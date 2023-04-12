@@ -40,7 +40,7 @@ main-build: consola
 consola: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/tp-2023-1c-Codefellas/shared/Debug" -o "consola" $(OBJS) $(USER_OBJS) $(LIBS) -lshared
+	gcc -L"/home/utnso/tp-2023-1c-Codefellas/shared/Debug" -o "consola" $(OBJS) $(USER_OBJS) $(LIBS) -lshared -lcommons
 	@echo 'Finished building target: $@'
 	@echo ' '
 
