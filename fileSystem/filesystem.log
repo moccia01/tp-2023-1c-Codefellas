@@ -1,0 +1,6 @@
+[INFO] 22:30:37:201 main/(7809:7809): Listo para escuchar a mi cliente
+[INFO] 22:31:09:774 main/(7809:7809): Se conecto un cliente!
+[INFO] 22:31:09:775 main/(7809:7809): Me llego el mensaje: Hola, soy kernel.
+[INFO] 22:32:37:665 filesystem_main/(7988:7988): Listo para escuchar a mi cliente
+[INFO] 22:32:50:660 filesystem_main/(7988:7988): Se conecto un cliente!
+[INFO] 22:32:50:660 filesystem_main/(7988:7988): Me llego el mensaje: Hola, soy kernel.

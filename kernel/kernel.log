@@ -15,3 +15,21 @@
 [INFO] 18:31:12:510 main/(4337:4337): Listo para recibir mensaje de consola
 [INFO] 18:31:18:574 main/(4337:4337): Se conecto un cliente!
 [INFO] 18:31:18:574 main/(4337:4337): Me llego el mensaje: Hola, soy consola.
+[INFO] 18:38:39:611 main/(4493:4493): Listo para escuchar a mi cliente
+[INFO] 18:38:39:611 main/(4493:4493): Listo para recibir mensaje de consola
+[INFO] 18:38:45:925 main/(4493:4493): Se conecto un cliente!
+[INFO] 18:38:45:926 main/(4493:4493): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:38:29:970 main/(4815:4815): Listo para escuchar a mi cliente
+[INFO] 20:38:29:971 main/(4815:4815): Listo para recibir mensaje de consola
+[INFO] 20:38:37:808 main/(4815:4815): Se conecto un cliente!
+[INFO] 20:38:37:808 main/(4815:4815): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:56:48:704 main/(6685:6685): Listo para escuchar a mi cliente
+[INFO] 21:56:48:704 main/(6685:6685): Listo para recibir mensajes
+[INFO] 21:56:54:591 main/(6685:6685): Se conecto un cliente!
+[INFO] 21:56:54:593 main/(6685:6685): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:30:50:651 main/(7832:7832): Listo para escuchar a mi cliente
+[INFO] 22:31:09:772 main/(7832:7832): Se conecto un cliente!
+[INFO] 22:31:09:773 main/(7832:7832): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:32:43:003 kernel_main/(7999:7999): Listo para escuchar a mi cliente
+[INFO] 22:32:50:657 kernel_main/(7999:7999): Se conecto un cliente!
+[INFO] 22:32:50:658 kernel_main/(7999:7999): Me llego el mensaje: Hola, soy consola.

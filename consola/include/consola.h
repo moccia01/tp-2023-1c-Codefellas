@@ -3,6 +3,7 @@
 
 #include <protocolo.h>
 #include <sockets.h>
+#include <shared.h>
 #include <commons/log.h>
 #include <commons/config.h>
 

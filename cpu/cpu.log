@@ -1,0 +1,6 @@
+[INFO] 22:30:44:729 main/(7820:7820): Listo para escuchar a mi cliente
+[INFO] 22:31:09:774 main/(7820:7820): Se conecto un cliente!
+[INFO] 22:31:09:774 main/(7820:7820): Me llego el mensaje: Hola, soy kernel.
+[INFO] 22:32:30:197 cpu_main/(7977:7977): Listo para escuchar a mi cliente
+[INFO] 22:32:50:659 cpu_main/(7977:7977): Se conecto un cliente!
+[INFO] 22:32:50:660 cpu_main/(7977:7977): Me llego el mensaje: Hola, soy kernel.

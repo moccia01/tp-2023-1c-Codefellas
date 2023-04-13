@@ -2,7 +2,7 @@
 
 int main(void) {
 
-	t_log* logger = log_create("consola.log", "main", true, LOG_LEVEL_INFO);
+	t_log* logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
 	t_config* config = config_create("consola.config");
 
 	if(config == NULL){
@@ -10,16 +10,14 @@ int main(void) {
 		exit(1);
 	}
 
-	char* ip = config_get_string_value(config, "IP_KERNEL");
-	char* puerto = config_get_string_value(config, "PUERTO_KERNEL");
-
-	int conexion = crear_conexion(ip, puerto);
-
+	// Conexion Kernel
+	char* IP_KERNEL = config_get_string_value(config, "IP_KERNEL");
+	// El enunciado dice q el puerto es numerico, pero la funcion getaddrinfo recibe char* y no puedo castear de int a char* :(
+	char* PUERTO_KERNEL = config_get_string_value(config, "PUERTO_KERNEL");
+	int conexion = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
 	enviar_mensaje("Hola, soy consola.", conexion);
 
-	log_destroy(logger);
-	config_destroy(config);
-	liberar_conexion(conexion);
+	terminar_programa(logger, config, conexion);
 
 	return 0;
 }
