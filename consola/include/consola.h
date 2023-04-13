@@ -1,7 +1,8 @@
 #ifndef CONSOLA_H_
 #define CONSOLA_H_
 
-#include <utils_cliente.h>
+#include <protocolo.h>
+#include <sockets.h>
 #include <commons/log.h>
 #include <commons/config.h>
 

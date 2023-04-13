@@ -2,3 +2,16 @@
 [INFO] 01:50:54:988 main/(2848:2848): Listo para recibir mensaje de consola
 [INFO] 01:51:46:797 main/(2917:2917): Listo para recibir mensaje de consola
 [INFO] 02:01:59:446 main/(29561:29561): Listo para recibir mensaje de consola
+[INFO] 18:01:07:938 main/(3252:3252): Listo para escuchar a mi cliente
+[INFO] 18:01:07:939 main/(3252:3252): Listo para recibir mensaje de consola
+[INFO] 18:07:12:563 main/(3493:3493): Listo para escuchar a mi cliente
+[INFO] 18:07:12:563 main/(3493:3493): Listo para recibir mensaje de consola
+[INFO] 18:07:20:734 main/(3493:3493): Se conecto un cliente!
+[INFO] 18:09:01:055 main/(3639:3639): Listo para escuchar a mi cliente
+[INFO] 18:09:01:056 main/(3639:3639): Listo para recibir mensaje de consola
+[INFO] 18:09:07:599 main/(3639:3639): Se conecto un cliente!
+[INFO] 18:09:07:600 main/(3639:3639): Me llego el mensaje Hola, soy consola.
+[INFO] 18:31:12:509 main/(4337:4337): Listo para escuchar a mi cliente
+[INFO] 18:31:12:510 main/(4337:4337): Listo para recibir mensaje de consola
+[INFO] 18:31:18:574 main/(4337:4337): Se conecto un cliente!
+[INFO] 18:31:18:574 main/(4337:4337): Me llego el mensaje: Hola, soy consola.
