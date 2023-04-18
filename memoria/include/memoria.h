@@ -5,5 +5,7 @@
 #include <protocolo.h>
 #include <commons/log.h>
 #include <commons/config.h>
+#include <shared.h>
+#include "init.h"
 
 #endif /* MEMORIA_H_ */

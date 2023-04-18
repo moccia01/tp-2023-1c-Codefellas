@@ -3,10 +3,12 @@
 int main(void) {
 	t_log* logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
 	t_config* config = config_create("filesystem.config");
-
-	// Inicio de servidor
 	char* IP = config_get_string_value(config, "IP_ESCUCHA");
 	char* PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+	char* IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
+	char* PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+
+	// Inicio de servidor
 	int fd_filesystem = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
@@ -18,6 +20,10 @@ int main(void) {
 	}
 	recibir_mensaje(logger, fd_kernel);
 
-	terminar_programa(logger, config, 0);
+	// Conecto CPU con memoria
+	int fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	enviar_mensaje("Hola, soy Filesystem.", fd_memoria);
+
+	terminar_programa(logger, config);
 	return 0;
 }

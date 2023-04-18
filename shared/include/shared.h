@@ -7,6 +7,6 @@
 #include <commons/config.h>
 #include "sockets.h"
 
-void terminar_programa(t_log* logger, t_config* config, int conexion);
+void terminar_programa(t_log* logger, t_config* config);
 
 #endif /* SHARED_H_ */

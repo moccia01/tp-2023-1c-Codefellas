@@ -6,5 +6,6 @@
 #include <shared.h>
 #include <commons/log.h>
 #include <commons/config.h>
+#include "init.h"
 
 #endif /* KERNEL_H_ */
