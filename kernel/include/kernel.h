@@ -27,7 +27,7 @@ struct PCB {
 	//free(nuevo_estado_string);
 //}
 
-//instruccion *obtener_ultima_instruccion(t_pcb *pcb)
+//instruccion   *obtener_ultima_instruccion(t_pcb *pcb)
 //{
 //	int ultima_instruccion_idx = pcb->program_counter - 1;
 //	instruccion *ultima_instruccion = list_get(pcb->instrucciones, ultima_instruccion_idx);
