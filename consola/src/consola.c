@@ -1,6 +1,6 @@
 #include "../include/consola.h"
 
-int main(void) {
+int main(int argc, char** argv) {
 	t_log* logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
 	t_config* config = config_create("consola.config");
 
