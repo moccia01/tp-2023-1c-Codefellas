@@ -12,10 +12,10 @@
 
 typedef struct
 {
-	uint32_t ax;
-	uint32_t bx;
-	uint32_t cx;
-	uint32_t dx;
+	char ax;
+	char bx;
+	char cx;
+	char dx;
 } registros_de_proposito_general;
 
 typedef enum
@@ -122,7 +122,7 @@ t_pcb *pcb_create(t_proceso *proceso, int pid, int socket)
     pcb->pagina_fault = NULL;
     pcb->tabla_de_segmentos = NULL;
    //  pcb->con_desalojo = false;
-    pcb->tamanio_segmentos = proceso->segmentos;
+    // pcb->tamanio_segmentos = proceso->segmentos;
 
     return pcb;
 }

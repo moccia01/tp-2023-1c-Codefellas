@@ -70,3 +70,10 @@
 [INFO] 01:40:03:073 memoria_main/(3637:3637): Me llego el mensaje: Hola, Soy Kernel!
 [INFO] 01:40:03:073 memoria_main/(3637:3637): Me llego el mensaje: Hola, soy Filesystem.
 [INFO] 01:40:03:073 memoria_main/(3637:3637): Me llego el mensaje: Hola, soy CPU!
+[INFO] 23:49:43:902 memoria_main/(2386:2386): Listo para escuchar a mi cliente
+[INFO] 23:50:21:933 memoria_main/(2386:2386): Se conecto un cliente!
+[INFO] 23:50:21:935 memoria_main/(2386:2386): Se conecto un cliente!
+[INFO] 23:50:21:935 memoria_main/(2386:2386): Se conecto un cliente!
+[INFO] 23:50:21:936 memoria_main/(2386:2386): Me llego el mensaje: Hola, Soy Kernel!
+[INFO] 23:50:21:936 memoria_main/(2386:2386): Me llego el mensaje: Hola, soy CPU!
+[INFO] 23:50:21:936 memoria_main/(2386:2386): Me llego el mensaje: Hola, soy Filesystem.
