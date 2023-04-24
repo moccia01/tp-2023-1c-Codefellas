@@ -28,7 +28,7 @@ typedef enum
 	FINISH_ERROR,
 	UNKNOWN_STATE
 } estado_proceso;
-
+//sss
 typedef enum
 {
 	FIFO,
