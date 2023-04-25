@@ -105,36 +105,8 @@ typedef struct
 
 } t_pcb;
 
-t_pcb *pcb_create(t_proceso *proceso, int pid, int socket)
-{
-    t_pcb *pcb = malloc(sizeof(t_pcb));
-
-    pcb->estado = NEW;
-    pcb->instrucciones = proceso->instrucciones;
-    pcb->pid = pid;
-   // pcb->socket_consola = socket;
-    pcb->program_counter = 0;
-    pcb->interrupcion = false;
-    pcb->registros.ax = 0;
-    pcb->registros.bx = 0;
-    pcb->registros.cx = 0;
-    pcb->registros.dx = 0;
-    pcb->pagina_fault = NULL;
-    pcb->tabla_de_segmentos = NULL;
-   //  pcb->con_desalojo = false;
-    // pcb->tamanio_segmentos = proceso->segmentos;
-
-    return pcb;
-}
-
-void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado)
-{
-	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
-	char *estado_anterior_string = strdup(estado_to_string(pcb->estado));
-	log_info(kernel_logger, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb->pid, estado_anterior_string, nuevo_estado_string);
-	free(estado_anterior_string);
-	free(nuevo_estado_string);
-}
+t_pcb *pcb_create(t_proceso *proceso, int pid, int socket);
+void cambiar_estado(t_log* logger, t_pcb *pcb, estado_proceso nuevo_estado);
 
 //instruccion     *obtener_ultima_instruccion(t_pcb *pcb)
 //{

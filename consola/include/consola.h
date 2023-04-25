@@ -12,11 +12,4 @@
 
 #endif /* CONSOLA_H_ */
 
-typedef struct{
-	char* instruccion;
-	char* parametro1;
-	char* parametro2;
-	char* parametro3;
-} t_instruccion;
-
 t_list* leer_instrucciones(char* path, t_log* logger);
