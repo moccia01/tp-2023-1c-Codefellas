@@ -99,3 +99,28 @@
 
 [INFO] 02:11:12:654 memoria_main/(4570:4609): Me llego el mensaje: Hola, Soy Kernel!
 [INFO] 02:14:36:695 memoria_main/(4923:4923): Listo para escuchar a mi cliente
+[INFO] 02:19:12:508 memoria_main/(5169:5169): Listo para escuchar a mi cliente
+[INFO] 02:19:37:194 memoria_main/(5169:5169): Cliente conectado (a Memoria)
+
+[INFO] 02:19:37:195 memoria_main/(5169:5169): Cliente conectado (a Memoria)
+
+[INFO] 02:19:37:198 memoria_main/(5169:5169): Cliente conectado (a Memoria)
+
+[INFO] 02:19:37:199 memoria_main/(5169:5211): Me llego el mensaje: Hola, soy CPU!
+[INFO] 02:19:37:199 memoria_main/(5169:5211): El cliente se desconecto de Memoria server
+[INFO] 02:19:37:202 memoria_main/(5169:5209): Me llego el mensaje: Hola, Soy Kernel!
+[INFO] 02:19:37:204 memoria_main/(5169:5210): Me llego el mensaje: Hola, soy Filesystem.
+[INFO] 02:19:37:204 memoria_main/(5169:5210): El cliente se desconecto de Memoria server
+[INFO] 02:22:22:940 memoria_main/(5169:5209): El cliente se desconecto de Memoria server
+[INFO] 02:23:01:268 memoria_main/(5273:5273): Listo para escuchar a mi cliente
+[INFO] 02:23:16:109 memoria_main/(5273:5273): Cliente conectado (a Memoria)
+
+[INFO] 02:23:16:111 memoria_main/(5273:5273): Cliente conectado (a Memoria)
+
+[INFO] 02:23:16:113 memoria_main/(5273:5312): Me llego el mensaje: Hola, soy Filesystem.
+[INFO] 02:23:16:113 memoria_main/(5273:5312): El cliente se desconecto de Memoria server
+[INFO] 02:23:16:115 memoria_main/(5273:5273): Cliente conectado (a Memoria)
+
+[INFO] 02:23:16:115 memoria_main/(5273:5313): Me llego el mensaje: Hola, soy CPU!
+[INFO] 02:23:16:115 memoria_main/(5273:5313): El cliente se desconecto de Memoria server
+[INFO] 02:23:16:118 memoria_main/(5273:5311): Me llego el mensaje: Hola, Soy Kernel!
