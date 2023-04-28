@@ -21,5 +21,7 @@ bool generar_conexiones(t_log* logger, t_config* config, int* fd_cpu, int* fd_me
 	*fd_cpu = crear_conexion(IP_CPU, PUERTO_CPU);
 	*fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
 
+
+
 	return *fd_filesystem != 0 && *fd_cpu != 0 && *fd_memoria != 0;
 }

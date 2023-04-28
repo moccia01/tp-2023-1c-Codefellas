@@ -1,5 +1,14 @@
 #include "../include/init.h"
 
+int inicializar_servidor(t_log* logger, t_config* config){
+	// Inicio de servidor
+		char* IP = config_get_string_value(config, "IP_ESCUCHA");
+		char* PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+		int fd_kernel = iniciar_servidor(logger, IP, PUERTO);
+		return fd_kernel;
+}
+
+
 // esto claramente no queda asi, es para testear hasta q implementemos hilos nomas
 void recibir_conexiones(t_log* logger, t_config* config, int fd_memoria, int* fd_cpu, int* fd_filesystem, int* fd_kernel){
 	// TODO: Implementar servidor multihilo para escuchar varios clientes.
@@ -7,6 +16,7 @@ void recibir_conexiones(t_log* logger, t_config* config, int fd_memoria, int* fd
 //	*fd_filesystem = esperar_cliente(logger, fd_memoria);
 //	*fd_kernel = esperar_cliente(logger, fd_memoria);
 }
+
 
 // Claramente esto tampoco queda asi, creo q deberia tener un switch con todos los posibles op_code y deberia ser individual para cada hilo
 void procesar_conexiones(t_log* logger, int fd_cpu, int fd_filesystem, int fd_kernel){

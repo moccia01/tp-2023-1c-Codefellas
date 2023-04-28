@@ -11,18 +11,18 @@ int main(void) {
 	}
 
 	// Conecto kernel con cpu, memoria y filesystem
-//	int fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
-//	if (!generar_conexiones(logger, config, &fd_cpu, &fd_memoria, &fd_filesystem)) {
-//		log_error(logger, "Alguna conexion falló :(");
-//		terminar_programa(logger, config);
-//		exit(1);
-//	}
-//
-//	// Intercambio de mensajes...
-//
-//	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
-//	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
-//	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
+	int fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
+	if (!generar_conexiones(logger, config, &fd_cpu, &fd_memoria, &fd_filesystem)) {
+		log_error(logger, "Alguna conexion falló :(");
+		terminar_programa(logger, config);
+		exit(1);
+	}
+
+	// Intercambio de mensajes...
+
+	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
+	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
+	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
 
 	int fd_kernel = inicializar_servidor(logger, config);
 

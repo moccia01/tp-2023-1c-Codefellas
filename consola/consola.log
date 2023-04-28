@@ -2127,3 +2127,363 @@
 [INFO] 01:08:11:297 consola_main/(12047:12047): Instruccion: EXIT 
 [INFO] 01:08:11:297 consola_main/(12047:12047): 
 
+[INFO] 01:57:45:326 consola_main/(4094:4094): Instruccion: SET 
+[INFO] 01:57:45:326 consola_main/(4094:4094): Parametro 1: AX 
+[INFO] 01:57:45:326 consola_main/(4094:4094): Parametro 2: HOLA 
+[INFO] 01:57:45:326 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:326 consola_main/(4094:4094): Instruccion: MOV_OUT 
+[INFO] 01:57:45:326 consola_main/(4094:4094): Parametro 1: 120 
+[INFO] 01:57:45:326 consola_main/(4094:4094): Parametro 2: AX 
+[INFO] 01:57:45:326 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: WAIT 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: DISCO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: I/O 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: 10 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: SIGNAL 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: DISCO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: MOV_IN 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: BX 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 120 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_OPEN 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: YIELD 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_TRUNCATE 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 64 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_SEEK 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 10 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: CREATE_SEGMENT 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: 1 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 128 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_WRITE 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 4 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 3: 4 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_READ 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 2: 16 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 3: 4 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: DELETE_SEGMENT 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: 1 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: F_CLOSE 
+[INFO] 01:57:45:327 consola_main/(4094:4094): Parametro 1: ARCHIVO 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 01:57:45:327 consola_main/(4094:4094): Instruccion: EXIT 
+[INFO] 01:57:45:327 consola_main/(4094:4094): 
+
+[INFO] 02:05:51:575 consola_main/(4228:4228): Instruccion: SET 
+[INFO] 02:05:51:575 consola_main/(4228:4228): Parametro 1: AX 
+[INFO] 02:05:51:575 consola_main/(4228:4228): Parametro 2: HOLA 
+[INFO] 02:05:51:575 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:575 consola_main/(4228:4228): Instruccion: MOV_OUT 
+[INFO] 02:05:51:575 consola_main/(4228:4228): Parametro 1: 120 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 2: AX 
+[INFO] 02:05:51:576 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:576 consola_main/(4228:4228): Instruccion: WAIT 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 1: DISCO 
+[INFO] 02:05:51:576 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:576 consola_main/(4228:4228): Instruccion: I/O 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 1: 10 
+[INFO] 02:05:51:576 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:576 consola_main/(4228:4228): Instruccion: SIGNAL 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 1: DISCO 
+[INFO] 02:05:51:576 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:576 consola_main/(4228:4228): Instruccion: MOV_IN 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 1: BX 
+[INFO] 02:05:51:576 consola_main/(4228:4228): Parametro 2: 120 
+[INFO] 02:05:51:576 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:576 consola_main/(4228:4228): Instruccion: F_OPEN 
+[INFO] 02:05:51:577 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:577 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:577 consola_main/(4228:4228): Instruccion: YIELD 
+[INFO] 02:05:51:577 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:577 consola_main/(4228:4228): Instruccion: F_TRUNCATE 
+[INFO] 02:05:51:577 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:577 consola_main/(4228:4228): Parametro 2: 64 
+[INFO] 02:05:51:577 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:578 consola_main/(4228:4228): Instruccion: F_SEEK 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 2: 10 
+[INFO] 02:05:51:578 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:578 consola_main/(4228:4228): Instruccion: CREATE_SEGMENT 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 1: 1 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 2: 128 
+[INFO] 02:05:51:578 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:578 consola_main/(4228:4228): Instruccion: F_WRITE 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 2: 4 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 3: 4 
+[INFO] 02:05:51:578 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:578 consola_main/(4228:4228): Instruccion: F_READ 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 2: 16 
+[INFO] 02:05:51:578 consola_main/(4228:4228): Parametro 3: 4 
+[INFO] 02:05:51:579 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:579 consola_main/(4228:4228): Instruccion: DELETE_SEGMENT 
+[INFO] 02:05:51:579 consola_main/(4228:4228): Parametro 1: 1 
+[INFO] 02:05:51:579 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:579 consola_main/(4228:4228): Instruccion: F_CLOSE 
+[INFO] 02:05:51:579 consola_main/(4228:4228): Parametro 1: ARCHIVO 
+[INFO] 02:05:51:579 consola_main/(4228:4228): 
+
+[INFO] 02:05:51:579 consola_main/(4228:4228): Instruccion: EXIT 
+[INFO] 02:05:51:579 consola_main/(4228:4228): 
+
+[INFO] 02:10:00:853 consola_main/(4519:4519): Instruccion: SET 
+[INFO] 02:10:00:853 consola_main/(4519:4519): Parametro 1: AX 
+[INFO] 02:10:00:853 consola_main/(4519:4519): Parametro 2: HOLA 
+[INFO] 02:10:00:853 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:853 consola_main/(4519:4519): Instruccion: MOV_OUT 
+[INFO] 02:10:00:853 consola_main/(4519:4519): Parametro 1: 120 
+[INFO] 02:10:00:854 consola_main/(4519:4519): Parametro 2: AX 
+[INFO] 02:10:00:854 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:854 consola_main/(4519:4519): Instruccion: WAIT 
+[INFO] 02:10:00:854 consola_main/(4519:4519): Parametro 1: DISCO 
+[INFO] 02:10:00:855 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:855 consola_main/(4519:4519): Instruccion: I/O 
+[INFO] 02:10:00:855 consola_main/(4519:4519): Parametro 1: 10 
+[INFO] 02:10:00:855 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:855 consola_main/(4519:4519): Instruccion: SIGNAL 
+[INFO] 02:10:00:855 consola_main/(4519:4519): Parametro 1: DISCO 
+[INFO] 02:10:00:855 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:855 consola_main/(4519:4519): Instruccion: MOV_IN 
+[INFO] 02:10:00:855 consola_main/(4519:4519): Parametro 1: BX 
+[INFO] 02:10:00:855 consola_main/(4519:4519): Parametro 2: 120 
+[INFO] 02:10:00:856 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:856 consola_main/(4519:4519): Instruccion: F_OPEN 
+[INFO] 02:10:00:856 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:856 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:856 consola_main/(4519:4519): Instruccion: YIELD 
+[INFO] 02:10:00:856 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:857 consola_main/(4519:4519): Instruccion: F_TRUNCATE 
+[INFO] 02:10:00:857 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:857 consola_main/(4519:4519): Parametro 2: 64 
+[INFO] 02:10:00:857 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:857 consola_main/(4519:4519): Instruccion: F_SEEK 
+[INFO] 02:10:00:857 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:858 consola_main/(4519:4519): Parametro 2: 10 
+[INFO] 02:10:00:858 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:858 consola_main/(4519:4519): Instruccion: CREATE_SEGMENT 
+[INFO] 02:10:00:859 consola_main/(4519:4519): Parametro 1: 1 
+[INFO] 02:10:00:859 consola_main/(4519:4519): Parametro 2: 128 
+[INFO] 02:10:00:859 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:859 consola_main/(4519:4519): Instruccion: F_WRITE 
+[INFO] 02:10:00:859 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:859 consola_main/(4519:4519): Parametro 2: 4 
+[INFO] 02:10:00:859 consola_main/(4519:4519): Parametro 3: 4 
+[INFO] 02:10:00:859 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:859 consola_main/(4519:4519): Instruccion: F_READ 
+[INFO] 02:10:00:860 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:860 consola_main/(4519:4519): Parametro 2: 16 
+[INFO] 02:10:00:860 consola_main/(4519:4519): Parametro 3: 4 
+[INFO] 02:10:00:860 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:860 consola_main/(4519:4519): Instruccion: DELETE_SEGMENT 
+[INFO] 02:10:00:860 consola_main/(4519:4519): Parametro 1: 1 
+[INFO] 02:10:00:860 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:861 consola_main/(4519:4519): Instruccion: F_CLOSE 
+[INFO] 02:10:00:861 consola_main/(4519:4519): Parametro 1: ARCHIVO 
+[INFO] 02:10:00:861 consola_main/(4519:4519): 
+
+[INFO] 02:10:00:861 consola_main/(4519:4519): Instruccion: EXIT 
+[INFO] 02:10:00:861 consola_main/(4519:4519): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: SET 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: AX 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: HOLA 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: MOV_OUT 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: 120 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: AX 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: WAIT 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: DISCO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: I/O 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: 10 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: SIGNAL 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: DISCO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: MOV_IN 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: BX 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 120 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: F_OPEN 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: YIELD 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: F_TRUNCATE 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 64 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: F_SEEK 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 10 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: CREATE_SEGMENT 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: 1 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 128 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: F_WRITE 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 4 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 3: 4 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:848 consola_main/(4616:4616): Instruccion: F_READ 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 2: 16 
+[INFO] 02:11:21:848 consola_main/(4616:4616): Parametro 3: 4 
+[INFO] 02:11:21:848 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:849 consola_main/(4616:4616): Instruccion: DELETE_SEGMENT 
+[INFO] 02:11:21:849 consola_main/(4616:4616): Parametro 1: 1 
+[INFO] 02:11:21:849 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:849 consola_main/(4616:4616): Instruccion: F_CLOSE 
+[INFO] 02:11:21:849 consola_main/(4616:4616): Parametro 1: ARCHIVO 
+[INFO] 02:11:21:849 consola_main/(4616:4616): 
+
+[INFO] 02:11:21:849 consola_main/(4616:4616): Instruccion: EXIT 
+[INFO] 02:11:21:849 consola_main/(4616:4616): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: SET 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: AX 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: HOLA 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: MOV_OUT 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: 120 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: AX 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: WAIT 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: DISCO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: I/O 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: 10 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: SIGNAL 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: DISCO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: MOV_IN 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: BX 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: 120 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: F_OPEN 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: YIELD 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: F_TRUNCATE 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: 64 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: F_SEEK 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: 10 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: CREATE_SEGMENT 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: 1 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: 128 
+[INFO] 02:14:52:552 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:552 consola_main/(4968:4968): Instruccion: F_WRITE 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 2: 4 
+[INFO] 02:14:52:552 consola_main/(4968:4968): Parametro 3: 4 
+[INFO] 02:14:52:553 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:553 consola_main/(4968:4968): Instruccion: F_READ 
+[INFO] 02:14:52:553 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:553 consola_main/(4968:4968): Parametro 2: 16 
+[INFO] 02:14:52:553 consola_main/(4968:4968): Parametro 3: 4 
+[INFO] 02:14:52:553 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:553 consola_main/(4968:4968): Instruccion: DELETE_SEGMENT 
+[INFO] 02:14:52:553 consola_main/(4968:4968): Parametro 1: 1 
+[INFO] 02:14:52:553 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:553 consola_main/(4968:4968): Instruccion: F_CLOSE 
+[INFO] 02:14:52:553 consola_main/(4968:4968): Parametro 1: ARCHIVO 
+[INFO] 02:14:52:553 consola_main/(4968:4968): 
+
+[INFO] 02:14:52:553 consola_main/(4968:4968): Instruccion: EXIT 
+[INFO] 02:14:52:553 consola_main/(4968:4968): 
+

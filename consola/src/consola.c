@@ -2,14 +2,14 @@
 
 int main(int argc, char **argv) {
 
-	t_log *logger = log_create("consola.log", "consola_main", true,
+	logger = log_create("consola.log", "consola_main", true,
 			LOG_LEVEL_INFO);
 
 	if (argc > 3) {
 		return EXIT_FAILURE;
 	}
 
-	t_config *config = config_create(argv[1]); //Tira warning aca xq no lo usamos nunca
+	config = config_create(argv[1]); //Tira warning aca xq no lo usamos nunca
 
 	//FILE* pseudo_code = fopen(argv[2], "r");
 
@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
+
 
 	char *IP_KERNEL = config_get_string_value(config, "IP_KERNEL");
 	// El enunciado dice q el puerto es numerico, pero la funcion getaddrinfo recibe char* y no puedo castear de int a char* :(
