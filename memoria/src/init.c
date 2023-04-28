@@ -3,9 +3,9 @@
 // esto claramente no queda asi, es para testear hasta q implementemos hilos nomas
 void recibir_conexiones(t_log* logger, t_config* config, int fd_memoria, int* fd_cpu, int* fd_filesystem, int* fd_kernel){
 	// TODO: Implementar servidor multihilo para escuchar varios clientes.
-	*fd_cpu = esperar_cliente(logger, fd_memoria);
-	*fd_filesystem = esperar_cliente(logger, fd_memoria);
-	*fd_kernel = esperar_cliente(logger, fd_memoria);
+//	*fd_cpu = esperar_cliente(logger, fd_memoria);
+//	*fd_filesystem = esperar_cliente(logger, fd_memoria);
+//	*fd_kernel = esperar_cliente(logger, fd_memoria);
 }
 
 // Claramente esto tampoco queda asi, creo q deberia tener un switch con todos los posibles op_code y deberia ser individual para cada hilo

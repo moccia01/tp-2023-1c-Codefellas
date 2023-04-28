@@ -32,14 +32,15 @@ int iniciar_servidor(t_log* logger, char* ip, char* puerto)
 	return socket_servidor;
 }
 
-int esperar_cliente(t_log* logger, int socket_servidor)
-{
-	// Aceptamos un nuevo cliente
-	int socket_cliente = accept(socket_servidor, NULL, NULL);
+int esperar_cliente(t_log* logger, const char* name, int socket_servidor) {
+    struct sockaddr_in dir_cliente;
+    socklen_t tam_direccion = sizeof(struct sockaddr_in);
 
-	log_info(logger, "Se conecto un cliente!");
+    int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 
-	return socket_cliente;
+    log_info(logger, "Cliente conectado (a %s)\n", name);
+
+    return socket_cliente;
 }
 
 int crear_conexion(char *ip, char* puerto)

@@ -12,7 +12,7 @@ int main(void) {
 	int fd_filesystem = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
-	int fd_kernel = esperar_cliente(logger, fd_filesystem);
+	int fd_kernel = esperar_cliente(logger, "Filesystem", fd_filesystem);
 	int cod_op = recibir_operacion(fd_kernel);
 	if(cod_op != MENSAJE){
 		printf("no se q paso pero exploto\n");

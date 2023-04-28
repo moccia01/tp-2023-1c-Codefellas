@@ -102,10 +102,10 @@ void crear_buffer(t_paquete* paquete)
 	paquete->buffer->stream = NULL;
 }
 
-t_paquete* crear_paquete(void)
+t_paquete* crear_paquete(op_code codigo_op)
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = PAQUETE;
+	paquete->codigo_operacion = codigo_op;
 	crear_buffer(paquete);
 	return paquete;
 }
@@ -122,7 +122,7 @@ void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
 
 void enviar_paquete(t_paquete* paquete, int socket_cliente)
 {
-	int bytes = paquete->buffer->size + 2*sizeof(int);
+	int bytes = paquete->buffer->size + sizeof(int) + sizeof(op_code);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
 	send(socket_cliente, a_enviar, bytes, 0);
@@ -131,7 +131,7 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 }
 
 void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
-	t_paquete* instrucciones_a_mandar = crear_paquete();
+	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
 	for(int i=0; i<list_size(lista_de_instrucciones); i++){
 		t_instruccion* instruccion = list_get(lista_de_instrucciones, i);
 		agregar_a_paquete(instrucciones_a_mandar, instruccion, sizeof(instruccion));
@@ -139,6 +139,7 @@ void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 	enviar_paquete(instrucciones_a_mandar, fd_modulo);
 }
 
-t_list* recv_instrucciones(int fd_modulo){
+t_list* recv_instrucciones(t_log* logger, int fd_modulo){
+	log_info(logger, "Se recibió una lista de  instrucciones.");
 	return recibir_paquete(fd_modulo);
 }

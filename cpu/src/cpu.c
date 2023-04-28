@@ -18,7 +18,7 @@ int main(void) {
 	int fd_cpu = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
-	int fd_kernel = esperar_cliente(logger, fd_cpu);
+	int fd_kernel = esperar_cliente(logger, "CPU", fd_cpu);
 	int cod_op = recibir_operacion(fd_kernel);
 	if(cod_op != MENSAJE){
 		log_error(logger, "no se q paso pero exploto\n");

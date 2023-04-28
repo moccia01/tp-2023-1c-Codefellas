@@ -7,6 +7,9 @@
 #include <commons/log.h>
 #include <commons/config.h>
 #include "init.h"
+#include "planificador.h"
+#include <pthread.h>
+#include "../include/comunicacion.h"
 
 #endif /* KERNEL_H_ */
 
@@ -44,7 +47,7 @@ typedef struct
 typedef struct
 {
 	t_list *instrucciones;
-	t_list *segmentos;
+	//t_list *segmentos;
 } t_proceso;
 
 typedef enum
@@ -105,8 +108,13 @@ typedef struct
 
 } t_pcb;
 
-t_pcb *pcb_create(t_proceso *proceso, int pid, int socket);
+t_list* lista_pcbs;
+t_log* logger;
+t_config* config;
+
+t_pcb *pcb_create(t_proceso *proceso, int pid);
 void cambiar_estado(t_log* logger, t_pcb *pcb, estado_proceso nuevo_estado);
+void armar_pcb(t_list *instrucciones);
 
 //instruccion     *obtener_ultima_instruccion(t_pcb *pcb)
 //{

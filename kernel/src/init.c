@@ -1,5 +1,13 @@
 #include "../include/init.h"
 
+int inicializar_servidor(t_log* logger, t_config* config){
+	// Inicio de servidor
+		char* IP = config_get_string_value(config, "IP_ESCUCHA");
+		char* PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+		int fd_kernel = iniciar_servidor(logger, IP, PUERTO);
+		return fd_kernel;
+}
+
 bool generar_conexiones(t_log* logger, t_config* config, int* fd_cpu, int* fd_memoria, int* fd_filesystem){
 	// Leo IPs y Puertos del config
 	char* IP_FILESYSTEM = config_get_string_value(config, "IP_FILESYSTEM");
