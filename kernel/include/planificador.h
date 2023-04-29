@@ -5,8 +5,8 @@
 #include <commons/log.h>
 #include <commons/collections/list.h>
 
-void planificar(t_config*);
-void planificar_largo_plazo(t_config*);
-void planificar_corto_plazo(t_config*);
+void planificar(t_log*, t_config*);
+void planificar_largo_plazo(t_log*, t_config*);
+void planificar_corto_plazo(t_log*, t_config*);
 
 #endif /* PLANIFICADOR_H_ */

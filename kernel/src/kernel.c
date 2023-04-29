@@ -3,7 +3,7 @@
 int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
 	config = config_create("kernel.config");
-	//pcbs = list_create();
+	lista_pcbs = list_create();
 
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
@@ -26,19 +26,8 @@ int main(void) {
 
 	int fd_kernel = inicializar_servidor(logger, config);
 
-	while(server_escuchar(logger, fd_kernel));
+	while(server_escuchar(logger, config, fd_kernel));
 
-	// Conexion consola
-//	int fd_consola = esperar_cliente(logger, fd_kernel);
-//	int cod_op = recibir_operacion(fd_consola);
-//	if (cod_op != MENSAJE) {
-//		log_error(logger, "no se q paso pero exploto\n");
-//		exit(1);
-//	}
-//
-//	recibir_mensaje(logger, fd_consola);
-//	t_list *instrucciones = recv_instrucciones(logger, fd_consola);
-//
 //	armar_pcb(instrucciones);
 //
 //	planificar(config);
