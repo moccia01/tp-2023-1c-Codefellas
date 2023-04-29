@@ -1,8 +1,8 @@
 #include "../include/cpu.h"
 
 int main(void) {
-	t_log* logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
-	t_config* config = config_create("cpu.config");
+	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
+	config = config_create("cpu.config");
 	t_registros* registros = inicializar_registro();
 
 	if(config == NULL){
@@ -42,18 +42,18 @@ t_registros* inicializar_registro(){
 	t_registros* registro = malloc(sizeof(t_registros));
 
 	//FUNCÓ PERO SUPONGO QUE HAY QUE CAMBIAR EL SIZE OF
-	registro->ax = malloc(sizeof(4));
-	registro->bx = malloc(sizeof(4));
-	registro->cx = malloc(sizeof(4));
-	registro->dx = malloc(sizeof(4));
-	registro->eax = malloc(sizeof(8));
-	registro->ebx = malloc(sizeof(8));
-	registro->ecx = malloc(sizeof(8));
-	registro->edx = malloc(sizeof(8));
-	registro->rax = malloc(sizeof(16));
-	registro->rbx = malloc(sizeof(16));
-	registro->rcx = malloc(sizeof(16));
-	registro->rdx = malloc(sizeof(16));
+	registro->ax = malloc(sizeof(5));
+	registro->bx = malloc(sizeof(5));
+	registro->cx = malloc(sizeof(5));
+	registro->dx = malloc(sizeof(5));
+	registro->eax = malloc(sizeof(9));
+	registro->ebx = malloc(sizeof(9));
+	registro->ecx = malloc(sizeof(9));
+	registro->edx = malloc(sizeof(9));
+	registro->rax = malloc(sizeof(17));
+	registro->rbx = malloc(sizeof(17));
+	registro->rcx = malloc(sizeof(17));
+	registro->rdx = malloc(sizeof(17));
 
 	registro->ax = NULL;
 	registro->bx = NULL;
@@ -74,45 +74,46 @@ t_registros* inicializar_registro(){
 void fetch(){
 
 }
-
+/*
 void decode(){
+	cod_instruccion cod_instruccion;	//NO VA
 
-
-	switch(cod_operacion){
-	case "SET":
+	switch(cod_instruccion){
+	case SET:
 		break;
-	case "MOV_IN":
+	case MOV_IN:
 		break;
-	case "I/O":
+	case IO:
 		break;
-	case "F_OPEN":
+	case F_OPEN:
 		break;
-	case "F_CLOSE":
+	case F_CLOSE:
 		break;
-	case "F_SEEK":
+	case F_SEEK:
 		break;
-	case "F_READ":
+	case F_READ:
 		break;
-	case "F_WRITE":
+	case F_WRITE:
 		break;
-	case "F_TRUNCATE":
+	case F_TRUNCATE:
 		break;
-	case "WAIT":
+	case WAIT:
 		break;
-	case "SIGNAL":
+	case SIGNAL:
 		break;
-	case "CREATE_SEGMENT":
+	case CREATE_SEGMENT:
 		break;
-	case "DELETE_SEGMENT":
+	case DELETE_SEGMENT:
 		break;
-	case "YIELD":
-		yield();
+	case YIELD:
+		//ejecutar_yield();
 		break;
-	case "EXIT":
-		exit();
+	case EXIT:
+		ejecutar_exit();
 		break;
 	default:
 		log_error(logger, "Instruccion no reconocida");
 		return;
 	}
 }
+*/

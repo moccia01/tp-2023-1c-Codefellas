@@ -42,33 +42,11 @@ typedef struct
 	//t_list *segmentos;
 } t_proceso;
 
-typedef enum
-{
-	SET,
-	ADD,
-	MOV_IN,
-	MOV_OUT,
-	IO,
-	SIGNAL,
-	EXIT,
-	UNKNOWN_OP,
-	ERROR_MEMORIA,
-	WAIT,
-	F_OPEN,
-	YIELD,
-	F_TRUNCATE,
-	F_SEEK,
-	CREATE_SEGMENT,
-	F_WRITE,
-	F_READ,
-	DELETE_SEGMENT,
-	F_CLOSE
-} cod_operacion;
 
 // INSTRUCCIONES QUE TIENEN DOS PARAMETROS
 typedef struct
 {
-	cod_operacion operacion;
+	op_code operacion;		//ANTES ERA DE TIPO cod_instruccion
 	char *parametro1;
 	char *parametro2;
 } instruccion;
