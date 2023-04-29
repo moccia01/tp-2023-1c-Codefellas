@@ -30,6 +30,22 @@ typedef struct
 	t_buffer* buffer;
 } t_paquete;
 
+typedef struct
+{
+	char* ax;
+	char* bx;
+	char* cx;
+	char* dx;
+	char* eax;
+	char* ebx;
+	char* ecx;
+	char* edx;
+	char* rax;
+	char* rbx;
+	char* rcx;
+	char* rdx;
+} t_registros;
+
 //Mensajes
 void enviar_mensaje(char* mensaje, int socket_cliente);
 int recibir_operacion(int socket_cliente);

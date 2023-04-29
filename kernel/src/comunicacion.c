@@ -22,6 +22,7 @@ static void procesar_conexion(void *void_args) {
 			break;
 		case INSTRUCCIONES_CONSOLA:
 			t_list* instrucciones = recv_instrucciones(logger, cliente_socket);
+			//	armar_pcb(instrucciones);
 			log_info(logger, "Recibí las instrucciones de la consola.");
 			break;
 		default:

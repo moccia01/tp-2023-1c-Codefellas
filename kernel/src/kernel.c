@@ -62,16 +62,13 @@ t_pcb* pcb_create(t_proceso *proceso, int pid) {
 
 	pcb->estado = NEW;
 	pcb->instrucciones = proceso->instrucciones;
-	pcb->pid = pid;
+	//pcb->pid = pid;
 	// pcb->socket_consola = socket;
-	pcb->program_counter = 0;
+	//pcb->program_counter = 0;
 	pcb->interrupcion = false;
-	pcb->registros.ax = 0;
-	pcb->registros.bx = 0;
-	pcb->registros.cx = 0;
-	pcb->registros.dx = 0;
-	pcb->pagina_fault = NULL;
 	pcb->tabla_de_segmentos = NULL;
+	pcb->contexto_de_ejecucion.pid = pid;
+	pcb->contexto_de_ejecucion.program_counter = 0;
 	//  pcb->con_desalojo = false;
 	// pcb->tamanio_segmentos = proceso->segmentos;
 

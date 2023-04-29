@@ -13,14 +13,6 @@
 
 #endif /* KERNEL_H_ */
 
-typedef struct
-{
-	char ax;
-	char bx;
-	char cx;
-	char dx;
-} registros_de_proposito_general;
-
 typedef enum
 {
 	NEW,
@@ -88,23 +80,29 @@ typedef struct
 	int direccion_fisica;
 	int tamanio_segmentos;
 
-	}t_segmento;
+}t_segmento;
 
-typedef struct
-
-{
+typedef struct{
 	int pid;
 	int program_counter;
+
+
+}t_contexto_ejecucion;
+
+typedef struct
+{
+	//int pid;
+	//int program_counter;
 	estado_proceso estado;
 	//int socket_consola;
 	bool interrupcion;
 	t_list *instrucciones;
 	// punteros de las listas en dudaa
 	t_list *tabla_de_segmentos;
-	registros_de_proposito_general registros;
-	t_pagina *pagina_fault;
+	t_registros registros;
+	t_contexto_ejecucion contexto_de_ejecucion;
+	t_segmento seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
 	//bool con_desalojo;
-
 
 } t_pcb;
 
