@@ -42,18 +42,18 @@ t_registros* inicializar_registro(){
 	t_registros* registro = malloc(sizeof(t_registros));
 
 	//FUNCÓ PERO SUPONGO QUE HAY QUE CAMBIAR EL SIZE OF
-	registro->ax = malloc(sizeof(int));		//CHEQUEAR SI SON 4 BYTES
-	registro->bx = malloc(sizeof(int));
-	registro->cx = malloc(sizeof(int));
-	registro->dx = malloc(sizeof(int));
-	registro->eax = malloc(sizeof(__uint8_t));
-	registro->ebx = malloc(sizeof(__uint8_t));
-	registro->ecx = malloc(sizeof(__uint8_t));
-	registro->edx = malloc(sizeof(__uint8_t));
-	registro->rax = malloc(sizeof(__uint16_t));
-	registro->rbx = malloc(sizeof(__uint16_t));
-	registro->rcx = malloc(sizeof(__uint16_t));
-	registro->rdx = malloc(sizeof(__uint16_t));
+	registro->ax = malloc(sizeof(4));
+	registro->bx = malloc(sizeof(4));
+	registro->cx = malloc(sizeof(4));
+	registro->dx = malloc(sizeof(4));
+	registro->eax = malloc(sizeof(8));
+	registro->ebx = malloc(sizeof(8));
+	registro->ecx = malloc(sizeof(8));
+	registro->edx = malloc(sizeof(8));
+	registro->rax = malloc(sizeof(16));
+	registro->rbx = malloc(sizeof(16));
+	registro->rcx = malloc(sizeof(16));
+	registro->rdx = malloc(sizeof(16));
 
 	registro->ax = NULL;
 	registro->bx = NULL;
