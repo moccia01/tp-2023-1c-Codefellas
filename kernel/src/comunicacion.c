@@ -1,7 +1,9 @@
 #include "../include/comunicacion.h"
+
 static void procesar_conexion(void *void_args) {
 	t_procesar_conexion_args *args = (t_procesar_conexion_args*) void_args;
 	t_log *logger = args->log;
+	t_config* config = args->cfg;
 	int cliente_socket = args->fd;
 	char *server_name = args->server_name;
 	free(args);
@@ -23,6 +25,8 @@ static void procesar_conexion(void *void_args) {
 		case INSTRUCCIONES_CONSOLA:
 			t_list* instrucciones = recv_instrucciones(logger, cliente_socket);
 			log_info(logger, "Recibí las instrucciones de la consola.");
+			armar_pcb(instrucciones);
+			planificar(config);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s",
@@ -35,7 +39,7 @@ static void procesar_conexion(void *void_args) {
 	return;
 }
 
-int server_escuchar(t_log *logger, int server_socket) {
+int server_escuchar(t_log *logger,t_config* config, int server_socket) {
 	char *server_name = "Kernel";
 	int cliente_socket = esperar_cliente(logger, server_name, server_socket);
 
@@ -43,6 +47,7 @@ int server_escuchar(t_log *logger, int server_socket) {
 		pthread_t hilo;
 		t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
 		args->log = logger;
+		args->cfg = config;
 		args->fd = cliente_socket;
 		args->server_name = server_name;
 		pthread_create(&hilo, NULL, (void*) procesar_conexion, (void*) args);
