@@ -41,6 +41,15 @@ typedef enum
 	UNKNOWN_STATE
 } estado_proceso;
 
+//CONTEXTO DE EJECUCION
+typedef struct{
+    int pid;
+    int program_counter;
+    t_list *instrucciones;
+    t_list *tabla_de_segmentos;
+    estado_proceso estado;
+}t_contexto_ejecucion;
+
 void terminar_programa(t_log* logger, t_config* config);
 char *estado_to_string(estado_proceso estado);
 
