@@ -14,6 +14,34 @@ typedef struct{
 	char* parametro3;
 } t_instruccion;
 
+typedef struct
+{
+	char* ax;
+	char* bx;
+	char* cx;
+	char* dx;
+	char* eax;
+	char* ebx;
+	char* ecx;
+	char* edx;
+	char* rax;
+	char* rbx;
+	char* rcx;
+	char* rdx;
+} t_registros;
+
+typedef enum
+{
+	NEW,
+	READY,
+	EXEC,
+	BLOCK,
+	FINISH_EXIT,
+	FINISH_ERROR,
+	UNKNOWN_STATE
+} estado_proceso;
+
 void terminar_programa(t_log* logger, t_config* config);
+char *estado_to_string(estado_proceso estado);
 
 #endif /* SHARED_H_ */

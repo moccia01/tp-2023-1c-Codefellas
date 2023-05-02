@@ -140,6 +140,6 @@ void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 }
 
 t_list* recv_instrucciones(t_log* logger, int fd_modulo){
-	log_info(logger, "Se recibió una lista de  instrucciones.");
+	log_info(logger, "Se recibió una lista de instrucciones.");
 	return recibir_paquete(fd_modulo);
 }

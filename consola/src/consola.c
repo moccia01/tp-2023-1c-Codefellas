@@ -69,23 +69,6 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 		instruccion.parametro2 = parametro2;
 		instruccion.parametro3 = parametro3;
 
-		// SOLO PARA CHEQUEAR
-		log_info(logger, "Instruccion: %s ", instruccion_token);
-
-		if (parametro1 != NULL) {
-			log_info(logger, "Parametro 1: %s ", parametro1);
-		}
-
-		if (parametro2 != NULL) {
-			log_info(logger, "Parametro 2: %s ", parametro2);
-		}
-
-		if (parametro3 != NULL) {
-			log_info(logger, "Parametro 3: %s ", parametro3);
-		}
-
-		log_info(logger, "\n");
-
 		list_add(lista_de_instrucciones, &instruccion);
 	}
 

@@ -6,23 +6,11 @@
 #include <shared.h>
 #include <commons/log.h>
 #include <commons/config.h>
-#include "init.h"
-#include "planificador.h"
 #include <pthread.h>
-#include "../include/comunicacion.h"
+#include <semaphore.h>
 
 #endif /* KERNEL_H_ */
 
-typedef enum
-{
-	NEW,
-	READY,
-	EXEC,
-	BLOCK,
-	FINISH_EXIT,
-	FINISH_ERROR,
-	UNKNOWN_STATE
-} estado_proceso;
 //sss
 typedef enum
 {
@@ -69,7 +57,7 @@ typedef struct{
 
 typedef struct
 {
-	//int pid;
+	int pid;
 	//int program_counter;
 	estado_proceso estado;
 	//int socket_consola;
@@ -84,13 +72,79 @@ typedef struct
 
 } t_pcb;
 
-t_list* lista_pcbs;
+typedef struct {
+	t_log *log;
+	t_config* cfg;
+	int fd;
+	char *server_name;
+} t_procesar_conexion_args;
+
 t_log* logger;
 t_config* config;
+int fd_cpu;
+int fd_memoria;
+int fd_filesystem;
+char* server_name;
 
+// Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)
+char* IP;
+char* PUERTO;
+char* IP_FILESYSTEM;
+char* PUERTO_FILESYSTEM;
+char* IP_CPU;
+char* PUERTO_CPU;
+char* IP_MEMORIA;
+char* PUERTO_MEMORIA;
+t_algoritmo ALGORITMO_PLANIFICACION;
+int ESTIMACION_INICIAL;
+float HRRN_ALFA;
+int GRADO_MAX_MULTIPROGRAMACION;
+char** RECURSOS;
+int* INSTANCIAS_RECURSOS;
+
+// Variables PCBs
+t_list* lista_pcbs;
+int generador_pid;
+t_queue* cola_ready;
+t_queue* cola_exit;
+t_queue* cola_listos_para_ready;
+t_queue* cola_exec;
+
+
+// Semaforos y pthread
+pthread_mutex_t mutex_generador_pid;
+sem_t sem_multiprog;
+sem_t sem_listos_ready;
+sem_t sem_ready;
+sem_t sem_exec;
+
+// INIT
+void leer_config();
+void asignar_algoritmo(char* algoritmo);
+bool generar_conexiones();
+int inicializar_servidor();
+void inicializar_variables();
+
+// COMUNICACION
+static void procesar_conexion(void *void_args);
+void iterator(char* value);
+int server_escuchar(int server_socket);
+
+// PCBS
 t_pcb *pcb_create(t_proceso *proceso, int pid);
-void cambiar_estado(t_log* logger, t_pcb *pcb, estado_proceso nuevo_estado);
+void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
 void armar_pcb(t_list *instrucciones);
+
+// PLANIFICACION
+void planificar();
+void planificar_largo_plazo();
+void exit_pcb();
+void ready_pcb();
+void setear_pcb_ready(t_pcb* pcb);
+void planificar_corto_plazo();
+void planificar_FIFO();
+void run_pcb(t_pcb* pcb, int fd_cpu);
+void planificar_HRRN();
 
 //instruccion     *obtener_ultima_instruccion(t_pcb *pcb)
 //{

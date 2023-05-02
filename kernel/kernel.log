@@ -1,0 +1,78 @@
+[INFO] 23:18:33:104 kernel_main/(9241:9241): esto leyendo la cfg
+[INFO] 23:18:33:104 kernel_main/(9241:9241): termine de leer cfg
+[INFO] 23:22:55:595 kernel_main/(9763:9763): hasta aca llega?
+[INFO] 23:23:31:185 kernel_main/(9891:9891): 1
+[INFO] 23:23:31:186 kernel_main/(9891:9891): 1
+[INFO] 23:26:43:503 kernel_main/(10045:10045): 1
+[INFO] 23:26:43:503 kernel_main/(10045:10045): 1
+[INFO] 23:27:34:424 kernel_main/(10109:10109): 1
+[INFO] 23:27:37:654 kernel_main/(10109:10109): 1
+[INFO] 23:30:11:681 kernel_main/(10882:10882): Grado multi prog: 4
+[INFO] 23:30:11:693 kernel_main/(10882:10882): 1
+[INFO] 23:30:11:693 kernel_main/(10882:10882): 1
+[INFO] 23:32:38:434 kernel_main/(11064:11064): Grado multi prog: 4
+[INFO] 23:32:38:435 kernel_main/(11064:11064): 1
+[INFO] 23:32:38:435 kernel_main/(11064:11064): 1
+[INFO] 23:37:32:043 kernel_main/(11210:11210): Grado multi prog: 4
+[INFO] 23:37:32:046 kernel_main/(11210:11210): 1
+[INFO] 23:37:32:046 kernel_main/(11210:11210): 1
+[INFO] 23:37:32:046 kernel_main/(11210:11210): 1
+[INFO] 23:37:32:046 kernel_main/(11210:11210): variables inicializadas
+[INFO] 23:37:32:046 kernel_main/(11210:11210): hasta aca llega?
+[INFO] 23:37:32:046 kernel_main/(11210:11210): Se inició la planificacion de largo plazo
+[INFO] 23:37:32:046 kernel_main/(11210:11210): Se inició la planificacion de corto plazo
+[INFO] 23:46:18:109 kernel_main/(11334:11334): Grado multi prog: 4
+[INFO] 23:46:18:111 kernel_main/(11334:11334): Se inició la planificacion de largo plazo
+[INFO] 23:46:18:111 kernel_main/(11334:11334): Se inició la planificacion de corto plazo
+[INFO] 23:51:49:060 kernel_main/(11410:11410): Grado multi prog: 4
+[INFO] 23:51:49:064 kernel_main/(11410:11410): Se inició la planificacion de largo plazo
+[INFO] 23:51:49:065 kernel_main/(11410:11410): Se inició la planificacion de corto plazo
+[INFO] 23:52:00:683 kernel_main/(11447:11447): Grado multi prog: 4
+[INFO] 23:52:22:716 kernel_main/(11447:11473): exit_pcb
+[INFO] 23:52:25:252 kernel_main/(11447:11476): ready_pcb
+[INFO] 23:52:36:651 kernel_main/(11447:11447): Se inició la planificacion de largo plazo
+[INFO] 23:52:40:337 kernel_main/(11447:11447): Se inició la planificacion de corto plazo
+[INFO] 23:53:30:894 kernel_main/(11511:11511): Grado multi prog: 4
+[INFO] 23:53:30:898 kernel_main/(11511:11511): Se inició la planificacion de largo plazo
+[INFO] 23:53:30:899 kernel_main/(11511:11511): Se inició la planificacion de corto plazo
+[INFO] 23:55:08:654 kernel_main/(11614:11614): Grado multi prog: 4
+[INFO] 23:55:08:655 kernel_main/(11614:11614): Se inició la planificacion de largo plazo
+[INFO] 23:55:08:656 kernel_main/(11614:11614): Se inició la planificacion de corto plazo
+[INFO] 23:55:34:976 kernel_main/(11666:11666): Grado multi prog: 4
+[INFO] 23:55:36:127 kernel_main/(11666:11684): exit_pcb
+[INFO] 23:55:36:133 kernel_main/(11666:11666): Se inició la planificacion de largo plazo
+[INFO] 23:55:36:133 kernel_main/(11666:11666): Se inició la planificacion de corto plazo
+[INFO] 23:56:02:898 kernel_main/(11666:11685): ready_pcb
+[INFO] 23:56:22:066 kernel_main/(11719:11719): Grado multi prog: 4
+[INFO] 23:56:23:861 kernel_main/(11719:11738): exit_pcb
+[INFO] 23:56:23:863 kernel_main/(11719:11719): Se inició la planificacion de largo plazo
+[INFO] 23:56:23:863 kernel_main/(11719:11739): ready_pcb
+[INFO] 23:56:23:864 kernel_main/(11719:11719): Se inició la planificacion de corto plazo
+[INFO] 23:57:38:861 kernel_main/(11869:11869): Grado multi prog: 4
+[INFO] 23:57:40:864 kernel_main/(11869:11897): exit_pcb
+[INFO] 23:57:40:867 kernel_main/(11869:11869): Se inició la planificacion de largo plazo
+[INFO] 23:57:40:868 kernel_main/(11869:11898): ready_pcb
+[INFO] 23:57:40:869 kernel_main/(11869:11869): Se inició la planificacion de corto plazo
+[INFO] 23:58:41:817 kernel_main/(11943:11943): Grado multi prog: 4
+[INFO] 23:58:44:438 kernel_main/(11943:11968): exit_pcb
+[INFO] 23:58:44:439 kernel_main/(11943:11943): Se inició la planificacion de largo plazo
+[INFO] 23:58:44:439 kernel_main/(11943:11969): ready_pcb
+[INFO] 23:58:44:440 kernel_main/(11943:11943): Se inició la planificacion de corto plazo
+[INFO] 00:00:39:069 kernel_main/(12181:12181): Grado multi prog: 4
+[INFO] 00:00:39:071 kernel_main/(12181:12181): Se inició la planificacion de largo plazo
+[INFO] 00:00:39:072 kernel_main/(12181:12181): Se inició la planificacion de corto plazo
+[INFO] 00:00:39:072 kernel_main/(12181:12181): Listo para escuchar a mi cliente
+[INFO] 00:00:39:072 kernel_main/(12181:12187): ready_pcb
+[INFO] 00:00:39:072 kernel_main/(12181:12186): exit_pcb
+[INFO] 00:02:24:909 kernel_main/(12288:12288): Grado multi prog: 4
+[INFO] 00:02:24:919 kernel_main/(12288:12288): Se inició la planificacion de largo plazo
+[INFO] 00:02:24:919 kernel_main/(12288:12288): Se inició la planificacion de corto plazo
+[INFO] 00:02:24:919 kernel_main/(12288:12288): Listo para escuchar a mi cliente
+[INFO] 00:02:24:925 kernel_main/(12288:12298): ready_pcb
+[INFO] 00:02:24:925 kernel_main/(12288:12297): exit_pcb
+[INFO] 00:02:57:890 kernel_main/(12288:12288): Cliente conectado (a Kernel)
+
+[INFO] 00:02:57:891 kernel_main/(12288:12311): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:02:57:892 kernel_main/(12288:12311): Se recibió una lista de  instrucciones.
+[INFO] 00:02:57:895 kernel_main/(12288:12311): Recibí las instrucciones de la consola.
+[INFO] 00:02:57:897 kernel_main/(12288:12311): Se crea el proceso <1> en NEW

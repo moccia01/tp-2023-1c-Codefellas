@@ -4,22 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/comunicacion.c \
-../src/init.c \
-../src/kernel.c \
-../src/planificador.c 
+../src/kernel.c 
 
 C_DEPS += \
-./src/comunicacion.d \
-./src/init.d \
-./src/kernel.d \
-./src/planificador.d 
+./src/kernel.d 
 
 OBJS += \
-./src/comunicacion.o \
-./src/init.o \
-./src/kernel.o \
-./src/planificador.o 
+./src/kernel.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -34,7 +25,7 @@ src/%.o: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/comunicacion.d ./src/comunicacion.o ./src/init.d ./src/init.o ./src/kernel.d ./src/kernel.o ./src/planificador.d ./src/planificador.o
+	-$(RM) ./src/kernel.d ./src/kernel.o
 
 .PHONY: clean-src
 
