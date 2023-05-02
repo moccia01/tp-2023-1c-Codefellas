@@ -2,6 +2,7 @@
 
 int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("kernel_obligatorio.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("kernel.config");
 	lista_pcbs = list_create();
 
@@ -79,9 +80,6 @@ bool generar_conexiones(){
 }
 
 void inicializar_variables(){
-	// Generales
-	server_name = "Kernel";
-
 	//PCBs
 	lista_pcbs = list_create();
 	generador_pid = 1;
@@ -121,8 +119,7 @@ static void procesar_conexion(void *void_args) {
 			armar_pcb(instrucciones);
 			break;
 		default:
-			log_error(logger, "Algo anduvo mal en el server de %s",
-					server_name);
+			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
 			return;
 		}
 	}

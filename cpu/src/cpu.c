@@ -2,6 +2,7 @@
 
 int main(void) {
 	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("cpu_obligatorio.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("cpu.config");
 	registros = inicializar_registro();
 
@@ -9,40 +10,70 @@ int main(void) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
-
-	IP = config_get_string_value(config, "IP_ESCUCHA");
-	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
-	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
-	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+	leer_config();
 
 	// Inicio de servidor
-	int fd_cpu = iniciar_servidor(logger, IP, PUERTO);
+	fd_cpu = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
-	int fd_kernel = esperar_cliente(logger, "CPU", fd_cpu);
-	int cod_op = recibir_operacion(fd_kernel);
-	if(cod_op != MENSAJE){
-		log_error(logger, "no se q paso pero exploto\n");
-		exit(1);
-	}
-	recibir_mensaje(logger, fd_kernel);
+	pthread_t conexion_kernel;
+	pthread_create(&conexion_kernel, NULL, (void*) server_escuchar, NULL);
+	pthread_detach(conexion_kernel);
 
 	// Conecto CPU con memoria
 	int fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
 	enviar_mensaje("Hola, soy CPU!", fd_memoria);
 
-	/*
-	while(fetch(pcb->contexto_de_ejecucion)){
-
-	}
-	*/
 	terminar_programa(logger, config);
-
-
-
 	return 0;
 }
 
+void leer_config(){
+	IP = config_get_string_value(config, "IP_ESCUCHA");
+	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
+	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+}
+
+// --------------- COMUNICACION ---------------
+
+static void procesar_conexion() {
+	op_code cop;
+	while (cliente_socket != -1) {
+        if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+            log_info(logger, "El cliente se desconecto de %s server", server_name);
+            return;
+        }
+		switch (cop) {
+		case MENSAJE:
+			recibir_mensaje(logger, cliente_socket);
+			break;
+		case CONTEXTO_EJECUCION:
+			//lo necesario para recibir el contexto
+			break;
+		// ...
+		default:
+			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
+			return;
+		}
+	}
+
+	log_warning(logger, "El cliente se desconecto de %s server", server_name);
+	return;
+}
+
+void server_escuchar() {
+	char *server_name = "CPU";
+	cliente_socket = esperar_cliente(logger, server_name, fd_cpu);
+
+	if (cliente_socket == -1) {
+		log_info(logger, "Hubo un error en la conexion del Kernel");
+	}
+	procesar_conexion();
+}
+
+
+// --------------- CICLO DE INSTRUCCIONES ---------------
 t_registros* inicializar_registro(){
 	registros = malloc(sizeof(t_registros));
 
@@ -77,24 +108,20 @@ t_registros* inicializar_registro(){
 }
 
 void fetch(t_contexto_ejecucion contexto){
-	t_list* proxima_instruccion = contexto.instrucciones;		//t_instruccion???
-	list_get(proxima_instruccion, contexto.program_counter);
+	t_instruccion* proxima_instruccion = list_get(contexto.instrucciones, contexto.program_counter);
 
-	decode(proxima_instruccion, contexto); // ver despues para poner como tipo instrucion
+	decode(proxima_instruccion, contexto);
 
 	contexto.program_counter += 1;
-
 }
 
-void decode(t_list* instruccion, t_contexto_ejecucion contexto){ // ver despues para poner como tipo instrucion
-	cod_instruccion cod_instruccion;	//NO VA
-	t_instruccion instruction;
+void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto){
+	cod_instruccion cod_instruccion;
+	// cod_instruccion = instruccion_to_enum(proxima_instruccion.instruccion);
 
-	list_get(instruccion, contexto.pid);	//REVISAR SEGURO NO VA
-				//NO TIENE SENTIDO, INST NO TIENE UN PID
 	switch(cod_instruccion){
 	case SET:
-		ejecutar_set(instruction.instruccion, instruction.parametro1);
+		ejecutar_set(proxima_instruccion->parametro1, proxima_instruccion->parametro2);
 		break;
 	case MOV_IN:
 		break;
@@ -169,8 +196,13 @@ void ejecutar_set(char* registro, char* valor){
 
 void ejecutar_yield(t_contexto_ejecucion contexto){
 	contexto.estado = YIELD;
+	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en ready.
+	// send_cambiar_estado(contexto, cliente_socket);
 }
 
 void ejecutar_exit(t_contexto_ejecucion contexto){
 	contexto.estado = EXIT;
+	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
 }
+
+

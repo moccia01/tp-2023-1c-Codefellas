@@ -1,40 +1,40 @@
 #include "../include/consola.h"
 
 int main(int argc, char **argv) {
-
-	logger = log_create("consola.log", "consola_main", true,
-			LOG_LEVEL_INFO);
+	logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("consola_obligatorio.log", "consola_obligatorio", true, LOG_LEVEL_INFO);
 
 	if (argc > 3) {
 		return EXIT_FAILURE;
 	}
 
-	config = config_create(argv[1]); //Tira warning aca xq no lo usamos nunca
-
-	//FILE* pseudo_code = fopen(argv[2], "r");
-
+	config = config_create(argv[1]);
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
-
-
-	char *IP_KERNEL = config_get_string_value(config, "IP_KERNEL");
-	// El enunciado dice q el puerto es numerico, pero la funcion getaddrinfo recibe char* y no puedo castear de int a char* :(
-	char *PUERTO_KERNEL = config_get_string_value(config, "PUERTO_KERNEL");
+	leer_config();
 
 	// Conexion Kernel
-	int fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
+	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
 	enviar_mensaje("Hola, soy consola.", fd_kernel);
 
-	t_list *lista_de_insturcciones_pseudocodigo = leer_instrucciones(argv[2], logger);
+	t_list *lista_de_insturcciones = leer_instrucciones(argv[2], logger);
+	send_instrucciones(fd_kernel, lista_de_insturcciones);
 
-	send_instrucciones(fd_kernel, lista_de_insturcciones_pseudocodigo);
+	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
+	recibir_mensaje(logger, fd_kernel);
 
 	terminar_programa(logger, config);
 	liberar_conexion(fd_kernel);
 
 	return 0;
+}
+
+void leer_config(){
+	IP_KERNEL = config_get_string_value(config, "IP_KERNEL");
+	// El enunciado dice q el puerto es numerico, pero la funcion getaddrinfo recibe char* y no puedo castear de int a char* :(
+	PUERTO_KERNEL = config_get_string_value(config, "PUERTO_KERNEL");
 }
 
 t_list* leer_instrucciones(char *path, t_log *logger) {
@@ -77,3 +77,26 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 
 	return lista_de_instrucciones;
 }
+
+//static void procesar_conexion(){
+//
+//	op_code cop;
+//	while (fd_kernel != -1) {
+//        if (recv(fd_kernel, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+//            return;
+//        }
+//		switch (cop) {
+//		case MENSAJE:
+//			recibir_mensaje(logger, fd_kernel);
+//			break;
+//		default:
+//			log_error(logger, "Algo anduvo mal en el server de consola");
+//			return;
+//		}
+//	}
+//
+//	log_warning(logger, "El cliente se desconecto de la consola");
+//	return;
+//}
+
+

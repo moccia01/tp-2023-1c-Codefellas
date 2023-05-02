@@ -40,7 +40,7 @@ main-build: cpu
 cpu: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/tp-2023-1c-Codefellas/shared/Debug" -o "cpu" $(OBJS) $(USER_OBJS) $(LIBS) -lshared -lcommons
+	gcc -L"/home/utnso/tp-2023-1c-Codefellas/shared/Debug" -o "cpu" $(OBJS) $(USER_OBJS) $(LIBS) -lshared -lpthread -lcommons
 	@echo 'Finished building target: $@'
 	@echo ' '
 

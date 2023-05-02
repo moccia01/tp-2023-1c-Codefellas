@@ -143,3 +143,11 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	log_info(logger, "Se recibió una lista de instrucciones.");
 	return recibir_paquete(fd_modulo);
 }
+
+void send_cambiar_estado(t_contexto_ejecucion contexto, int socket_cliente){
+	/*
+	 *  crear un paquete
+	 *  agreagar contexto a paquete
+	 *  enviar paquete
+	 */
+}

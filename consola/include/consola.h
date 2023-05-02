@@ -10,9 +10,19 @@
 #include <string.h>
 #define MAX_LINE_LENGTH 256
 
+// Variables globales
 t_log* logger;
+t_log* logger_obligatorio;
 t_config* config;
 
-#endif /* CONSOLA_H_ */
+// Variables config
+char *IP_KERNEL;
+char *PUERTO_KERNEL;
 
+int fd_kernel;
+
+void leer_config();
 t_list* leer_instrucciones(char* path, t_log* logger);
+
+
+#endif /* CONSOLA_H_ */

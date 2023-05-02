@@ -6,6 +6,7 @@
 #include <sockets.h>
 #include <protocolo.h>
 #include <shared.h>
+#include <pthread.h>
 
 #endif /* CPU_H_ */
 
@@ -33,8 +34,12 @@ typedef enum
 } cod_instruccion;
 
 t_log* logger;
+t_log* logger_obligatorio;
 t_config* config;
 t_registros* registros;
+char* server_name;
+int cliente_socket;
+int fd_cpu;
 
 // Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)
 char* IP;
@@ -43,9 +48,15 @@ char* IP_MEMORIA;
 char* PUERTO_MEMORIA;
 int RETARDO_INSTRUCCION;
 
+void leer_config();
+
+// Comunicacion
+static void procesar_conexion();
+void server_escuchar() ;
+
 t_registros* inicializar_registro();
 void fetch(t_contexto_ejecucion contexto);
-void decode(t_list* instruccion, t_contexto_ejecucion contexto);
+void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
 void ejecutar_set(char* registro, char* valor);

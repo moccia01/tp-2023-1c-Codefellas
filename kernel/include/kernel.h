@@ -74,6 +74,7 @@ typedef struct {
 } t_procesar_conexion_args;
 
 t_log* logger;
+t_log* logger_obligatorio;
 t_config* config;
 int fd_cpu;
 int fd_memoria;

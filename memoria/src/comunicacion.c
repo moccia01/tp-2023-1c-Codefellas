@@ -17,10 +17,6 @@ static void procesar_conexion(void *void_args) {
 		case MENSAJE:
 			recibir_mensaje(logger, cliente_socket);
 			break;
-		case PAQUETE:
-			t_list* paquete_recibido = recibir_paquete(cliente_socket);
-			log_info(logger, "Recibí un paquete");
-			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
 			return;
