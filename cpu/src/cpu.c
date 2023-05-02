@@ -31,6 +31,11 @@ int main(void) {
 	int fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
 	enviar_mensaje("Hola, soy CPU!", fd_memoria);
 
+	/*
+	while(fetch(pcb->contexto_de_ejecucion)){
+
+	}
+	*/
 	terminar_programa(logger, config);
 
 
@@ -75,17 +80,21 @@ void fetch(t_contexto_ejecucion contexto){
 	t_list* proxima_instruccion = contexto.instrucciones;		//t_instruccion???
 	list_get(proxima_instruccion, contexto.program_counter);
 
-	decode(proxima_instruccion); // ver despues para poner como tipo instrucion
+	decode(proxima_instruccion, contexto); // ver despues para poner como tipo instrucion
 
 	contexto.program_counter += 1;
 
 }
 
-void decode(t_list* instruccion){ // ver despues para poner como tipo instrucion
+void decode(t_list* instruccion, t_contexto_ejecucion contexto){ // ver despues para poner como tipo instrucion
 	cod_instruccion cod_instruccion;	//NO VA
+	t_instruccion instruction;
 
+	list_get(instruccion, contexto.pid);	//REVISAR SEGURO NO VA
+				//NO TIENE SENTIDO, INST NO TIENE UN PID
 	switch(cod_instruccion){
 	case SET:
+		ejecutar_set(instruction.instruccion, instruction.parametro1);
 		break;
 	case MOV_IN:
 		break;
@@ -112,10 +121,10 @@ void decode(t_list* instruccion){ // ver despues para poner como tipo instrucion
 	case DELETE_SEGMENT:
 		break;
 	case YIELD:
-		//ejecutar_yield();
+		ejecutar_yield(contexto);
 		break;
 	case EXIT:
-		//ejecutar_exit();
+		ejecutar_exit(contexto);
 		break;
 	default:
 		log_error(logger, "Instruccion no reconocida");
@@ -156,4 +165,12 @@ void ejecutar_set(char* registro, char* valor){
 	sleep(RETARDO_INSTRUCCION);
 	//VER EL TEMA DEL SLEEP PARA EL RETARDO DE LA INSTRUCCION
 
+}
+
+void ejecutar_yield(t_contexto_ejecucion contexto){
+	contexto.estado = YIELD;
+}
+
+void ejecutar_exit(t_contexto_ejecucion contexto){
+	contexto.estado = EXIT;
 }

@@ -45,7 +45,7 @@ int RETARDO_INSTRUCCION;
 
 t_registros* inicializar_registro();
 void fetch(t_contexto_ejecucion contexto);
-void decode(t_list* instruccion);
+void decode(t_list* instruccion, t_contexto_ejecucion contexto);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
 void ejecutar_set(char* registro, char* valor);
@@ -62,5 +62,5 @@ void ejecutar_wait();		//Verificar el tipo de recurso
 void ejecutar_signal();		//Verificar el tipo de recurso
 void ejecutar_create_segment(int id_segmento, int tamanio);
 void ejecutar_delete_segment(int id_segmento);
-void ejecutar_yield();
-void ejecutar_exit();
+void ejecutar_yield(t_contexto_ejecucion contexto);
+void ejecutar_exit(t_contexto_ejecucion contexto);
