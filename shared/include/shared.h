@@ -41,6 +41,29 @@ typedef enum
 	UNKNOWN_STATE
 } estado_proceso;
 
+typedef enum
+{
+	SET,
+	ADD,
+	MOV_IN,
+	MOV_OUT,
+	IO,
+	SIGNAL,
+	EXIT,
+	UNKNOWN_OP,
+	ERROR_MEMORIA,
+	WAIT,
+	F_OPEN,
+	YIELD,
+	F_TRUNCATE,
+	F_SEEK,
+	CREATE_SEGMENT,
+	F_WRITE,
+	F_READ,
+	DELETE_SEGMENT,
+	F_CLOSE
+} cod_instruccion;
+
 //CONTEXTO DE EJECUCION
 typedef struct{
     int pid;

@@ -17,6 +17,7 @@ typedef enum
 	INSTRUCCIONES_CONSOLA,
 	PAQUETE,
 	CONTEXTO_EJECUCION,
+	CAMBIAR_ESTADO,
 }op_code;
 
 typedef struct
@@ -50,6 +51,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
 void procesar_instruccion(t_instruccion* instruccion);
+void send_cambiar_estado(t_contexto_ejecucion contexto, int socket_cliente);
 
 //send_cambiar_estado(contexto, cliente_socket);
 //recv_cambiar_estado()

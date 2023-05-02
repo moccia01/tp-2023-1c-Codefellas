@@ -144,10 +144,10 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
-void send_cambiar_estado(t_contexto_ejecucion contexto, int socket_cliente){
-	/*
-	 *  crear un paquete
-	 *  agreagar contexto a paquete
-	 *  enviar paquete
-	 */
+void send_cambiar_estado(t_contexto_ejecucion contexto, int fd_modulo){
+
+	t_paquete* contexto_a_mandar = crear_paquete(CAMBIAR_ESTADO);
+	agregar_a_paquete(contexto_a_mandar, &contexto, sizeof(contexto));
+	enviar_paquete(contexto_a_mandar, fd_modulo);
+
 }

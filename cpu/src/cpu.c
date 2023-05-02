@@ -39,14 +39,14 @@ void leer_config(){
 
 static void procesar_conexion() {
 	op_code cop;
-	while (cliente_socket != -1) {
-        if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+	while (socket_cliente != -1) {
+        if (recv(socket_cliente, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
             log_info(logger, "El cliente se desconecto de %s server", server_name);
             return;
         }
 		switch (cop) {
 		case MENSAJE:
-			recibir_mensaje(logger, cliente_socket);
+			recibir_mensaje(logger, socket_cliente);
 			break;
 		case CONTEXTO_EJECUCION:
 			//lo necesario para recibir el contexto
@@ -64,9 +64,9 @@ static void procesar_conexion() {
 
 void server_escuchar() {
 	char *server_name = "CPU";
-	cliente_socket = esperar_cliente(logger, server_name, fd_cpu);
+	socket_cliente = esperar_cliente(logger, server_name, fd_cpu);
 
-	if (cliente_socket == -1) {
+	if (socket_cliente == -1) {
 		log_info(logger, "Hubo un error en la conexion del Kernel");
 	}
 	procesar_conexion();
@@ -116,8 +116,7 @@ void fetch(t_contexto_ejecucion contexto){
 }
 
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto){
-	cod_instruccion cod_instruccion;
-	// cod_instruccion = instruccion_to_enum(proxima_instruccion.instruccion);
+	cod_instruccion cod_instruccion = instruccion_to_enum(proxima_instruccion->instruccion);
 
 	switch(cod_instruccion){
 	case SET:
@@ -197,7 +196,7 @@ void ejecutar_set(char* registro, char* valor){
 void ejecutar_yield(t_contexto_ejecucion contexto){
 	contexto.estado = YIELD;
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en ready.
-	// send_cambiar_estado(contexto, cliente_socket);
+	send_cambiar_estado(contexto, socket_cliente);
 }
 
 void ejecutar_exit(t_contexto_ejecucion contexto){
@@ -205,4 +204,40 @@ void ejecutar_exit(t_contexto_ejecucion contexto){
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
 }
 
+cod_instruccion instruccion_to_enum(char* instruccion){
 
+	if(strcmp(instruccion, "SET") == 0){
+		return SET;
+	} else if(strcmp(instruccion, "MOV_IN") == 0){
+		return MOV_IN;
+	} else if(strcmp(instruccion, "IO") == 0){
+		return IO;
+	} else if(strcmp(instruccion, "F_OPEN") == 0){
+		return F_OPEN;
+	} else if(strcmp(instruccion, "F_CLOSE") == 0){
+		return F_CLOSE;
+	} else if(strcmp(instruccion, "F_SEEK") == 0){
+		return F_SEEK;
+	} else if(strcmp(instruccion, "F_READ") == 0){
+		return F_READ;
+	} else if(strcmp(instruccion, "F_WRITE") == 0){
+		return F_WRITE;
+	} else if(strcmp(instruccion, "F_TRUNCATE") == 0){
+		return F_TRUNCATE;
+	} else if(strcmp(instruccion, "WAIT") == 0){
+		return WAIT;
+	} else if(strcmp(instruccion, "SIGNAL") == 0){
+		return SIGNAL;
+	} else if(strcmp(instruccion, "CREATE_SEGMENT") == 0){
+		return CREATE_SEGMENT;
+	} else if(strcmp(instruccion, "DELETE_SEGMENT") == 0){
+		return DELETE_SEGMENT;
+	} else if(strcmp(instruccion, "YIELD") == 0){
+		return YIELD;
+	} else if(strcmp(instruccion, "EXIT") == 0){
+		return EXIT;
+	} else{
+		log_info(logger, "No se reconocio la funcion");
+	}
+	return -1;
+}

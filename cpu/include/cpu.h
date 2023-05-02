@@ -10,35 +10,12 @@
 
 #endif /* CPU_H_ */
 
-typedef enum
-{
-	SET,
-	ADD,
-	MOV_IN,
-	MOV_OUT,
-	IO,
-	SIGNAL,
-	EXIT,
-	UNKNOWN_OP,
-	ERROR_MEMORIA,
-	WAIT,
-	F_OPEN,
-	YIELD,
-	F_TRUNCATE,
-	F_SEEK,
-	CREATE_SEGMENT,
-	F_WRITE,
-	F_READ,
-	DELETE_SEGMENT,
-	F_CLOSE
-} cod_instruccion;
-
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
 t_registros* registros;
 char* server_name;
-int cliente_socket;
+int socket_cliente;
 int fd_cpu;
 
 // Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)
@@ -57,6 +34,7 @@ void server_escuchar() ;
 t_registros* inicializar_registro();
 void fetch(t_contexto_ejecucion contexto);
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto);
+cod_instruccion instruccion_to_enum(char* instruccion);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
 void ejecutar_set(char* registro, char* valor);
