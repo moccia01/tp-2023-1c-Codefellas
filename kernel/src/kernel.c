@@ -170,15 +170,16 @@ void armar_pcb(t_list *instrucciones) {
 t_pcb* pcb_create(t_proceso *proceso, int pid) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 
-	pcb->estado = NEW;
-	pcb->instrucciones = proceso->instrucciones;
+	pcb->contexto_de_ejecucion.estado = NEW;
+	//pcb->instrucciones = proceso->instrucciones;
 	pcb->pid = pid;
 	// pcb->socket_consola = socket;
 	//pcb->program_counter = 0;
 	pcb->interrupcion = false;
-	pcb->tabla_de_segmentos = NULL;
+	pcb->contexto_de_ejecucion.tabla_de_segmentos = NULL;
 	pcb->contexto_de_ejecucion.pid = pid;
 	pcb->contexto_de_ejecucion.program_counter = 0;
+	pcb->contexto_de_ejecucion.instrucciones = proceso->instrucciones;
 	//  pcb->con_desalojo = false;
 	// pcb->tamanio_segmentos = proceso->segmentos;
 
@@ -188,7 +189,7 @@ t_pcb* pcb_create(t_proceso *proceso, int pid) {
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado)
 {
 	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
-	char *estado_anterior_string = strdup(estado_to_string(pcb->estado));
+	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion.estado));
 	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->pid, estado_anterior_string, nuevo_estado_string);
 	free(estado_anterior_string);
 	free(nuevo_estado_string);

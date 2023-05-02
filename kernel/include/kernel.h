@@ -51,6 +51,9 @@ typedef struct
 typedef struct{
 	int pid;
 	int program_counter;
+	t_list *instrucciones;
+	t_list *tabla_de_segmentos;
+	estado_proceso estado;
 
 
 }t_contexto_ejecucion;
@@ -59,12 +62,12 @@ typedef struct
 {
 	int pid;
 	//int program_counter;
-	estado_proceso estado;
+	//estado_proceso estado;
 	//int socket_consola;
 	bool interrupcion;
-	t_list *instrucciones;
+	//t_list *instrucciones;
 	// punteros de las listas en dudaa
-	t_list *tabla_de_segmentos;
+	//t_list *tabla_de_segmentos;
 	t_registros registros;
 	t_contexto_ejecucion contexto_de_ejecucion;
 	t_segmento seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto

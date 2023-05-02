@@ -74,7 +74,7 @@ t_registros* inicializar_registro(){
 void fetch(){
 
 }
-/*
+
 void decode(){
 	cod_instruccion cod_instruccion;	//NO VA
 
@@ -109,11 +109,11 @@ void decode(){
 		//ejecutar_yield();
 		break;
 	case EXIT:
-		ejecutar_exit();
+		//ejecutar_exit();
 		break;
 	default:
 		log_error(logger, "Instruccion no reconocida");
 		return;
 	}
 }
-*/
+

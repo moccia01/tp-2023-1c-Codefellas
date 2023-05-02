@@ -39,7 +39,7 @@ void fetch();
 void decode();
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
-void ejecutar_set(t_registros registro, char* valor);		//Verificar tipo de valor
+void ejecutar_set(t_registros registro, char* valor);
 void ejecutar_mov_in(t_registros registro, int dir_logica);
 void ejecutar_mov_out(int dir_logica, t_registros registro);
 void ejecutar_i_o(int tiempo);
