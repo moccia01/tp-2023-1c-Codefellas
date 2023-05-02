@@ -48,19 +48,10 @@ typedef struct
 
 }t_segmento;
 
-typedef struct{
-	int pid;
-	int program_counter;
-	t_list *instrucciones;
-	t_list *tabla_de_segmentos;
-	estado_proceso estado;
-
-
-}t_contexto_ejecucion;
 
 typedef struct
 {
-	int pid;
+	//int pid;
 	//int program_counter;
 	//estado_proceso estado;
 	//int socket_consola;

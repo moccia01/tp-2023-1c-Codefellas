@@ -3,17 +3,17 @@
 int main(void) {
 	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
 	config = config_create("cpu.config");
-	t_registros* registros = inicializar_registro();
+	registros = inicializar_registro();
 
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
 
-	char* IP = config_get_string_value(config, "IP_ESCUCHA");
-	char* PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
-	char* IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
-	char* PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+	IP = config_get_string_value(config, "IP_ESCUCHA");
+	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
+	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
 
 	// Inicio de servidor
 	int fd_cpu = iniciar_servidor(logger, IP, PUERTO);
@@ -39,43 +39,49 @@ int main(void) {
 }
 
 t_registros* inicializar_registro(){
-	t_registros* registro = malloc(sizeof(t_registros));
+	registros = malloc(sizeof(t_registros));
 
 	//FUNCÓ PERO SUPONGO QUE HAY QUE CAMBIAR EL SIZE OF
-	registro->ax = malloc(sizeof(5));
-	registro->bx = malloc(sizeof(5));
-	registro->cx = malloc(sizeof(5));
-	registro->dx = malloc(sizeof(5));
-	registro->eax = malloc(sizeof(9));
-	registro->ebx = malloc(sizeof(9));
-	registro->ecx = malloc(sizeof(9));
-	registro->edx = malloc(sizeof(9));
-	registro->rax = malloc(sizeof(17));
-	registro->rbx = malloc(sizeof(17));
-	registro->rcx = malloc(sizeof(17));
-	registro->rdx = malloc(sizeof(17));
+	registros->ax = malloc(sizeof(5));
+	registros->bx = malloc(sizeof(5));
+	registros->cx = malloc(sizeof(5));
+	registros->dx = malloc(sizeof(5));
+	registros->eax = malloc(sizeof(9));
+	registros->ebx = malloc(sizeof(9));
+	registros->ecx = malloc(sizeof(9));
+	registros->edx = malloc(sizeof(9));
+	registros->rax = malloc(sizeof(17));
+	registros->rbx = malloc(sizeof(17));
+	registros->rcx = malloc(sizeof(17));
+	registros->rdx = malloc(sizeof(17));
 
-	registro->ax = NULL;
-	registro->bx = NULL;
-	registro->cx = NULL;
-	registro->dx = NULL;
-	registro->eax = NULL;
-	registro->ebx = NULL;
-	registro->ecx = NULL;
-	registro->edx = NULL;
-	registro->rax = NULL;
-	registro->rbx = NULL;
-	registro->rcx = NULL;
-	registro->rdx = NULL;
+	registros->ax = NULL;
+	registros->bx = NULL;
+	registros->cx = NULL;
+	registros->dx = NULL;
+	registros->eax = NULL;
+	registros->ebx = NULL;
+	registros->ecx = NULL;
+	registros->edx = NULL;
+	registros->rax = NULL;
+	registros->rbx = NULL;
+	registros->rcx = NULL;
+	registros->rdx = NULL;
 
-	return registro;
+	return registros;
 }
 
-void fetch(){
+void fetch(t_contexto_ejecucion contexto){
+	t_list* proxima_instruccion = contexto.instrucciones;		//t_instruccion???
+	list_get(proxima_instruccion, contexto.program_counter);
+
+	decode(proxima_instruccion); // ver despues para poner como tipo instrucion
+
+	contexto.program_counter += 1;
 
 }
 
-void decode(){
+void decode(t_list* instruccion){ // ver despues para poner como tipo instrucion
 	cod_instruccion cod_instruccion;	//NO VA
 
 	switch(cod_instruccion){
@@ -117,3 +123,37 @@ void decode(){
 	}
 }
 
+void ejecutar_set(char* registro, char* valor){
+
+	strcat(valor, "\0");
+
+	if(strcmp(registro, "AX") == 0){
+		registros->ax = valor;
+	}else if(strcmp(registro, "BX") == 0){
+		registros->bx = valor;
+	}else if(strcmp(registro, "CX") == 0){
+		registros->cx = valor;
+	}else if(strcmp(registro, "DX") == 0){
+		registros->dx = valor;
+	}else if(strcmp(registro, "EAX") == 0){
+		registros->eax = valor;
+	}else if(strcmp(registro, "EBX") == 0){
+		registros->ebx = valor;
+	}else if(strcmp(registro, "ECX") == 0){
+		registros->ecx = valor;
+	}else if(strcmp(registro, "EDX") == 0){
+		registros->edx = valor;
+	}else if(strcmp(registro, "RAX") == 0){
+		registros->rax = valor;
+	}else if(strcmp(registro, "RBX") == 0){
+		registros->rbx = valor;
+	}else if(strcmp(registro, "RCX") == 0){
+		registros->rcx = valor;
+	}else if(strcmp(registro, "RDX") == 0){
+		registros->rdx = valor;
+	}
+
+	sleep(RETARDO_INSTRUCCION);
+	//VER EL TEMA DEL SLEEP PARA EL RETARDO DE LA INSTRUCCION
+
+}

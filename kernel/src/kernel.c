@@ -172,7 +172,7 @@ t_pcb* pcb_create(t_proceso *proceso, int pid) {
 
 	pcb->contexto_de_ejecucion.estado = NEW;
 	//pcb->instrucciones = proceso->instrucciones;
-	pcb->pid = pid;
+	pcb->contexto_de_ejecucion.pid = pid;
 	// pcb->socket_consola = socket;
 	//pcb->program_counter = 0;
 	pcb->interrupcion = false;
@@ -190,7 +190,7 @@ void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado)
 {
 	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
 	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion.estado));
-	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->pid, estado_anterior_string, nuevo_estado_string);
+	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->contexto_de_ejecucion.pid, estado_anterior_string, nuevo_estado_string);
 	free(estado_anterior_string);
 	free(nuevo_estado_string);
 }

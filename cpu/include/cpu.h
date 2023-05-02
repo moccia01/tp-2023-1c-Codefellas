@@ -34,12 +34,21 @@ typedef enum
 
 t_log* logger;
 t_config* config;
+t_registros* registros;
+
+// Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)
+char* IP;
+char* PUERTO;
+char* IP_MEMORIA;
+char* PUERTO_MEMORIA;
+int RETARDO_INSTRUCCION;
+
 t_registros* inicializar_registro();
-void fetch();
-void decode();
+void fetch(t_contexto_ejecucion contexto);
+void decode(t_list* instruccion);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
-void ejecutar_set(t_registros registro, char* valor);
+void ejecutar_set(char* registro, char* valor);
 void ejecutar_mov_in(t_registros registro, int dir_logica);
 void ejecutar_mov_out(int dir_logica, t_registros registro);
 void ejecutar_i_o(int tiempo);
