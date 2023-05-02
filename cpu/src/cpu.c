@@ -201,6 +201,7 @@ void ejecutar_yield(t_contexto_ejecucion contexto){
 
 void ejecutar_exit(t_contexto_ejecucion contexto){
 	contexto.estado = EXIT;
+	send_cambiar_estado(contexto, socket_cliente);
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
 }
 
