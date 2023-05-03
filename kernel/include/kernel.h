@@ -66,13 +66,6 @@ typedef struct
 
 } t_pcb;
 
-typedef struct {
-	t_log *log;
-	t_config* cfg;
-	int fd;
-	char *server_name;
-} t_procesar_conexion_args;
-
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
@@ -111,10 +104,13 @@ t_queue* cola_exec;
 pthread_mutex_t mutex_generador_pid;
 pthread_mutex_t mutex_cola_ready;
 pthread_mutex_t mutex_cola_listos_para_ready;
+pthread_mutex_t mutex_cola_exit;
+pthread_mutex_t mutex_cola_exec;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;
 sem_t sem_exec;
+sem_t sem_exit;
 
 // INIT
 void leer_config();

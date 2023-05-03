@@ -71,9 +71,21 @@ int inicializar_servidor() {
 }
 
 bool generar_conexiones() {
+	pthread_t conexion_filesystem;
+	pthread_t conexion_cpu;
+	pthread_t conexion_memoria;
+
 	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
+	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
+	pthread_detach(conexion_filesystem);
+
 	fd_cpu = crear_conexion(IP_CPU, PUERTO_CPU);
+	pthread_create(&conexion_cpu, NULL, (void*) procesar_conexion, (void*) &fd_cpu);
+	pthread_detach(conexion_cpu);
+
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
+	pthread_detach(conexion_memoria);
 
 	return fd_filesystem != 0 && fd_cpu != 0 && fd_memoria != 0;
 }
@@ -91,10 +103,13 @@ void inicializar_variables() {
 	pthread_mutex_init(&mutex_generador_pid, NULL);
 	pthread_mutex_init(&mutex_cola_ready, NULL);
 	pthread_mutex_init(&mutex_cola_listos_para_ready, NULL);
+	pthread_mutex_init(&mutex_cola_exit);
+	pthread_mutex_init(&mutex_cola_exec);
 	sem_init(&sem_multiprog, 0, GRADO_MAX_MULTIPROGRAMACION);
 	sem_init(&sem_listos_ready, 0, 0);
 	sem_init(&sem_ready, 0, 0);
 	sem_init(&sem_exec, 0, 0);
+	sem_init(&sem_exit, 0, 0);
 
 }
 
@@ -123,6 +138,15 @@ static void procesar_conexion(void *void_args) {
 		case INSTRUCCIONES_CONSOLA:
 			t_list *instrucciones = recv_instrucciones(logger, cliente_socket);
 			armar_pcb(instrucciones);
+			break;
+		case CAMBIAR_ESTADO:
+			t_contexto_ejecucion* contexto_recibido = recv_cambiar_estado(cliente_socket);
+			int pid = contexto_recibido->pid;
+			estado_proceso nuevo_estado = contexto_recibido->estado;
+			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			sem_post(&sem_exec);
+			cambiar_estado(pcb, nuevo_estado);
+			procesar_cambio_estado(pcb);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s",
@@ -167,7 +191,7 @@ void armar_pcb(t_list *instrucciones) {
 	log_info(logger, "Se crea el proceso <%d> en NEW", pid);
 	// mutex
 	list_add(lista_pcbs, pcb);
-	queue_push(cola_listos_para_ready, pcb);
+	safe_pcb_push(cola_listos_para_ready, pcb, mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
 }
 
@@ -192,13 +216,44 @@ t_pcb* pcb_create(t_proceso *proceso, int pid) {
 
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
 	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
-	char *estado_anterior_string = strdup(
-			estado_to_string(pcb->contexto_de_ejecucion.estado));
-	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",
-			pcb->contexto_de_ejecucion.pid, estado_anterior_string,
-			nuevo_estado_string);
+	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion.estado));
+	pcb->contexto_de_ejecucion.estado = nuevo_estado;
+	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->contexto_de_ejecucion.pid, estado_anterior_string, nuevo_estado_string);
 	free(estado_anterior_string);
 	free(nuevo_estado_string);
+}
+
+// hay que acordarse de agregar frees aca si se cambia la estructura del t_pcb !!!
+void pcb_destroy(t_pcb* pcb){
+	list_destroy(pcb->contexto_de_ejecucion.instrucciones);
+	list_destroy(pcb->contexto_de_ejecucion.tabla_de_segmentos);
+	free(pcb);
+}
+
+bool pcb_cmp (t_pcb* pcb1, t_pcb* pcb2){
+	return pcb1->contexto_de_ejecucion.pid == pcb2->contexto_de_ejecucion.pid;
+}
+
+void procesar_cambio_estado(t_pcb* pcb){
+
+	switch(pcb->contexto_de_ejecucion.estado){
+	case READY:
+		safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_ready);
+		sem_post(&sem_listos_ready);
+		break;
+	case FINISH_EXIT:
+		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
+		sem_post(&sem_exit);
+		break;
+	case FINISH_ERROR:
+		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
+		sem_post(&sem_exit);
+		break;
+	case BLOCK:
+		// lo que tengamos que hacer en block
+		break;
+	default: break;
+	}
 }
 
 // ------------------ PLANIFICACION ------------------
@@ -221,14 +276,23 @@ void planificar_largo_plazo() {
 }
 
 void exit_pcb(void) {
-	log_info(logger, "exit_pcb");
+	while (1)
+	{
+		sem_wait(&sem_exit);
+		t_pcb *pcb = safe_pcb_pop(cola_exit, &mutex_cola_exit);
+		// Falta el motivo de finalizacion de proceso
+		// el contexto de ejecucion deberia incluir el motivo de error.
+		// pcb->contexto_de_ejecucion.motivo
+		log_info(logger_obligatorio, "Finaliza el proceso <%d> - Motivo: <>", pcb->contexto_de_ejecucion.pid);
+		pcb_destroy(pcb);
+	}
 }
 
 void ready_pcb(void) {
 	log_info(logger, "ready_pcb");
 	while (1) {
 		sem_wait(&sem_listos_ready);
-		t_pcb *pcb = queue_pop(cola_listos_para_ready);
+		t_pcb *pcb = safe_pcb_pop(cola_listos_para_ready, &mutex_cola_listos_para_ready);
 		sem_wait(&sem_multiprog);
 		setear_pcb_ready(pcb);
 	}
@@ -243,12 +307,20 @@ t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex)
 	return pcb;
 }
 
+void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex)
+{
+	pthread_mutex_lock(mutex);
+	queue_push(queue, pcb);
+	pthread_mutex_unlock(mutex);
+}
+
 void setear_pcb_ready(t_pcb *pcb) {
+	// mutex cambiar_estado??
 	cambiar_estado(pcb, READY);
+	pthread_mutex_lock(&mutex_cola_ready);
 	queue_push(cola_ready, pcb);
-	pthread_mutex_lock(&mutex_cola_ready);
 	log_cola_ready();
-	pthread_mutex_lock(&mutex_cola_ready);
+	pthread_mutex_unlock(&mutex_cola_ready);
 }
 
 void log_cola_ready(){
@@ -300,16 +372,16 @@ void planificar_corto_plazo() {
 void planificar_FIFO() {
 	while (1) {
 		sem_wait(&sem_ready);
-		t_pcb *pcb = queue_pop(cola_ready);
+		t_pcb *pcb = safe_pcb_pop(cola_ready, &mutex_cola_ready);
 		sem_post(&sem_multiprog);
 		sem_wait(&sem_exec);
-		cambiar_estado(pcb, EXEC);
 		run_pcb(pcb);
 	}
 }
 
 void run_pcb(t_pcb* pcb){
-	send_cambiar_estado(pcb->contexto_de_ejecucion, fd_cpu);
+	cambiar_estado(pcb, EXEC);
+	send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 }
 
 void planificar_HRRN(){
