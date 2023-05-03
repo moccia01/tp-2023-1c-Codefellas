@@ -51,9 +51,12 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
 void procesar_instruccion(t_instruccion* instruccion);
-void send_cambiar_estado(t_contexto_ejecucion contexto, int socket_cliente);
 
-//send_cambiar_estado(contexto, cliente_socket);
+void send_contexto_ejecucion(t_contexto_ejecucion contexto, int fd_modulo);
+t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
+
+void send_cambiar_estado(t_contexto_ejecucion contexto, int fd_modulo);
+t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 //recv_cambiar_estado()
 
 #endif /* PROTOCOLO_H_ */

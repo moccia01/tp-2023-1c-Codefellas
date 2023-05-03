@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <commons/log.h>
 #include <commons/config.h>
+#include <commons/string.h>
 #include "sockets.h"
 
 typedef struct{
@@ -75,5 +76,7 @@ typedef struct{
 
 void terminar_programa(t_log* logger, t_config* config);
 char *estado_to_string(estado_proceso estado);
+char *list_to_string(t_list *list);
+
 
 #endif /* SHARED_H_ */

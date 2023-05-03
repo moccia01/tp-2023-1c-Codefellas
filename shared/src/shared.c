@@ -32,3 +32,23 @@ char *estado_to_string(estado_proceso estado)
         break;
     }
 }
+
+char *list_to_string(t_list *list)
+{
+    char *string = string_new();
+    for (int i = 0; i < list_size(list); i++)
+    {
+        int *num = (int *)list_get(list, i);
+        if (i < list_size(list) - 1)
+        {
+            string_append_with_format(&string, "%d,", *num);
+        }
+        else
+        {
+            string_append_with_format(&string, "%d", *num);
+        }
+    }
+    return string;
+}
+
+

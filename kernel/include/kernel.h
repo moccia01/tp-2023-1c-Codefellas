@@ -76,6 +76,7 @@ typedef struct {
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
+int server_socket;
 int fd_cpu;
 int fd_memoria;
 int fd_filesystem;
@@ -108,6 +109,8 @@ t_queue* cola_exec;
 
 // Semaforos y pthread
 pthread_mutex_t mutex_generador_pid;
+pthread_mutex_t mutex_cola_ready;
+pthread_mutex_t mutex_cola_listos_para_ready;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;
@@ -135,10 +138,14 @@ void planificar();
 void planificar_largo_plazo();
 void exit_pcb();
 void ready_pcb();
+t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
 void setear_pcb_ready(t_pcb* pcb);
+void log_cola_ready();
+t_list *pcb_queue_to_pid_list(t_queue *queue);
+char* algoritmo_to_string(t_algoritmo algoritmo);
 void planificar_corto_plazo();
 void planificar_FIFO();
-void run_pcb(t_pcb* pcb, int fd_cpu);
+void run_pcb(t_pcb* pcb);
 void planificar_HRRN();
 
 //instruccion     *obtener_ultima_instruccion(t_pcb *pcb)

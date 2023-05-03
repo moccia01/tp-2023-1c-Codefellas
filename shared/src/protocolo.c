@@ -144,10 +144,25 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
+void send_contexto_ejecucion(t_contexto_ejecucion contexto, int fd_modulo){
+	t_paquete* contexto_a_mandar = crear_paquete(CONTEXTO_EJECUCION);
+	agregar_a_paquete(contexto_a_mandar, &contexto, sizeof(contexto));
+	enviar_paquete(contexto_a_mandar, fd_modulo);
+}
+
+t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	return list_get(paquete, 0);
+}
+
 void send_cambiar_estado(t_contexto_ejecucion contexto, int fd_modulo){
 
 	t_paquete* contexto_a_mandar = crear_paquete(CAMBIAR_ESTADO);
 	agregar_a_paquete(contexto_a_mandar, &contexto, sizeof(contexto));
 	enviar_paquete(contexto_a_mandar, fd_modulo);
 
+}
+
+t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){
+	return recv_contexto_ejecucion(fd_modulo);
 }
