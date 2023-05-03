@@ -126,7 +126,9 @@ int server_escuchar(int server_socket);
 
 // PCBS
 t_pcb *pcb_create(t_proceso *proceso, int pid);
+void pcb_destroy(t_pcb* pcb);
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
+void procesar_cambio_estado(t_pcb* pcb);
 void armar_pcb(t_list *instrucciones);
 
 // PLANIFICACION
@@ -135,6 +137,7 @@ void planificar_largo_plazo();
 void exit_pcb();
 void ready_pcb();
 t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
+void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex);
 void setear_pcb_ready(t_pcb* pcb);
 void log_cola_ready();
 t_list *pcb_queue_to_pid_list(t_queue *queue);
@@ -144,10 +147,4 @@ void planificar_FIFO();
 void run_pcb(t_pcb* pcb);
 void planificar_HRRN();
 
-//instruccion     *obtener_ultima_instruccion(t_pcb *pcb)
-//{
-//	int ultima_instruccion_idx = pcb->program_counter - 1;
-//	instruccion *ultima_instruccion = list_get(pcb->instrucciones, ultima_instruccion_idx);
-//return ultima_instruccion;
-//}
 

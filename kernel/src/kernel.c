@@ -103,8 +103,8 @@ void inicializar_variables() {
 	pthread_mutex_init(&mutex_generador_pid, NULL);
 	pthread_mutex_init(&mutex_cola_ready, NULL);
 	pthread_mutex_init(&mutex_cola_listos_para_ready, NULL);
-	pthread_mutex_init(&mutex_cola_exit);
-	pthread_mutex_init(&mutex_cola_exec);
+	pthread_mutex_init(&mutex_cola_exit, NULL);
+	pthread_mutex_init(&mutex_cola_exec, NULL);
 	sem_init(&sem_multiprog, 0, GRADO_MAX_MULTIPROGRAMACION);
 	sem_init(&sem_listos_ready, 0, 0);
 	sem_init(&sem_ready, 0, 0);
@@ -141,7 +141,6 @@ static void procesar_conexion(void *void_args) {
 			break;
 		case CAMBIAR_ESTADO:
 			t_contexto_ejecucion* contexto_recibido = recv_cambiar_estado(cliente_socket);
-			int pid = contexto_recibido->pid;
 			estado_proceso nuevo_estado = contexto_recibido->estado;
 			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			sem_post(&sem_exec);
@@ -180,21 +179,6 @@ int server_escuchar(int server_socket) {
 
 // ------------------ PCBS ------------------
 
-void armar_pcb(t_list *instrucciones) {
-	t_proceso *proceso = malloc(sizeof(t_proceso));
-	pthread_mutex_lock(&mutex_generador_pid);
-	int pid = generador_pid;
-	generador_pid++;
-	pthread_mutex_unlock(&mutex_generador_pid);
-	proceso->instrucciones = instrucciones;
-	t_pcb *pcb = pcb_create(proceso, pid);
-	log_info(logger, "Se crea el proceso <%d> en NEW", pid);
-	// mutex
-	list_add(lista_pcbs, pcb);
-	safe_pcb_push(cola_listos_para_ready, pcb, mutex_cola_listos_para_ready);
-	sem_post(&sem_listos_ready);
-}
-
 t_pcb* pcb_create(t_proceso *proceso, int pid) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 
@@ -214,15 +198,6 @@ t_pcb* pcb_create(t_proceso *proceso, int pid) {
 	return pcb;
 }
 
-void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
-	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
-	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion.estado));
-	pcb->contexto_de_ejecucion.estado = nuevo_estado;
-	log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->contexto_de_ejecucion.pid, estado_anterior_string, nuevo_estado_string);
-	free(estado_anterior_string);
-	free(nuevo_estado_string);
-}
-
 // hay que acordarse de agregar frees aca si se cambia la estructura del t_pcb !!!
 void pcb_destroy(t_pcb* pcb){
 	list_destroy(pcb->contexto_de_ejecucion.instrucciones);
@@ -230,8 +205,13 @@ void pcb_destroy(t_pcb* pcb){
 	free(pcb);
 }
 
-bool pcb_cmp (t_pcb* pcb1, t_pcb* pcb2){
-	return pcb1->contexto_de_ejecucion.pid == pcb2->contexto_de_ejecucion.pid;
+void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
+	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
+	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion.estado));
+	pcb->contexto_de_ejecucion.estado = nuevo_estado;
+	log_info(logger_obligatorio, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->contexto_de_ejecucion.pid, estado_anterior_string, nuevo_estado_string);
+	free(estado_anterior_string);
+	free(nuevo_estado_string);
 }
 
 void procesar_cambio_estado(t_pcb* pcb){
@@ -254,6 +234,21 @@ void procesar_cambio_estado(t_pcb* pcb){
 		break;
 	default: break;
 	}
+}
+
+void armar_pcb(t_list *instrucciones) {
+	t_proceso *proceso = malloc(sizeof(t_proceso));
+	pthread_mutex_lock(&mutex_generador_pid);
+	int pid = generador_pid;
+	generador_pid++;
+	pthread_mutex_unlock(&mutex_generador_pid);
+	proceso->instrucciones = instrucciones;
+	t_pcb *pcb = pcb_create(proceso, pid);
+	log_info(logger_obligatorio, "Se crea el proceso <%d> en NEW", pid);
+	// mutex
+	list_add(lista_pcbs, pcb);
+	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
+	sem_post(&sem_listos_ready);
 }
 
 // ------------------ PLANIFICACION ------------------
