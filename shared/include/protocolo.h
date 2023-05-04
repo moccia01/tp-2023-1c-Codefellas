@@ -55,8 +55,9 @@ void procesar_instruccion(t_instruccion* instruccion);
 void send_contexto_ejecucion(t_contexto_ejecucion contexto, int fd_modulo);
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
 
-void send_cambiar_estado(t_contexto_ejecucion contexto, int fd_modulo);
+void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 //recv_cambiar_estado()
 
 #endif /* PROTOCOLO_H_ */
+

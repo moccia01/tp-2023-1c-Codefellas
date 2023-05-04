@@ -6,6 +6,9 @@ int main(void) {
 	config = config_create("cpu.config");
 	registros = inicializar_registro();
 
+	//Inicializar variables (CUANDO ESCALE PASARLO A UNA FUNCION)
+	flag_execute = true;
+
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
@@ -50,6 +53,9 @@ static void procesar_conexion() {
 			break;
 		case CONTEXTO_EJECUCION:
 			//lo necesario para recibir el contexto
+			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
+			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
+			//socket_cliente = fd_kernel
 			break;
 		// ...
 		default:
@@ -107,54 +113,76 @@ t_registros* inicializar_registro(){
 	return registros;
 }
 
-void fetch(t_contexto_ejecucion contexto){
-	t_instruccion* proxima_instruccion = list_get(contexto.instrucciones, contexto.program_counter);
+void fetch(t_contexto_ejecucion* contexto){
+	t_instruccion* proxima_instruccion = list_get(contexto->instrucciones, contexto->program_counter);
 
 	decode(proxima_instruccion, contexto);
 
-	contexto.program_counter += 1;
+	contexto->program_counter += 1;
 }
 
-void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto){
+void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	cod_instruccion cod_instruccion = instruccion_to_enum(proxima_instruccion->instruccion);
 
+	//los logs son para testear e ir sabiendo lo que se va ejecutando
 	switch(cod_instruccion){
-	case SET:
-		ejecutar_set(proxima_instruccion->parametro1, proxima_instruccion->parametro2);
-		break;
-	case MOV_IN:
-		break;
-	case IO:
-		break;
-	case F_OPEN:
-		break;
-	case F_CLOSE:
-		break;
-	case F_SEEK:
-		break;
-	case F_READ:
-		break;
-	case F_WRITE:
-		break;
-	case F_TRUNCATE:
-		break;
-	case WAIT:
-		break;
-	case SIGNAL:
-		break;
-	case CREATE_SEGMENT:
-		break;
-	case DELETE_SEGMENT:
-		break;
-	case YIELD:
-		ejecutar_yield(contexto);
-		break;
-	case EXIT:
-		ejecutar_exit(contexto);
-		break;
-	default:
-		log_error(logger, "Instruccion no reconocida");
-		return;
+		case SET:
+			ejecutar_set(proxima_instruccion->parametro1, proxima_instruccion->parametro2);
+			log_info(logger,"Se esta ejecutando un SET");
+			break;
+		case MOV_IN:
+			log_info(logger,"Se esta ejecutando un MOV_IN");
+			break;
+		case MOV_OUT:
+			log_info(logger,"Se esta ejecutando un MOV_OUT");
+			break;
+		case IO:
+			flag_execute = false;
+			log_info(logger,"Se esta ejecutando un I/O");
+			break;
+		case F_OPEN:
+			log_info(logger,"Se esta ejecutando un F_OPEN");
+			break;
+		case F_CLOSE:
+			log_info(logger,"Se esta ejecutando un F_CLOSE");
+			break;
+		case F_SEEK:
+			log_info(logger,"Se esta ejecutando un F_SEEK");
+			break;
+		case F_READ:
+			log_info(logger,"Se esta ejecutando un F_READ");
+			break;
+		case F_WRITE:
+			log_info(logger,"Se esta ejecutando un F_WRITE");
+			break;
+		case F_TRUNCATE:
+			log_info(logger,"Se esta ejecutando un F_TRUNCATE");
+			break;
+		case WAIT:
+			log_info(logger,"Se esta ejecutando un WAIT");
+			break;
+		case SIGNAL:
+			log_info(logger,"Se esta ejecutando un SIGNAL");
+			break;
+		case CREATE_SEGMENT:
+			log_info(logger,"Se esta ejecutando un CREATE_SEGMENT");
+			break;
+		case DELETE_SEGMENT:
+			log_info(logger,"Se esta ejecutando un DELETE_SEGMENT");
+			break;
+		case YIELD:
+			flag_execute = false;
+			ejecutar_yield(contexto);
+			log_info(logger,"Se esta ejecutando un YIELD");
+			break;
+		case EXIT:
+			flag_execute = false;
+			ejecutar_exit(contexto);
+			log_info(logger,"Se esta ejecutando un EXIT");
+			break;
+		default:
+			log_error(logger, "Instruccion no reconocida");
+			return;
 	}
 }
 
@@ -193,14 +221,15 @@ void ejecutar_set(char* registro, char* valor){
 
 }
 
-void ejecutar_yield(t_contexto_ejecucion contexto){
-	contexto.estado = YIELD;
+void ejecutar_yield(t_contexto_ejecucion* contexto){
+	contexto->estado = YIELD;
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en ready.
 	send_cambiar_estado(contexto, socket_cliente);
 }
 
-void ejecutar_exit(t_contexto_ejecucion contexto){
-	contexto.estado = EXIT;
+void ejecutar_exit(t_contexto_ejecucion* contexto){
+	contexto->estado = EXIT;
+	contexto->motivo_exit = SUCCESS;
 	send_cambiar_estado(contexto, socket_cliente);
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
 }
@@ -241,4 +270,12 @@ cod_instruccion instruccion_to_enum(char* instruccion){
 		log_info(logger, "No se reconocio la funcion");
 	}
 	return -1;
+}
+
+void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
+
+	while(flag_execute){
+		fetch(contexto);
+	}
+
 }

@@ -65,6 +65,20 @@ typedef enum
 	F_CLOSE
 } cod_instruccion;
 
+//MOTIVOS DE BLOQUEO POSIBLES
+typedef enum{
+	IO_BLOCK,
+	NOMBRE_RECURSO,
+	NOMBRE_ARCHIVO
+}motivo_block;
+
+//MOTIVOS DE EXIT
+typedef enum{
+	SUCCESS,
+	SEG_FAULT,
+	OUT_OF_MEMORY
+}motivo_exit;
+
 //CONTEXTO DE EJECUCION
 typedef struct{
     int pid;
@@ -72,6 +86,8 @@ typedef struct{
     t_list *instrucciones;
     t_list *tabla_de_segmentos;
     estado_proceso estado;
+    motivo_exit motivo_exit;
+    motivo_block motivo_block;
 }t_contexto_ejecucion;
 
 void terminar_programa(t_log* logger, t_config* config);

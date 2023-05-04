@@ -14,9 +14,11 @@ t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
 t_registros* registros;
+//t_contexto_ejecucion* contexto_de_ejecucion;
 char* server_name;
 int socket_cliente;
 int fd_cpu;
+bool flag_execute;
 
 // Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)
 char* IP;
@@ -32,9 +34,10 @@ static void procesar_conexion();
 void server_escuchar() ;
 
 t_registros* inicializar_registro();
-void fetch(t_contexto_ejecucion contexto);
-void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion contexto);
+void fetch(t_contexto_ejecucion* contexto);
+void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto);
 cod_instruccion instruccion_to_enum(char* instruccion);
+void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO
 void ejecutar_set(char* registro, char* valor);
@@ -51,5 +54,5 @@ void ejecutar_wait();		//Verificar el tipo de recurso
 void ejecutar_signal();		//Verificar el tipo de recurso
 void ejecutar_create_segment(int id_segmento, int tamanio);
 void ejecutar_delete_segment(int id_segmento);
-void ejecutar_yield(t_contexto_ejecucion contexto);
-void ejecutar_exit(t_contexto_ejecucion contexto);
+void ejecutar_yield(t_contexto_ejecucion* contexto);
+void ejecutar_exit(t_contexto_ejecucion* contexto);
