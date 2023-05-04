@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
 
 	terminar_programa(logger, config);
 	liberar_conexion(fd_kernel);
-
 	return 0;
 }
 

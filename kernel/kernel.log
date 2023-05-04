@@ -76,3 +76,35 @@
 [INFO] 00:02:57:892 kernel_main/(12288:12311): Se recibió una lista de  instrucciones.
 [INFO] 00:02:57:895 kernel_main/(12288:12311): Recibí las instrucciones de la consola.
 [INFO] 00:02:57:897 kernel_main/(12288:12311): Se crea el proceso <1> en NEW
+[INFO] 23:37:13:933 kernel_main/(2236:2236): Grado multi prog: 4
+[INFO] 23:37:13:957 kernel_main/(2236:2236): Se inició la planificacion de largo plazo
+[INFO] 23:37:13:959 kernel_main/(2236:2236): Se inició la planificacion de corto plazo
+[INFO] 23:37:13:959 kernel_main/(2236:2236): Listo para escuchar a mi cliente
+[INFO] 23:37:13:962 kernel_main/(2236:2245): ready_pcb
+[INFO] 23:37:13:964 kernel_main/(2236:2242): El cliente se desconecto de (null) server
+[INFO] 23:37:13:964 kernel_main/(2236:2241): El cliente se desconecto de (null) server
+[INFO] 23:37:26:446 kernel_main/(2236:2236): Cliente conectado (a Kernel)
+
+[INFO] 23:37:26:453 kernel_main/(2236:2263): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:37:26:463 kernel_main/(2236:2263): Se recibió una lista de instrucciones.
+[INFO] 23:38:53:485 kernel_main/(2236:2236): Cliente conectado (a Kernel)
+
+[INFO] 23:38:53:492 kernel_main/(2236:2277): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:38:53:493 kernel_main/(2236:2277): Se recibió una lista de instrucciones.
+[INFO] 23:39:16:375 kernel_main/(2236:2236): Cliente conectado (a Kernel)
+
+[INFO] 23:39:16:376 kernel_main/(2236:2290): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:39:16:376 kernel_main/(2236:2290): Se recibió una lista de instrucciones.
+[INFO] 23:39:30:001 kernel_main/(2236:2236): Cliente conectado (a Kernel)
+
+[INFO] 23:39:30:006 kernel_main/(2236:2304): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:39:30:007 kernel_main/(2236:2304): Se recibió una lista de instrucciones.
+[INFO] 23:39:34:860 kernel_main/(2236:2236): Cliente conectado (a Kernel)
+
+[INFO] 23:39:34:860 kernel_main/(2236:2317): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:39:34:860 kernel_main/(2236:2317): Se recibió una lista de instrucciones.
+[INFO] 23:41:04:273 kernel_main/(2236:2263): El cliente se desconecto de (null) server
+[INFO] 23:41:10:786 kernel_main/(2236:2277): El cliente se desconecto de (null) server
+[INFO] 23:41:13:832 kernel_main/(2236:2290): El cliente se desconecto de (null) server
+[INFO] 23:41:17:580 kernel_main/(2236:2304): El cliente se desconecto de (null) server
+[INFO] 23:41:21:092 kernel_main/(2236:2317): El cliente se desconecto de (null) server

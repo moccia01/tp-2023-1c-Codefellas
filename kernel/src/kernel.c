@@ -163,7 +163,7 @@ void iterator(char *value) {
 }
 
 int server_escuchar(int server_socket) {
-	char *server_name = "Kernel";
+	server_name = "Kernel";
 	int cliente_socket = esperar_cliente(logger, server_name, server_socket);
 
 	if (cliente_socket != -1) {
@@ -313,6 +313,7 @@ void setear_pcb_ready(t_pcb *pcb) {
 	// mutex cambiar_estado??
 	cambiar_estado(pcb, READY);
 	pthread_mutex_lock(&mutex_cola_ready);
+	// no safe_pcb_push
 	queue_push(cola_ready, pcb);
 	log_cola_ready();
 	pthread_mutex_unlock(&mutex_cola_ready);

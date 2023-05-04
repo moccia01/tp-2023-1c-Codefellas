@@ -10,3 +10,7 @@
 [INFO] 00:02:24:911 filesystem_main/(12276:12276): Cliente conectado (a Filesystem)
 
 [INFO] 00:02:24:912 filesystem_main/(12276:12276): Me llego el mensaje: Hola, Soy Kernel!
+[INFO] 23:37:07:365 filesystem_main/(2223:2223): Listo para escuchar a mi cliente
+[INFO] 23:37:13:957 filesystem_main/(2223:2223): Cliente conectado (a Filesystem)
+
+[INFO] 23:37:13:957 filesystem_main/(2223:2223): Me llego el mensaje: Hola, Soy Kernel!
