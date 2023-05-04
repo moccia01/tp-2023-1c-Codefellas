@@ -15,17 +15,17 @@ int main(void) {
 	}
 	leer_config();
 
+	// Conecto CPU con memoria
+	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	enviar_mensaje("Hola, soy CPU!", fd_memoria);
+
 	// Inicio de servidor
 	fd_cpu = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
 	pthread_t conexion_kernel;
 	pthread_create(&conexion_kernel, NULL, (void*) server_escuchar, NULL);
-	pthread_detach(conexion_kernel);
-
-	// Conecto CPU con memoria
-	int fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	enviar_mensaje("Hola, soy CPU!", fd_memoria);
+	pthread_join(conexion_kernel, NULL);
 
 	terminar_programa(logger, config);
 	return 0;
@@ -52,8 +52,8 @@ static void procesar_conexion() {
 			recibir_mensaje(logger, socket_cliente);
 			break;
 		case CONTEXTO_EJECUCION:
-			//lo necesario para recibir el contexto
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
+			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
 			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
 			//socket_cliente = fd_kernel
 			break;
@@ -114,14 +114,16 @@ t_registros* inicializar_registro(){
 }
 
 void fetch(t_contexto_ejecucion* contexto){
+	log_info(logger, "se ejecuta fetch");
 	t_instruccion* proxima_instruccion = list_get(contexto->instrucciones, contexto->program_counter);
-
-	decode(proxima_instruccion, contexto);
-
+	log_info(logger, "1");
 	contexto->program_counter += 1;
+	log_info(logger, "1");
+	decode(proxima_instruccion, contexto);
 }
 
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
+	log_info(logger, "se ejecuta decode");
 	cod_instruccion cod_instruccion = instruccion_to_enum(proxima_instruccion->instruccion);
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
@@ -187,7 +189,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 }
 
 void ejecutar_set(char* registro, char* valor){
-
+	// les falta asignar el \0 al final de cada una
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
@@ -216,6 +218,7 @@ void ejecutar_set(char* registro, char* valor){
 		registros->rdx = valor;
 	}
 
+	log_info(logger, "a mimir");
 	sleep(RETARDO_INSTRUCCION);
 	//VER EL TEMA DEL SLEEP PARA EL RETARDO DE LA INSTRUCCION
 
@@ -273,7 +276,6 @@ cod_instruccion instruccion_to_enum(char* instruccion){
 }
 
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
-
 	while(flag_execute){
 		fetch(contexto);
 	}

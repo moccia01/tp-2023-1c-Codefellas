@@ -4,17 +4,23 @@ int main(void) {
 	logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
 	config = config_create("filesystem.config");
 
+	if(config == NULL){
+		log_error(logger, "No se encontró el archivo :(");
+		exit(1);
+	}
+	leer_config();
+
+	// Conecto CPU con memoria
+	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	enviar_mensaje("Hola, soy Filesystem.", fd_memoria);
+
 	// Inicio de servidor
 	fd_filesystem = iniciar_servidor(logger, IP, PUERTO);
 
 	// Conexion Kernel
 	pthread_t conexion_memoria;
 	pthread_create(&conexion_memoria, NULL, (void*) server_escuchar, NULL);
-	pthread_detach(conexion_memoria);
-
-	// Conecto CPU con memoria
-	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	enviar_mensaje("Hola, soy Filesystem.", fd_memoria);
+	pthread_join(conexion_memoria, NULL);
 
 	terminar_programa(logger, config);
 	return 0;

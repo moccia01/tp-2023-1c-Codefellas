@@ -18,6 +18,7 @@ t_registros* registros;
 char* server_name;
 int socket_cliente;
 int fd_cpu;
+int fd_memoria;
 bool flag_execute;
 
 // Variables del config (Las pongo aca asi no estamos revoleando el cfg para todos lados)

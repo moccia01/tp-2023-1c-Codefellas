@@ -23,7 +23,9 @@ int main(int argc, char **argv) {
 	send_instrucciones(fd_kernel, lista_de_insturcciones);
 
 	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
-	recibir_mensaje(logger, fd_kernel);
+	pthread_t conexion_kernel;
+	pthread_create(&conexion_kernel, NULL, (void*) procesar_conexion, NULL);
+	pthread_join(conexion_kernel, NULL);
 
 	terminar_programa(logger, config);
 	liberar_conexion(fd_kernel);
@@ -77,25 +79,24 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 	return lista_de_instrucciones;
 }
 
-//static void procesar_conexion(){
-//
-//	op_code cop;
-//	while (fd_kernel != -1) {
-//        if (recv(fd_kernel, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
-//            return;
-//        }
-//		switch (cop) {
-//		case MENSAJE:
-//			recibir_mensaje(logger, fd_kernel);
-//			break;
-//		default:
-//			log_error(logger, "Algo anduvo mal en el server de consola");
-//			return;
-//		}
-//	}
-//
-//	log_warning(logger, "El cliente se desconecto de la consola");
-//	return;
-//}
+static void procesar_conexion(){
+	op_code cop;
+	while (fd_kernel != -1) {
+        if (recv(fd_kernel, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+            return;
+        }
+		switch (cop) {
+		case MENSAJE:
+			recibir_mensaje(logger, fd_kernel);
+			break;
+		default:
+			log_error(logger, "Algo anduvo mal en el server de consola");
+			return;
+		}
+	}
+
+	log_warning(logger, "El cliente se desconecto de la consola");
+	return;
+}
 
 

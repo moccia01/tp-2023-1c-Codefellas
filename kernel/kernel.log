@@ -108,3 +108,155 @@
 [INFO] 23:41:13:832 kernel_main/(2236:2290): El cliente se desconecto de (null) server
 [INFO] 23:41:17:580 kernel_main/(2236:2304): El cliente se desconecto de (null) server
 [INFO] 23:41:21:092 kernel_main/(2236:2317): El cliente se desconecto de (null) server
+[INFO] 21:51:56:492 kernel_main/(2794:2794): Grado multi prog: 4
+[INFO] 21:51:56:493 kernel_main/(2794:2794): Se inició la planificacion de largo plazo
+[INFO] 21:51:56:494 kernel_main/(2794:2794): Se inició la planificacion de corto plazo
+[INFO] 21:51:56:494 kernel_main/(2794:2794): Listo para escuchar a mi cliente
+[INFO] 21:51:56:502 kernel_main/(2794:2803): ready_pcb
+[INFO] 21:52:25:722 kernel_main/(2794:2794): Cliente conectado a Kernel
+
+[INFO] 21:52:25:723 kernel_main/(2794:2821): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:52:25:732 kernel_main/(2794:2821): Se recibió una lista de instrucciones.
+[INFO] 21:52:49:993 kernel_main/(2794:2794): Cliente conectado a Kernel
+
+[INFO] 21:52:49:996 kernel_main/(2794:2834): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:52:49:997 kernel_main/(2794:2834): Se recibió una lista de instrucciones.
+[INFO] 21:53:02:767 kernel_main/(2794:2800): El cliente se desconecto de Kernel server
+[INFO] 21:53:03:717 kernel_main/(2794:2801): El cliente se desconecto de Kernel server
+[INFO] 22:13:44:763 kernel_main/(4194:4194): Grado multi prog: 4
+[INFO] 22:13:44:773 kernel_main/(4194:4194): Se inició la planificacion de largo plazo
+[INFO] 22:13:44:773 kernel_main/(4194:4194): Se inició la planificacion de corto plazo
+[INFO] 22:13:44:773 kernel_main/(4194:4194): Listo para escuchar a mi cliente
+[INFO] 22:14:15:375 kernel_main/(4194:4194): Cliente conectado a Kernel
+
+[INFO] 22:14:15:376 kernel_main/(4194:4219): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:14:15:376 kernel_main/(4194:4219): Se recibió una lista de instrucciones.
+[INFO] 22:14:33:626 kernel_main/(4229:4229): Grado multi prog: 4
+[INFO] 22:14:33:628 kernel_main/(4229:4229): Se inició la planificacion de largo plazo
+[INFO] 22:14:33:629 kernel_main/(4229:4229): Se inició la planificacion de corto plazo
+[INFO] 22:14:33:629 kernel_main/(4229:4229): Listo para escuchar a mi cliente
+[INFO] 22:15:05:058 kernel_main/(4194:4194): Cliente conectado a Kernel
+
+[INFO] 22:15:05:059 kernel_main/(4194:4256): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:15:05:059 kernel_main/(4194:4256): Se recibió una lista de instrucciones.
+[INFO] 22:15:17:059 kernel_main/(4194:4201): El cliente se desconecto de Kernel server
+[INFO] 22:17:05:220 kernel_main/(4392:4392): Grado multi prog: 4
+[INFO] 22:17:05:220 kernel_main/(4392:4392): Se inició la planificacion de largo plazo
+[INFO] 22:17:05:220 kernel_main/(4392:4392): Se inició la planificacion de corto plazo
+[INFO] 22:17:05:221 kernel_main/(4392:4392): Listo para escuchar a mi cliente
+[INFO] 22:17:10:391 kernel_main/(4392:4392): Cliente conectado a Kernel
+
+[INFO] 22:17:10:391 kernel_main/(4392:4417): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:17:10:392 kernel_main/(4392:4417): Se recibió una lista de instrucciones.
+[INFO] 22:18:29:634 kernel_main/(4573:4573): Grado multi prog: 4
+[INFO] 22:18:29:640 kernel_main/(4573:4573): Se inició la planificacion de largo plazo
+[INFO] 22:18:29:644 kernel_main/(4573:4573): Se inició la planificacion de corto plazo
+[INFO] 22:18:29:644 kernel_main/(4573:4573): Listo para escuchar a mi cliente
+[INFO] 22:27:01:075 kernel_main/(4765:4765): Grado multi prog: 4
+[INFO] 22:27:01:078 kernel_main/(4765:4765): Se inició la planificacion de largo plazo
+[INFO] 22:27:01:078 kernel_main/(4765:4765): Se inició la planificacion de corto plazo
+[INFO] 22:27:01:079 kernel_main/(4765:4765): Listo para escuchar a mi cliente
+[INFO] 22:27:27:109 kernel_main/(4765:4765): Cliente conectado a Kernel
+
+[INFO] 22:27:27:109 kernel_main/(4765:4794): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:27:27:110 kernel_main/(4765:4794): Se recibió una lista de instrucciones.
+[INFO] 22:27:27:110 kernel_main/(4765:4777): El proceso 1 se pone en ejecucion
+[INFO] 22:27:27:270 kernel_main/(4765:4772): El cliente se desconecto de Kernel server
+[INFO] 22:31:02:034 kernel_main/(4765:4794): El cliente se desconecto de Kernel server
+[INFO] 22:37:19:359 kernel_main/(5406:5406): Grado multi prog: 4
+[INFO] 22:37:19:363 kernel_main/(5406:5406): Se inició la planificacion de largo plazo
+[INFO] 22:37:19:405 kernel_main/(5406:5406): Se inició la planificacion de corto plazo
+[INFO] 22:37:19:407 kernel_main/(5406:5406): Listo para escuchar a mi cliente
+[INFO] 22:37:27:829 kernel_main/(5406:5406): Cliente conectado a Kernel
+
+[INFO] 22:37:27:830 kernel_main/(5406:5431): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:37:27:830 kernel_main/(5406:5431): Se recibió una lista de instrucciones.
+[INFO] 22:37:27:830 kernel_main/(5406:5417): El proceso 1 se pone en ejecucion
+[INFO] 22:37:28:062 kernel_main/(5406:5412): El cliente se desconecto de Kernel server
+[INFO] 22:42:30:368 kernel_main/(5810:5810): Grado multi prog: 4
+[INFO] 22:42:30:379 kernel_main/(5810:5810): Se inició la planificacion de largo plazo
+[INFO] 22:42:30:379 kernel_main/(5810:5810): Se inició la planificacion de corto plazo
+[INFO] 22:42:30:379 kernel_main/(5810:5810): Listo para escuchar a mi cliente
+[INFO] 22:42:36:442 kernel_main/(5406:5406): Cliente conectado a Kernel
+
+[INFO] 22:42:36:444 kernel_main/(5406:5834): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:42:36:444 kernel_main/(5406:5834): Se recibió una lista de instrucciones.
+[INFO] 22:42:43:545 kernel_main/(5406:5834): El cliente se desconecto de Kernel server
+[INFO] 22:42:44:052 kernel_main/(5810:5815): El cliente se desconecto de Kernel server
+[INFO] 22:43:02:265 kernel_main/(5894:5894): Grado multi prog: 4
+[INFO] 22:43:02:272 kernel_main/(5894:5894): Se inició la planificacion de largo plazo
+[INFO] 22:43:02:272 kernel_main/(5894:5894): Se inició la planificacion de corto plazo
+[INFO] 22:43:02:272 kernel_main/(5894:5894): Listo para escuchar a mi cliente
+[INFO] 22:43:21:521 kernel_main/(5894:5900): El cliente se desconecto de Kernel server
+[INFO] 22:43:58:520 kernel_main/(5966:5966): Grado multi prog: 4
+[INFO] 22:43:58:523 kernel_main/(5966:5966): Se inició la planificacion de largo plazo
+[INFO] 22:43:58:523 kernel_main/(5966:5966): Se inició la planificacion de corto plazo
+[INFO] 22:43:58:524 kernel_main/(5966:5966): Listo para escuchar a mi cliente
+[INFO] 22:43:58:529 kernel_main/(5966:5971): El cliente se desconecto de Kernel server
+[INFO] 22:45:16:833 kernel_main/(6027:6027): Grado multi prog: 4
+[INFO] 22:45:16:835 kernel_main/(6027:6027): Se inició la planificacion de largo plazo
+[INFO] 22:45:16:835 kernel_main/(6027:6027): Se inició la planificacion de corto plazo
+[INFO] 22:45:16:836 kernel_main/(6027:6027): Listo para escuchar a mi cliente
+[INFO] 22:45:41:145 kernel_main/(6027:6027): Cliente conectado a Kernel
+
+[INFO] 22:45:41:146 kernel_main/(6027:6052): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:45:41:147 kernel_main/(6027:6052): Se recibió una lista de instrucciones.
+[INFO] 22:45:41:147 kernel_main/(6027:6038): El proceso 1 se pone en ejecucion
+[INFO] 22:45:41:325 kernel_main/(6027:6033): El cliente se desconecto de Kernel server
+[INFO] 22:46:40:357 kernel_main/(6027:6052): El cliente se desconecto de Kernel server
+[INFO] 22:47:07:070 kernel_main/(6283:6283): Grado multi prog: 4
+[INFO] 22:47:07:074 kernel_main/(6283:6283): Se inició la planificacion de largo plazo
+[INFO] 22:47:07:074 kernel_main/(6283:6283): Se inició la planificacion de corto plazo
+[INFO] 22:47:07:075 kernel_main/(6283:6283): Listo para escuchar a mi cliente
+[INFO] 22:47:07:076 kernel_main/(6283:6290): El cliente se desconecto de Kernel server
+[INFO] 22:47:12:785 kernel_main/(6283:6283): Cliente conectado a Kernel
+
+[INFO] 22:47:12:787 kernel_main/(6283:6308): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:47:12:787 kernel_main/(6283:6308): Se recibió una lista de instrucciones.
+[INFO] 22:47:12:787 kernel_main/(6283:6295): El proceso 1 se pone en ejecucion
+[INFO] 22:47:40:330 kernel_main/(6283:6292): El cliente se desconecto de Kernel server
+[INFO] 22:49:13:001 kernel_main/(6553:6553): Grado multi prog: 4
+[INFO] 22:49:13:005 kernel_main/(6553:6553): Se inició la planificacion de largo plazo
+[INFO] 22:49:13:005 kernel_main/(6553:6553): Se inició la planificacion de corto plazo
+[INFO] 22:49:13:006 kernel_main/(6553:6553): Listo para escuchar a mi cliente
+[INFO] 22:49:20:302 kernel_main/(6553:6553): Cliente conectado a Kernel
+
+[INFO] 22:49:20:310 kernel_main/(6553:6578): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:49:20:310 kernel_main/(6553:6578): Se recibió una lista de instrucciones.
+[INFO] 22:49:20:314 kernel_main/(6553:6565): El proceso 1 se pone en ejecucion
+[INFO] 22:49:20:591 kernel_main/(6553:6560): El cliente se desconecto de Kernel server
+[INFO] 22:51:05:165 kernel_main/(6553:6578): El cliente se desconecto de Kernel server
+[INFO] 22:58:53:775 kernel_main/(7042:7042): Grado multi prog: 4
+[INFO] 22:58:53:779 kernel_main/(7042:7042): Se inició la planificacion de largo plazo
+[INFO] 22:58:53:780 kernel_main/(7042:7042): Se inició la planificacion de corto plazo
+[INFO] 22:58:53:780 kernel_main/(7042:7042): Listo para escuchar a mi cliente
+[INFO] 22:58:59:414 kernel_main/(7042:7042): Cliente conectado a Kernel
+
+[INFO] 22:58:59:416 kernel_main/(7042:7065): Me llego el mensaje: Hola, soy consola.
+[INFO] 22:58:59:416 kernel_main/(7042:7065): Se recibió una lista de instrucciones.
+[INFO] 23:01:28:154 kernel_main/(7292:7292): Grado multi prog: 4
+[INFO] 23:01:28:158 kernel_main/(7292:7292): Se inició la planificacion de largo plazo
+[INFO] 23:01:28:159 kernel_main/(7292:7292): Se inició la planificacion de corto plazo
+[INFO] 23:01:28:159 kernel_main/(7292:7292): Listo para escuchar a mi cliente
+[INFO] 23:01:28:159 kernel_main/(7292:7299): El cliente se desconecto de Kernel server
+[INFO] 23:01:35:457 kernel_main/(7292:7292): Cliente conectado a Kernel
+
+[INFO] 23:01:35:458 kernel_main/(7292:7314): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:01:35:459 kernel_main/(7292:7314): Se recibió una lista de instrucciones.
+[INFO] 23:01:35:459 kernel_main/(7292:7314): la primera instruccion es (null) (null) (null)
+[INFO] 23:01:35:459 kernel_main/(7292:7302): El proceso 1 se pone en ejecucion
+[INFO] 23:01:35:623 kernel_main/(7292:7298): El cliente se desconecto de Kernel server
+[INFO] 23:22:18:100 kernel_main/(7714:7714): Grado multi prog: 4
+[INFO] 23:22:18:101 kernel_main/(7714:7714): Listo para escuchar a mi cliente
+[INFO] 23:22:25:281 kernel_main/(7714:7714): Cliente conectado a (null)
+
+[INFO] 23:22:25:287 kernel_main/(7714:7714): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:22:25:288 kernel_main/(7714:7714): Se recibió una lista de instrucciones.
+[INFO] 23:23:15:656 kernel_main/(7814:7814): Grado multi prog: 4
+[INFO] 23:23:19:793 kernel_main/(7814:7814): Listo para escuchar a mi cliente
+[INFO] 23:34:19:024 kernel_main/(8089:8089): Grado multi prog: 4
+[INFO] 23:34:23:745 kernel_main/(8089:8089): Listo para escuchar a mi cliente
+[INFO] 23:34:36:448 kernel_main/(8089:8089): Cliente conectado a (null)
+
+[INFO] 23:34:49:508 kernel_main/(8089:8089): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:35:07:625 kernel_main/(8089:8089): Se recibió una lista de instrucciones.

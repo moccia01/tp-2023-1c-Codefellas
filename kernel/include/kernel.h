@@ -60,7 +60,7 @@ typedef struct
 	// punteros de las listas en dudaa
 	//t_list *tabla_de_segmentos;
 	t_registros registros;
-	t_contexto_ejecucion contexto_de_ejecucion;
+	t_contexto_ejecucion* contexto_de_ejecucion;
 	t_segmento seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
 	//bool con_desalojo;
 
@@ -120,12 +120,12 @@ int inicializar_servidor();
 void inicializar_variables();
 
 // COMUNICACION
-static void procesar_conexion(void *void_args);
+static void procesar_conexion(int cliente_socket);
 void iterator(char* value);
 int server_escuchar(int server_socket);
 
 // PCBS
-t_pcb *pcb_create(t_proceso *proceso, int pid);
+t_pcb *pcb_create(t_list* instrucciones, int pid);
 void pcb_destroy(t_pcb* pcb);
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
 void procesar_cambio_estado(t_pcb* pcb);
