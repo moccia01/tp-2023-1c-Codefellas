@@ -124,7 +124,7 @@ void fetch(t_contexto_ejecucion* contexto){
 
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	log_info(logger, "se ejecuta decode");
-	cod_instruccion cod_instruccion = instruccion_to_enum(proxima_instruccion->instruccion);
+	cod_instruccion cod_instruccion = proxima_instruccion->instruccion;
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
 	switch(cod_instruccion){
@@ -235,44 +235,6 @@ void ejecutar_exit(t_contexto_ejecucion* contexto){
 	contexto->motivo_exit = SUCCESS;
 	send_cambiar_estado(contexto, socket_cliente);
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
-}
-
-cod_instruccion instruccion_to_enum(char* instruccion){
-
-	if(strcmp(instruccion, "SET") == 0){
-		return SET;
-	} else if(strcmp(instruccion, "MOV_IN") == 0){
-		return MOV_IN;
-	} else if(strcmp(instruccion, "IO") == 0){
-		return IO;
-	} else if(strcmp(instruccion, "F_OPEN") == 0){
-		return F_OPEN;
-	} else if(strcmp(instruccion, "F_CLOSE") == 0){
-		return F_CLOSE;
-	} else if(strcmp(instruccion, "F_SEEK") == 0){
-		return F_SEEK;
-	} else if(strcmp(instruccion, "F_READ") == 0){
-		return F_READ;
-	} else if(strcmp(instruccion, "F_WRITE") == 0){
-		return F_WRITE;
-	} else if(strcmp(instruccion, "F_TRUNCATE") == 0){
-		return F_TRUNCATE;
-	} else if(strcmp(instruccion, "WAIT") == 0){
-		return WAIT;
-	} else if(strcmp(instruccion, "SIGNAL") == 0){
-		return SIGNAL;
-	} else if(strcmp(instruccion, "CREATE_SEGMENT") == 0){
-		return CREATE_SEGMENT;
-	} else if(strcmp(instruccion, "DELETE_SEGMENT") == 0){
-		return DELETE_SEGMENT;
-	} else if(strcmp(instruccion, "YIELD") == 0){
-		return YIELD;
-	} else if(strcmp(instruccion, "EXIT") == 0){
-		return EXIT;
-	} else{
-		log_info(logger, "No se reconocio la funcion");
-	}
-	return -1;
 }
 
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){

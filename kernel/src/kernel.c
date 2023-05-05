@@ -27,12 +27,10 @@ int main(void) {
 //	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
 
 	inicializar_variables();
-//	planificar();
+	planificar();
 
 	server_socket = inicializar_servidor();
-	int cliente_socket = esperar_cliente(logger, server_name, server_socket);
-	procesar_conexion(cliente_socket);
-//	while (server_escuchar(server_socket));
+	while (server_escuchar(server_socket));
 
 	terminar_programa(logger, config);
 	return 0;
@@ -116,9 +114,9 @@ void inicializar_variables() {
 
 // ------------------ COMUNICACION ------------------
 
-static void procesar_conexion(int cliente_socket) {
-//	int *args = (int*) void_args;
-//	int cliente_socket = *args;
+static void procesar_conexion(void* void_args) {
+	int *args = (int*) void_args;
+	int cliente_socket = *args;
 
 	op_code cop;
 	while (cliente_socket != -1) {
@@ -138,8 +136,7 @@ static void procesar_conexion(int cliente_socket) {
 			break;
 		case INSTRUCCIONES_CONSOLA:
 			t_list *instrucciones = recv_instrucciones(logger, cliente_socket);
-			t_instruccion* instruccion = list_get(instrucciones, 0);
-			log_info(logger, "la primera instruccion es %s %s %s", instruccion->instruccion, instruccion->parametro1, instruccion->parametro2);
+			loggear_instrucciones_test(logger, instrucciones);
 			armar_pcb(instrucciones);
 			break;
 		case CAMBIAR_ESTADO:

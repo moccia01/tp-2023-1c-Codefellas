@@ -118,9 +118,8 @@ void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
 int inicializar_servidor();
 void inicializar_variables();
-
 // COMUNICACION
-static void procesar_conexion(int cliente_socket);
+static void procesar_conexion(void* args);
 void iterator(char* value);
 int server_escuchar(int server_socket);
 

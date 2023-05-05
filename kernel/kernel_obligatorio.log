@@ -53,3 +53,34 @@
 [INFO] 23:01:35:459 kernel_obligatorio/(7292:7301): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
 [INFO] 23:01:35:459 kernel_obligatorio/(7292:7301): Cola Ready FIFO: [1]
 [INFO] 23:01:35:459 kernel_obligatorio/(7292:7302): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 20:10:04:660 kernel_obligatorio/(9180:9201): Se crea el proceso <1> en NEW
+[INFO] 20:10:04:672 kernel_obligatorio/(9180:9187): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 20:10:04:672 kernel_obligatorio/(9180:9187): Cola Ready FIFO: [1]
+[INFO] 20:10:04:672 kernel_obligatorio/(9180:9188): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 20:18:55:374 kernel_obligatorio/(10256:10277): Se crea el proceso <1> en NEW
+[INFO] 20:18:55:375 kernel_obligatorio/(10256:10262): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 20:18:55:375 kernel_obligatorio/(10256:10262): Cola Ready FIFO: [1]
+[INFO] 20:18:55:375 kernel_obligatorio/(10256:10263): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 21:19:23:989 kernel_obligatorio/(13133:13554): Se crea el proceso <1> en NEW
+[INFO] 21:19:23:990 kernel_obligatorio/(13133:13139): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:19:23:990 kernel_obligatorio/(13133:13139): Cola Ready FIFO: [1]
+[INFO] 21:19:23:992 kernel_obligatorio/(13133:13140): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 21:21:04:682 kernel_obligatorio/(13133:13941): Se crea el proceso <2> en NEW
+[INFO] 21:21:04:683 kernel_obligatorio/(13133:13139): PID: <2> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:21:04:683 kernel_obligatorio/(13133:13139): Cola Ready FIFO: [2]
+[INFO] 21:22:45:649 kernel_obligatorio/(14125:14144): Se crea el proceso <1> en NEW
+[INFO] 21:22:45:649 kernel_obligatorio/(14125:14131): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:22:45:649 kernel_obligatorio/(14125:14131): Cola Ready FIFO: [1]
+[INFO] 21:22:45:649 kernel_obligatorio/(14125:14132): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 21:25:20:644 kernel_obligatorio/(14258:14278): Se crea el proceso <1> en NEW
+[INFO] 21:25:20:644 kernel_obligatorio/(14258:14260): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:25:20:644 kernel_obligatorio/(14258:14260): Cola Ready FIFO: [1]
+[INFO] 21:25:20:644 kernel_obligatorio/(14258:14261): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 21:35:43:311 kernel_obligatorio/(14507:14526): Se crea el proceso <1> en NEW
+[INFO] 21:35:43:312 kernel_obligatorio/(14507:14513): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:35:43:312 kernel_obligatorio/(14507:14513): Cola Ready FIFO: [1]
+[INFO] 21:35:43:314 kernel_obligatorio/(14507:14514): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 21:41:31:933 kernel_obligatorio/(15032:15051): Se crea el proceso <1> en NEW
+[INFO] 21:41:31:933 kernel_obligatorio/(15032:15038): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 21:41:31:933 kernel_obligatorio/(15032:15038): Cola Ready FIFO: [1]
+[INFO] 21:41:31:933 kernel_obligatorio/(15032:15039): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>

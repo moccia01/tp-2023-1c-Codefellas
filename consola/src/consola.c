@@ -15,19 +15,12 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-//	// Conexion Kernel
-//	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
-//	enviar_mensaje("Hola, soy consola.", fd_kernel);
+	// Conexion Kernel
+	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
+	enviar_mensaje("Hola, soy consola.", fd_kernel);
 
 	t_list* lista_de_instrucciones = leer_instrucciones(argv[2], logger);
-	t_instruccion* instruccion = list_get(lista_de_instrucciones, 0);
-	log_info(logger, "la primera instruccion es %s", instruccion->instruccion);
-	instruccion = list_get(lista_de_instrucciones, 1);
-	log_info(logger, "la segunda instruccion es %s", instruccion->instruccion);
-	instruccion = list_get(lista_de_instrucciones, 2);
-	log_info(logger, "la tercera instruccion es %s", instruccion->instruccion);
-	log_info(logger, "tamaño de list = %d", list_size(lista_de_instrucciones));
-//	send_instrucciones(fd_kernel, lista_de_instrucciones);
+	send_instrucciones(fd_kernel, lista_de_instrucciones);
 
 	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
 	pthread_t conexion_kernel;
@@ -63,7 +56,6 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 
 	while (fgets(buffer, MAX_LINE_LENGTH, pseudocodigo) != NULL) {
 		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
-		instruccion->instruccion = malloc(MAX_LINE_LENGTH);
 		instruccion->parametro1 = malloc(MAX_LINE_LENGTH);
 		instruccion->parametro2 = malloc(MAX_LINE_LENGTH);
 		instruccion->parametro3 = malloc(MAX_LINE_LENGTH);
@@ -78,15 +70,23 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
             parametros[param_count++] = token;
         }
 
-        strcpy(instruccion->instruccion, instruccion_leida);
+        cod_instruccion cod_inst = instruccion_to_enum(instruccion_leida);
+
+        instruccion->instruccion = cod_inst;
         if(param_count > 0){
         	strcpy(instruccion->parametro1, parametros[0]);
+        }else{
+        	strcpy(instruccion->parametro1, "");
         }
         if(param_count > 1){
         	strcpy(instruccion->parametro2, parametros[1]);
+        }else{
+        	strcpy(instruccion->parametro2, "");
         }
         if(param_count > 2){
         	strcpy(instruccion->parametro3, parametros[2]);
+        }else{
+        	strcpy(instruccion->parametro3, "");
         }
         list_add(lista_de_instrucciones, instruccion);
 

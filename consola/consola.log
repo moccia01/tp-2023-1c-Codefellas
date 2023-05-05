@@ -252,3 +252,226 @@
 [INFO] 19:07:28:548 consola_main/(6188:6188): la segunda instruccion es MOV_OUT
 [INFO] 19:07:28:548 consola_main/(6188:6188): la tercera instruccion es WAIT
 [INFO] 19:07:28:549 consola_main/(6188:6188): tamaño de list = 16
+[INFO] 20:31:39:905 consola_main/(11392:11392): La instruccion 0 es: YIELD   
+[INFO] 20:31:39:905 consola_main/(11392:11392): La instruccion 1 es: EXIT   
+[ERROR] 20:32:18:156 consola_main/(11405:11405): Instruccion no reconocida
+[INFO] 20:32:18:165 consola_main/(11405:11405): La instruccion 0 es: (null) 120 AX 
+[INFO] 20:32:18:165 consola_main/(11405:11405): La instruccion 1 es: WAIT DISCO  
+[ERROR] 20:32:18:170 consola_main/(11405:11405): Instruccion no reconocida
+[INFO] 20:32:18:170 consola_main/(11405:11405): La instruccion 2 es: (null) 10  
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 3 es: SIGNAL DISCO  
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 4 es: MOV_IN BX 120 
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 5 es: F_OPEN ARCHIVO  
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 6 es: YIELD   
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 7 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 8 es: F_SEEK ARCHIVO 10 
+[INFO] 20:32:18:171 consola_main/(11405:11405): La instruccion 9 es: CREATE_SEGMENT 1 128 
+[INFO] 20:32:18:172 consola_main/(11405:11405): La instruccion 10 es: F_WRITE ARCHIVO 4 4
+[INFO] 20:32:18:172 consola_main/(11405:11405): La instruccion 11 es: F_READ ARCHIVO 16 4
+[INFO] 20:32:18:172 consola_main/(11405:11405): La instruccion 12 es: DELETE_SEGMENT 1  
+[INFO] 20:32:18:172 consola_main/(11405:11405): La instruccion 13 es: F_CLOSE ARCHIVO  
+[INFO] 20:32:18:172 consola_main/(11405:11405): La instruccion 14 es: EXIT   
+[INFO] 20:35:06:146 consola_main/(11576:11576): La instruccion 0 es: SET AX HOLA 
+[ERROR] 20:35:06:147 consola_main/(11576:11576): Instruccion no reconocida
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 1 es: (null) 120 AX 
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 2 es: WAIT DISCO  
+[ERROR] 20:35:06:147 consola_main/(11576:11576): Instruccion no reconocida
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 3 es: (null) 10  
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 4 es: SIGNAL DISCO  
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 5 es: MOV_IN BX 120 
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 6 es: F_OPEN ARCHIVO  
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 7 es: YIELD   
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 8 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 9 es: F_SEEK ARCHIVO 10 
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 10 es: CREATE_SEGMENT 1 128 
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 11 es: F_WRITE ARCHIVO 4 4
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 12 es: F_READ ARCHIVO 16 4
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 13 es: DELETE_SEGMENT 1  
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 14 es: F_CLOSE ARCHIVO  
+[INFO] 20:35:06:147 consola_main/(11576:11576): La instruccion 15 es: EXIT   
+[INFO] 20:53:03:177 consola_main/(11778:11778): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:01:20:000 consola_main/(11988:11988): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:01:20:001 consola_main/(11988:11988): La instruccion 2 es: WAIT DISCO  
+[ERROR] 21:01:20:003 consola_main/(11988:11988): Instruccion no reconocida
+[INFO] 21:01:20:003 consola_main/(11988:11988): La instruccion 3 es: (null) 10  
+[INFO] 21:01:20:003 consola_main/(11988:11988): La instruccion 4 es: SIGNAL DISCO  
+[INFO] 21:01:20:003 consola_main/(11988:11988): La instruccion 5 es: MOV_IN BX 120 
+[INFO] 21:01:20:003 consola_main/(11988:11988): La instruccion 6 es: F_OPEN ARCHIVO  
+[INFO] 21:01:20:003 consola_main/(11988:11988): La instruccion 7 es: YIELD   
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 8 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 9 es: F_SEEK ARCHIVO 10 
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 10 es: CREATE_SEGMENT 1 128 
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 11 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 12 es: F_READ ARCHIVO 16 4
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 13 es: DELETE_SEGMENT 1  
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 14 es: F_CLOSE ARCHIVO  
+[INFO] 21:01:20:004 consola_main/(11988:11988): La instruccion 15 es: EXIT   
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 1 es: SET AX HOLA 
+[ERROR] 21:06:07:087 consola_main/(12084:12084): Instruccion no reconocida
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 2 es: (null) 120 AX 
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 3 es: WAIT DISCO  
+[ERROR] 21:06:07:087 consola_main/(12084:12084): Instruccion no reconocida
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 4 es: (null) 10  
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:06:07:087 consola_main/(12084:12084): La instruccion 8 es: YIELD   
+[INFO] 21:06:07:089 consola_main/(12084:12084): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:06:07:089 consola_main/(12084:12084): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:06:07:089 consola_main/(12084:12084): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:06:07:089 consola_main/(12084:12084): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:06:07:090 consola_main/(12084:12084): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:06:07:090 consola_main/(12084:12084): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:06:07:090 consola_main/(12084:12084): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:06:07:090 consola_main/(12084:12084): La instruccion 16 es: EXIT   
+[INFO] 21:08:47:055 consola_main/(12297:12297): instruccion leida: SET
+[INFO] 21:08:47:055 consola_main/(12297:12297): instruccion leida: MOV_OUT
+[INFO] 21:08:47:055 consola_main/(12297:12297): instruccion leida: WAIT
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: I/O
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: SIGNAL
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: MOV_IN
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: F_OPEN
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: YIELD
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: F_TRUNCATE
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: F_SEEK
+[INFO] 21:08:47:056 consola_main/(12297:12297): instruccion leida: CREATE_SEGMENT
+[INFO] 21:08:47:057 consola_main/(12297:12297): instruccion leida: F_WRITE
+[INFO] 21:08:47:057 consola_main/(12297:12297): instruccion leida: F_READ
+[INFO] 21:08:47:057 consola_main/(12297:12297): instruccion leida: DELETE_SEGMENT
+[INFO] 21:08:47:058 consola_main/(12297:12297): instruccion leida: F_CLOSE
+[INFO] 21:08:47:058 consola_main/(12297:12297): instruccion leida: EXIT
+[INFO] 21:08:47:058 consola_main/(12297:12297): La instruccion 1 es: SET AX HOLA 
+[ERROR] 21:08:47:058 consola_main/(12297:12297): Instruccion no reconocida
+[INFO] 21:08:47:058 consola_main/(12297:12297): La instruccion 2 es: (null) 120 AX 
+[INFO] 21:08:47:058 consola_main/(12297:12297): La instruccion 3 es: WAIT DISCO  
+[ERROR] 21:08:47:058 consola_main/(12297:12297): Instruccion no reconocida
+[INFO] 21:08:47:058 consola_main/(12297:12297): La instruccion 4 es: (null) 10  
+[INFO] 21:08:47:058 consola_main/(12297:12297): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 8 es: YIELD   
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:08:47:059 consola_main/(12297:12297): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:08:47:060 consola_main/(12297:12297): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:08:47:060 consola_main/(12297:12297): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:08:47:060 consola_main/(12297:12297): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:08:47:060 consola_main/(12297:12297): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:08:47:061 consola_main/(12297:12297): La instruccion 16 es: EXIT   
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: SET
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: MOV_OUT
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: WAIT
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: I/O
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: SIGNAL
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: MOV_IN
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: F_OPEN
+[INFO] 21:11:34:744 consola_main/(12475:12475): instruccion leida: YIELD
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: F_TRUNCATE
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: F_SEEK
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: CREATE_SEGMENT
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: F_WRITE
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: F_READ
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: DELETE_SEGMENT
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: F_CLOSE
+[INFO] 21:11:34:745 consola_main/(12475:12475): instruccion leida: EXIT
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 1 es: SET AX HOLA 
+[ERROR] 21:11:34:745 consola_main/(12475:12475): Instruccion no reconocida
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 2 es: (null) 120 AX 
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 3 es: WAIT DISCO  
+[ERROR] 21:11:34:745 consola_main/(12475:12475): Instruccion no reconocida
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 4 es: (null) 10  
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 8 es: YIELD   
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:11:34:745 consola_main/(12475:12475): La instruccion 16 es: EXIT   
+[INFO] 21:16:38:260 consola_main/(12815:12815): instruccion leida: SET
+[INFO] 21:16:38:262 consola_main/(12815:12815): instruccion leida: MOV_OUT
+[INFO] 21:16:38:263 consola_main/(12815:12815): instruccion leida: WAIT
+[INFO] 21:16:38:263 consola_main/(12815:12815): instruccion leida: I/O
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: SIGNAL
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: MOV_IN
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: F_OPEN
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: YIELD
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: F_TRUNCATE
+[INFO] 21:16:38:264 consola_main/(12815:12815): instruccion leida: F_SEEK
+[INFO] 21:16:38:269 consola_main/(12815:12815): instruccion leida: CREATE_SEGMENT
+[INFO] 21:16:38:270 consola_main/(12815:12815): instruccion leida: F_WRITE
+[INFO] 21:16:38:270 consola_main/(12815:12815): instruccion leida: F_READ
+[INFO] 21:16:38:270 consola_main/(12815:12815): instruccion leida: DELETE_SEGMENT
+[INFO] 21:16:38:270 consola_main/(12815:12815): instruccion leida: F_CLOSE
+[INFO] 21:16:38:271 consola_main/(12815:12815): instruccion leida: EXIT
+[INFO] 21:16:38:271 consola_main/(12815:12815): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:16:38:271 consola_main/(12815:12815): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:16:38:271 consola_main/(12815:12815): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 4 es: I/O 10  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 8 es: YIELD   
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:16:38:272 consola_main/(12815:12815): La instruccion 16 es: EXIT   
+[INFO] 21:25:20:639 consola_main/(14273:14273): el tamaño de la lista es 16
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 4 es: I/O 10  
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:25:20:641 consola_main/(14273:14273): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:25:20:642 consola_main/(14273:14273): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:25:20:642 consola_main/(14273:14273): La instruccion 8 es: YIELD   
+[INFO] 21:25:20:642 consola_main/(14273:14273): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:25:20:642 consola_main/(14273:14273): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:25:20:643 consola_main/(14273:14273): La instruccion 16 es: EXIT   
+[INFO] 21:35:43:300 consola_main/(14521:14521): el tamaño de la lista es 16
+[INFO] 21:35:43:303 consola_main/(14521:14521): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 4 es: I/O 10  
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:35:43:304 consola_main/(14521:14521): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:35:43:305 consola_main/(14521:14521): La instruccion 8 es: YIELD   
+[INFO] 21:35:43:305 consola_main/(14521:14521): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:35:43:307 consola_main/(14521:14521): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:35:43:307 consola_main/(14521:14521): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:35:43:307 consola_main/(14521:14521): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:35:43:307 consola_main/(14521:14521): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:35:43:308 consola_main/(14521:14521): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:35:43:308 consola_main/(14521:14521): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:35:43:308 consola_main/(14521:14521): La instruccion 16 es: EXIT   
+[INFO] 21:39:26:980 consola_main/(14683:14683): el tamaño de la lista es 16
+[INFO] 21:39:26:981 consola_main/(14683:14683): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:39:26:981 consola_main/(14683:14683): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:39:26:981 consola_main/(14683:14683): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:39:26:981 consola_main/(14683:14683): La instruccion 4 es: I/O 10  
+[INFO] 21:39:26:981 consola_main/(14683:14683): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:39:26:982 consola_main/(14683:14683): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 8 es: YIELD   
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:39:26:983 consola_main/(14683:14683): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:39:26:984 consola_main/(14683:14683): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:39:26:984 consola_main/(14683:14683): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:39:26:984 consola_main/(14683:14683): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:39:26:984 consola_main/(14683:14683): La instruccion 16 es: EXIT   

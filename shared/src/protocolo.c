@@ -132,16 +132,51 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 
 void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
-	for(int i=0; i<list_size(lista_de_instrucciones); i++){
-		t_instruccion* instruccion = (t_instruccion*) list_get(lista_de_instrucciones, i);
-		agregar_a_paquete(instrucciones_a_mandar, instruccion, strlen(instruccion->instruccion) + strlen(instruccion->parametro1) + strlen(instruccion->parametro2) + strlen(instruccion->parametro3));
+	int cantidad_instrucciones = list_size(lista_de_instrucciones);
+	agregar_a_paquete(instrucciones_a_mandar, &(cantidad_instrucciones), sizeof(int));
+	for(int i=0; i<cantidad_instrucciones; i++){
+		t_instruccion* instruccion = list_get(lista_de_instrucciones, i);
+		agregar_a_paquete(instrucciones_a_mandar, &(instruccion->instruccion), sizeof(cod_instruccion));
+		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro1, strlen(instruccion->parametro1) + 1);
+		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro2, strlen(instruccion->parametro2) + 1);
+		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro3, strlen(instruccion->parametro3) + 1);
 	}
 	enviar_paquete(instrucciones_a_mandar, fd_modulo);
 }
 
 t_list* recv_instrucciones(t_log* logger, int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_list* instrucciones = list_create();
+	int* cantidad_instrucciones = list_get(paquete, 0);
+	int i = 1;
+
+	log_info(logger, "intentado recibir instrucciones de cantidad %d", *cantidad_instrucciones);
+	while(i<(*cantidad_instrucciones* 4)){
+		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+		cod_instruccion* cod = list_get(paquete, i);
+		instruccion->instruccion = *cod;
+		i++;
+
+		char* param1 = list_get(paquete, i);
+		instruccion->parametro1 = malloc(strlen(param1));
+		strcpy(instruccion->parametro1, param1);
+		i++;
+
+		char* param2 = list_get(paquete, i);
+		instruccion->parametro2 = malloc(strlen(param2));
+		strcpy(instruccion->parametro2, param2);
+		i++;
+
+		char* param3 = list_get(paquete, i);
+		instruccion->parametro3 = malloc(strlen(param3));
+		strcpy(instruccion->parametro3, param3);
+		i++;
+
+		list_add(instrucciones, instruccion);
+	}
+
 	log_info(logger, "Se recibió una lista de instrucciones.");
-	return recibir_paquete(fd_modulo);
+	return instrucciones;
 }
 
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){

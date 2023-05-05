@@ -313,3 +313,190 @@
 
 [INFO] 00:11:18:470 kernel_main/(9987:9987): Me llego el mensaje: Hola, soy consola.
 [INFO] 00:11:18:647 kernel_main/(9987:9987): El cliente se desconecto de (null) server
+[INFO] 19:11:16:513 kernel_main/(6470:6470): Se inició la planificacion de largo plazo
+[INFO] 19:11:16:529 kernel_main/(6470:6470): Se inició la planificacion de corto plazo
+[INFO] 19:11:16:529 kernel_main/(6470:6470): Listo para escuchar a mi cliente
+[INFO] 19:11:22:137 kernel_main/(6470:6470): Cliente conectado a Kernel
+
+[INFO] 19:11:22:138 kernel_main/(6470:6493): Me llego el mensaje: Hola, soy consola.
+[INFO] 19:11:22:138 kernel_main/(6470:6493): Se recibió una lista de instrucciones.
+[INFO] 19:13:32:547 kernel_main/(6615:6615): Se inició la planificacion de largo plazo
+[INFO] 19:13:32:559 kernel_main/(6615:6615): Se inició la planificacion de corto plazo
+[INFO] 19:13:32:559 kernel_main/(6615:6615): Listo para escuchar a mi cliente
+[INFO] 19:13:36:161 kernel_main/(6615:6615): Cliente conectado a Kernel
+
+[INFO] 19:13:36:162 kernel_main/(6615:6636): Me llego el mensaje: Hola, soy consola.
+[INFO] 19:13:36:162 kernel_main/(6615:6636): Se recibió una lista de instrucciones.
+[INFO] 19:14:07:555 kernel_main/(6743:6743): Se inició la planificacion de largo plazo
+[INFO] 19:14:07:556 kernel_main/(6743:6743): Se inició la planificacion de corto plazo
+[INFO] 19:14:07:556 kernel_main/(6743:6743): Listo para escuchar a mi cliente
+[INFO] 19:14:30:483 kernel_main/(6772:6772): Se inició la planificacion de largo plazo
+[INFO] 19:14:30:485 kernel_main/(6772:6772): Se inició la planificacion de corto plazo
+[INFO] 19:14:30:485 kernel_main/(6772:6772): Listo para escuchar a mi cliente
+[INFO] 20:08:45:825 kernel_main/(9040:9040): Se inició la planificacion de largo plazo
+[INFO] 20:08:45:826 kernel_main/(9040:9040): Se inició la planificacion de corto plazo
+[INFO] 20:08:45:826 kernel_main/(9040:9040): Listo para escuchar a mi cliente
+[INFO] 20:08:50:688 kernel_main/(9040:9040): Cliente conectado a Kernel
+
+[INFO] 20:08:50:689 kernel_main/(9040:9063): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:09:12:212 kernel_main/(9040:9063): El cliente se desconecto de Kernel server
+[INFO] 20:09:58:775 kernel_main/(9180:9180): Se inició la planificacion de largo plazo
+[INFO] 20:09:58:775 kernel_main/(9180:9180): Se inició la planificacion de corto plazo
+[INFO] 20:09:58:776 kernel_main/(9180:9180): Listo para escuchar a mi cliente
+[INFO] 20:10:04:657 kernel_main/(9180:9180): Cliente conectado a Kernel
+
+[INFO] 20:10:04:660 kernel_main/(9180:9201): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:10:04:660 kernel_main/(9180:9201): intentado recibir instrucciones
+[INFO] 20:10:04:660 kernel_main/(9180:9201): Se recibió una lista de instrucciones.
+[INFO] 20:10:04:660 kernel_main/(9180:9201): la primera instruccion es (null) AX HOLA
+[INFO] 20:10:04:672 kernel_main/(9180:9188): El proceso 1 se pone en ejecucion
+[INFO] 20:18:49:925 kernel_main/(10256:10256): Se inició la planificacion de largo plazo
+[INFO] 20:18:49:925 kernel_main/(10256:10256): Se inició la planificacion de corto plazo
+[INFO] 20:18:49:925 kernel_main/(10256:10256): Listo para escuchar a mi cliente
+[INFO] 20:18:55:372 kernel_main/(10256:10256): Cliente conectado a Kernel
+
+[INFO] 20:18:55:373 kernel_main/(10256:10277): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:18:55:373 kernel_main/(10256:10277): intentado recibir instrucciones
+[INFO] 20:18:55:373 kernel_main/(10256:10277): Se recibió una lista de instrucciones.
+[INFO] 20:18:55:374 kernel_main/(10256:10277): La instruccion 0 es: SET AX HOLA 
+[INFO] 20:18:55:375 kernel_main/(10256:10263): El proceso 1 se pone en ejecucion
+[INFO] 20:21:02:913 kernel_main/(10391:10391): Se inició la planificacion de largo plazo
+[INFO] 20:21:02:914 kernel_main/(10391:10391): Se inició la planificacion de corto plazo
+[INFO] 20:21:02:914 kernel_main/(10391:10391): Listo para escuchar a mi cliente
+[INFO] 20:21:18:543 kernel_main/(10420:10420): Se inició la planificacion de largo plazo
+[INFO] 20:21:18:543 kernel_main/(10420:10420): Se inició la planificacion de corto plazo
+[INFO] 20:21:18:544 kernel_main/(10420:10420): Listo para escuchar a mi cliente
+[INFO] 20:22:26:913 kernel_main/(10617:10617): Se inició la planificacion de largo plazo
+[INFO] 20:22:26:913 kernel_main/(10617:10617): Se inició la planificacion de corto plazo
+[INFO] 20:22:26:913 kernel_main/(10617:10617): Listo para escuchar a mi cliente
+[INFO] 20:22:32:761 kernel_main/(10617:10617): Cliente conectado a Kernel
+
+[INFO] 20:22:32:764 kernel_main/(10617:10638): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:22:32:765 kernel_main/(10617:10638): intentado recibir instrucciones
+[INFO] 20:22:32:765 kernel_main/(10617:10638): Se recibió una lista de instrucciones.
+[INFO] 20:22:57:617 kernel_main/(10646:10646): Se inició la planificacion de largo plazo
+[INFO] 20:22:57:618 kernel_main/(10646:10646): Se inició la planificacion de corto plazo
+[INFO] 20:22:57:619 kernel_main/(10646:10646): Listo para escuchar a mi cliente
+[INFO] 20:23:21:438 kernel_main/(10673:10673): Se inició la planificacion de largo plazo
+[INFO] 20:23:21:439 kernel_main/(10673:10673): Se inició la planificacion de corto plazo
+[INFO] 20:23:21:439 kernel_main/(10673:10673): Listo para escuchar a mi cliente
+[INFO] 20:23:47:964 kernel_main/(10745:10745): Se inició la planificacion de largo plazo
+[INFO] 20:23:47:964 kernel_main/(10745:10745): Se inició la planificacion de corto plazo
+[INFO] 20:23:47:964 kernel_main/(10745:10745): Listo para escuchar a mi cliente
+[INFO] 20:23:55:337 kernel_main/(10745:10745): Cliente conectado a Kernel
+
+[INFO] 20:23:55:338 kernel_main/(10745:10765): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:23:55:339 kernel_main/(10745:10765): intentado recibir instrucciones
+[INFO] 20:23:55:339 kernel_main/(10745:10765): Se recibió una lista de instrucciones.
+[INFO] 20:26:36:976 kernel_main/(10927:10927): Se inició la planificacion de largo plazo
+[INFO] 20:26:36:977 kernel_main/(10927:10927): Se inició la planificacion de corto plazo
+[INFO] 20:26:36:977 kernel_main/(10927:10927): Listo para escuchar a mi cliente
+[INFO] 20:26:42:915 kernel_main/(10927:10927): Cliente conectado a Kernel
+
+[INFO] 20:26:42:922 kernel_main/(10927:10947): Me llego el mensaje: Hola, soy consola.
+[INFO] 20:26:42:922 kernel_main/(10927:10947): intentado recibir instrucciones
+[INFO] 20:26:42:922 kernel_main/(10927:10947): Se recibió una lista de instrucciones.
+[INFO] 21:19:17:857 kernel_main/(13133:13133): Se inició la planificacion de largo plazo
+[INFO] 21:19:17:866 kernel_main/(13133:13133): Se inició la planificacion de corto plazo
+[INFO] 21:19:17:866 kernel_main/(13133:13133): Listo para escuchar a mi cliente
+[INFO] 21:19:23:975 kernel_main/(13133:13133): Cliente conectado a Kernel
+
+[INFO] 21:19:23:989 kernel_main/(13133:13554): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:19:23:989 kernel_main/(13133:13554): intentado recibir instrucciones
+[INFO] 21:19:23:989 kernel_main/(13133:13554): Se recibió una lista de instrucciones.
+[INFO] 21:19:23:989 kernel_main/(13133:13554): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:19:23:989 kernel_main/(13133:13554): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:19:23:989 kernel_main/(13133:13554): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:19:23:989 kernel_main/(13133:13554): La instruccion 4 es: I/O 10  
+[INFO] 21:19:23:993 kernel_main/(13133:13140): El proceso 1 se pone en ejecucion
+[INFO] 21:21:00:652 kernel_main/(13922:13922): Se inició la planificacion de largo plazo
+[INFO] 21:21:00:653 kernel_main/(13922:13922): Se inició la planificacion de corto plazo
+[INFO] 21:21:00:654 kernel_main/(13922:13922): Listo para escuchar a mi cliente
+[INFO] 21:21:04:676 kernel_main/(13133:13133): Cliente conectado a Kernel
+
+[INFO] 21:21:04:677 kernel_main/(13133:13941): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:21:04:677 kernel_main/(13133:13941): intentado recibir instrucciones
+[INFO] 21:21:04:679 kernel_main/(13133:13941): Se recibió una lista de instrucciones.
+[INFO] 21:21:04:680 kernel_main/(13133:13941): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:21:04:680 kernel_main/(13133:13941): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:21:04:680 kernel_main/(13133:13941): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:21:04:680 kernel_main/(13133:13941): La instruccion 4 es: I/O 10  
+[INFO] 21:22:09:396 kernel_main/(14099:14099): Se inició la planificacion de largo plazo
+[INFO] 21:22:09:396 kernel_main/(14099:14099): Se inició la planificacion de corto plazo
+[INFO] 21:22:09:397 kernel_main/(14099:14099): Listo para escuchar a mi cliente
+[INFO] 21:22:41:263 kernel_main/(14125:14125): Se inició la planificacion de largo plazo
+[INFO] 21:22:41:264 kernel_main/(14125:14125): Se inició la planificacion de corto plazo
+[INFO] 21:22:41:264 kernel_main/(14125:14125): Listo para escuchar a mi cliente
+[INFO] 21:22:45:639 kernel_main/(14125:14125): Cliente conectado a Kernel
+
+[INFO] 21:22:45:644 kernel_main/(14125:14144): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:22:45:645 kernel_main/(14125:14144): intentado recibir instrucciones
+[INFO] 21:22:45:646 kernel_main/(14125:14144): Se recibió una lista de instrucciones.
+[INFO] 21:22:45:646 kernel_main/(14125:14144): el tamaño de la lista es 4
+[INFO] 21:22:45:647 kernel_main/(14125:14144): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:22:45:648 kernel_main/(14125:14144): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:22:45:648 kernel_main/(14125:14144): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:22:45:648 kernel_main/(14125:14144): La instruccion 4 es: I/O 10  
+[INFO] 21:22:45:649 kernel_main/(14125:14132): El proceso 1 se pone en ejecucion
+[INFO] 21:24:00:787 kernel_main/(14125:14144): El cliente se desconecto de Kernel server
+[INFO] 21:24:53:926 kernel_main/(14258:14258): Se inició la planificacion de largo plazo
+[INFO] 21:24:53:926 kernel_main/(14258:14258): Se inició la planificacion de corto plazo
+[INFO] 21:24:53:927 kernel_main/(14258:14258): Listo para escuchar a mi cliente
+[INFO] 21:25:20:639 kernel_main/(14258:14258): Cliente conectado a Kernel
+
+[INFO] 21:25:20:644 kernel_main/(14258:14278): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:25:20:644 kernel_main/(14258:14278): intentado recibir instrucciones
+[INFO] 21:25:20:644 kernel_main/(14258:14278): Se recibió una lista de instrucciones.
+[INFO] 21:25:20:644 kernel_main/(14258:14278): el tamaño de la lista es 4
+[INFO] 21:25:20:644 kernel_main/(14258:14278): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:25:20:644 kernel_main/(14258:14278): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:25:20:644 kernel_main/(14258:14278): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:25:20:644 kernel_main/(14258:14278): La instruccion 4 es: I/O 10  
+[INFO] 21:25:20:644 kernel_main/(14258:14261): El proceso 1 se pone en ejecucion
+[INFO] 21:28:01:880 kernel_main/(14258:14278): El cliente se desconecto de Kernel server
+[INFO] 21:35:37:848 kernel_main/(14507:14507): Se inició la planificacion de largo plazo
+[INFO] 21:35:37:848 kernel_main/(14507:14507): Se inició la planificacion de corto plazo
+[INFO] 21:35:37:848 kernel_main/(14507:14507): Listo para escuchar a mi cliente
+[INFO] 21:35:43:300 kernel_main/(14507:14507): Cliente conectado a Kernel
+
+[INFO] 21:35:43:301 kernel_main/(14507:14526): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:35:43:309 kernel_main/(14507:14526): intentado recibir instrucciones de cantidad 16
+[INFO] 21:35:43:309 kernel_main/(14507:14526): Se recibió una lista de instrucciones.
+[INFO] 21:35:43:309 kernel_main/(14507:14526): el tamaño de la lista es 4
+[INFO] 21:35:43:310 kernel_main/(14507:14526): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:35:43:310 kernel_main/(14507:14526): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:35:43:311 kernel_main/(14507:14526): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:35:43:311 kernel_main/(14507:14526): La instruccion 4 es: I/O 10  
+[INFO] 21:35:43:314 kernel_main/(14507:14514): El proceso 1 se pone en ejecucion
+[INFO] 21:39:22:429 kernel_main/(14669:14669): Se inició la planificacion de largo plazo
+[INFO] 21:39:22:430 kernel_main/(14669:14669): Se inició la planificacion de corto plazo
+[INFO] 21:39:22:430 kernel_main/(14669:14669): Listo para escuchar a mi cliente
+[INFO] 21:39:57:249 kernel_main/(14749:14749): Se inició la planificacion de largo plazo
+[INFO] 21:39:57:252 kernel_main/(14749:14749): Se inició la planificacion de corto plazo
+[INFO] 21:39:57:254 kernel_main/(14749:14749): Listo para escuchar a mi cliente
+[INFO] 21:41:27:418 kernel_main/(15032:15032): Se inició la planificacion de largo plazo
+[INFO] 21:41:27:418 kernel_main/(15032:15032): Se inició la planificacion de corto plazo
+[INFO] 21:41:27:419 kernel_main/(15032:15032): Listo para escuchar a mi cliente
+[INFO] 21:41:31:906 kernel_main/(15032:15032): Cliente conectado a Kernel
+
+[INFO] 21:41:31:925 kernel_main/(15032:15051): Me llego el mensaje: Hola, soy consola.
+[INFO] 21:41:31:926 kernel_main/(15032:15051): intentado recibir instrucciones de cantidad 16
+[INFO] 21:41:31:926 kernel_main/(15032:15051): Se recibió una lista de instrucciones.
+[INFO] 21:41:31:926 kernel_main/(15032:15051): el tamaño de la lista es 16
+[INFO] 21:41:31:927 kernel_main/(15032:15051): La instruccion 1 es: SET AX HOLA 
+[INFO] 21:41:31:927 kernel_main/(15032:15051): La instruccion 2 es: MOV_OUT 120 AX 
+[INFO] 21:41:31:929 kernel_main/(15032:15051): La instruccion 3 es: WAIT DISCO  
+[INFO] 21:41:31:930 kernel_main/(15032:15051): La instruccion 4 es: I/O 10  
+[INFO] 21:41:31:930 kernel_main/(15032:15051): La instruccion 5 es: SIGNAL DISCO  
+[INFO] 21:41:31:930 kernel_main/(15032:15051): La instruccion 6 es: MOV_IN BX 120 
+[INFO] 21:41:31:930 kernel_main/(15032:15051): La instruccion 7 es: F_OPEN ARCHIVO  
+[INFO] 21:41:31:931 kernel_main/(15032:15051): La instruccion 8 es: YIELD   
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 9 es: F_TRUNCATE ARCHIVO 64 
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 10 es: F_SEEK ARCHIVO 10 
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 11 es: CREATE_SEGMENT 1 128 
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 12 es: F_WRITE ARCHIVO 4 4
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 13 es: F_READ ARCHIVO 16 4
+[INFO] 21:41:31:932 kernel_main/(15032:15051): La instruccion 14 es: DELETE_SEGMENT 1  
+[INFO] 21:41:31:933 kernel_main/(15032:15051): La instruccion 15 es: F_CLOSE ARCHIVO  
+[INFO] 21:41:31:933 kernel_main/(15032:15051): La instruccion 16 es: EXIT   
+[INFO] 21:41:31:933 kernel_main/(15032:15039): El proceso 1 se pone en ejecucion

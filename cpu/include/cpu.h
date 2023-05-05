@@ -37,7 +37,6 @@ void server_escuchar() ;
 t_registros* inicializar_registro();
 void fetch(t_contexto_ejecucion* contexto);
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto);
-cod_instruccion instruccion_to_enum(char* instruccion);
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 
 //Instrucciones	VERIFICAR TIPOS DE RETORNO

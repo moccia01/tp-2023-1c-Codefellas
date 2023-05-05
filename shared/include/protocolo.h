@@ -43,6 +43,7 @@ void crear_buffer(t_paquete* paquete);
 t_list* recibir_paquete(int);
 t_paquete* crear_paquete(op_code);
 void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio);
+void agregar_a_paquete_con_header(t_paquete *paquete, void *valor, int tamanio);
 void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void* serializar_paquete(t_paquete* paquete, int bytes);

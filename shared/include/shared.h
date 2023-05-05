@@ -8,13 +8,6 @@
 #include <commons/string.h>
 #include "sockets.h"
 
-typedef struct{
-	char* instruccion;
-	char* parametro1;
-	char* parametro2;
-	char* parametro3;
-} t_instruccion;
-
 typedef struct
 {
 	char* ax;
@@ -65,6 +58,13 @@ typedef enum
 	F_CLOSE
 } cod_instruccion;
 
+typedef struct{
+	cod_instruccion instruccion;
+	char* parametro1;
+	char* parametro2;
+	char* parametro3;
+} t_instruccion;
+
 //MOTIVOS DE BLOQUEO POSIBLES
 typedef enum{
 	IO_BLOCK,
@@ -93,6 +93,9 @@ typedef struct{
 void terminar_programa(t_log* logger, t_config* config);
 char *estado_to_string(estado_proceso estado);
 char *list_to_string(t_list *list);
+cod_instruccion instruccion_to_enum(char* instruccion);
+void loggear_instrucciones_test(t_log* logger, t_list* instrucciones);
+char* instruccion_to_string(t_log* logger, cod_instruccion cod);
 
 
 #endif /* SHARED_H_ */
