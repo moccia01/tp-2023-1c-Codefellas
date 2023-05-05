@@ -198,3 +198,57 @@
 [INFO] 01:10:19:552 consola_main/(14366:14366): la segunda instruccion es àj."6V
 [INFO] 01:10:19:552 consola_main/(14366:14366): la tercera instruccion es Ðk."6V
 [INFO] 01:10:19:552 consola_main/(14366:14366): tamaÃ±o de list = 3
+[INFO] 18:00:43:186 consola_main/(2400:2400): instru: SET
+[INFO] 18:04:05:981 consola_main/(2440:2440): instru: SET
+[INFO] 18:06:51:051 consola_main/(2660:2660): instru: SET
+[INFO] 18:06:51:051 consola_main/(2660:2660): inst: HOLA
+[INFO] 18:06:51:051 consola_main/(2660:2660): inst pos 0: HOLA
+[INFO] 18:06:51:051 consola_main/(2660:2660): instru: YIELD
+[INFO] 18:08:03:160 consola_main/(2725:2725): instru: SET
+[INFO] 18:08:03:160 consola_main/(2725:2725): inst: SET
+[INFO] 18:08:03:160 consola_main/(2725:2725): inst pos 0: SET
+[INFO] 18:08:03:160 consola_main/(2725:2725): instru: YIELD
+[INFO] 18:08:30:988 consola_main/(2755:2755): instru: SET
+[INFO] 18:08:30:989 consola_main/(2755:2755): inst: SET
+[INFO] 18:08:30:989 consola_main/(2755:2755): inst pos 0: SET
+[INFO] 18:08:30:989 consola_main/(2755:2755): instru: YIELD
+[INFO] 18:08:54:875 consola_main/(2810:2810): instru: SET
+[INFO] 18:09:09:293 consola_main/(2810:2810): inst: SET
+[INFO] 18:09:25:616 consola_main/(2810:2810): inst pos 0: SET
+[INFO] 18:09:37:193 consola_main/(2810:2810): instru: YIELD
+[INFO] 18:13:19:044 consola_main/(3006:3006): instru: SET
+[INFO] 18:13:19:045 consola_main/(3006:3006): inst: SET
+[INFO] 18:13:19:045 consola_main/(3006:3006): inst pos 0: SET
+[INFO] 18:13:19:045 consola_main/(3006:3006): instru: YIELD
+[INFO] 18:13:55:904 consola_main/(3057:3057): instru: SET
+[INFO] 18:25:46:227 consola_main/(3788:3788): instruccion leida: SET
+[INFO] 18:27:10:129 consola_main/(3863:3863): instruccion leida: SET
+[INFO] 18:27:39:979 consola_main/(3896:3896): instruccion leida: SET
+[INFO] 18:29:56:590 consola_main/(4048:4048): instruccion leida: SET
+[INFO] 18:29:56:590 consola_main/(4048:4048): inst: SET
+[INFO] 18:29:56:590 consola_main/(4048:4048): inst pos 0: SET
+[INFO] 18:29:56:591 consola_main/(4048:4048): instruccion leida: YIELD
+[INFO] 18:32:54:626 consola_main/(4335:4335): instruccion leida: SET
+[INFO] 18:32:54:629 consola_main/(4335:4335): inst: SET
+[INFO] 18:32:54:629 consola_main/(4335:4335): inst pos 0: SET
+[INFO] 18:32:54:630 consola_main/(4335:4335): instruccion leida: YIELD
+[INFO] 18:38:37:748 consola_main/(4657:4657): instruccion leida: SET
+[INFO] 18:40:24:995 consola_main/(4848:4848): instruccion leida: SET
+[INFO] 18:44:01:783 consola_main/(4917:4917): inst: SET
+[INFO] 18:44:01:784 consola_main/(4917:4917): inst pos 0: SET
+[INFO] 18:44:01:784 consola_main/(4917:4917): inst: YIELD
+[INFO] 18:44:01:785 consola_main/(4917:4917): inst pos 1: YIELD
+[INFO] 18:44:01:785 consola_main/(4917:4917): inst: EXIT
+[INFO] 18:44:01:785 consola_main/(4917:4917): inst pos 2: EXIT
+[INFO] 18:44:01:786 consola_main/(4917:4917): la primera instruccion es EXIT
+[INFO] 18:44:01:786 consola_main/(4917:4917): la segunda instruccion es àÚ8kU
+[INFO] 18:44:01:786 consola_main/(4917:4917): la tercera instruccion es ÐÛ8kU
+[INFO] 18:44:01:786 consola_main/(4917:4917): tamaÃ±o de list = 3
+[INFO] 19:05:23:738 consola_main/(6122:6122): la primera instruccion es SET
+[INFO] 19:05:23:739 consola_main/(6122:6122): la segunda instruccion es YIELD
+[INFO] 19:05:23:739 consola_main/(6122:6122): la tercera instruccion es EXIT
+[INFO] 19:05:23:739 consola_main/(6122:6122): tamaÃ±o de list = 3
+[INFO] 19:07:28:548 consola_main/(6188:6188): la primera instruccion es SET
+[INFO] 19:07:28:548 consola_main/(6188:6188): la segunda instruccion es MOV_OUT
+[INFO] 19:07:28:548 consola_main/(6188:6188): la tercera instruccion es WAIT
+[INFO] 19:07:28:549 consola_main/(6188:6188): tamaÃ±o de list = 16
