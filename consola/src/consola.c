@@ -15,12 +15,19 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	// Conexion Kernel
-	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
-	enviar_mensaje("Hola, soy consola.", fd_kernel);
+//	// Conexion Kernel
+//	fd_kernel = crear_conexion(IP_KERNEL, PUERTO_KERNEL);
+//	enviar_mensaje("Hola, soy consola.", fd_kernel);
 
-	t_list *lista_de_insturcciones = leer_instrucciones(argv[2], logger);
-	send_instrucciones(fd_kernel, lista_de_insturcciones);
+	t_list lista_de_instrucciones = leer_instrucciones(argv[2], logger);
+	t_instruccion* instruccion = list_get(&lista_de_instrucciones, 0);
+	log_info(logger, "la primera instruccion es %s", instruccion->instruccion);
+	instruccion = list_get(&lista_de_instrucciones, 1);
+	log_info(logger, "la segunda instruccion es %s", instruccion->instruccion);
+	instruccion = list_get(&lista_de_instrucciones, 2);
+	log_info(logger, "la tercera instruccion es %s", instruccion->instruccion);
+	log_info(logger, "tamaño de list = %d", list_size(&lista_de_instrucciones));
+//	send_instrucciones(fd_kernel, lista_de_instrucciones);
 
 	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
 	pthread_t conexion_kernel;
@@ -38,15 +45,10 @@ void leer_config(){
 	PUERTO_KERNEL = config_get_string_value(config, "PUERTO_KERNEL");
 }
 
-t_list* leer_instrucciones(char *path, t_log *logger) {
-	t_list *lista_de_instrucciones = list_create();
+t_list leer_instrucciones(char *path, t_log *logger) {
+	t_list lista_de_instrucciones = *list_create();
 	FILE *pseudocodigo;
 	char buffer[MAX_LINE_LENGTH];
-	char *instruccion_token;
-	char *parametro1;
-	char *parametro2;
-	char *parametro3;
-	t_instruccion instruccion;
 
 	pseudocodigo = fopen(path, "r");
 
@@ -59,18 +61,32 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 		// Eliminar el carácter de salto de línea del final de la línea
 		buffer[strcspn(buffer, "\n")] = '\0';
 
+		char *instruccion_token = malloc(MAX_LINE_LENGTH * sizeof(char));
+		char *parametro1 = malloc(MAX_LINE_LENGTH * sizeof(char));
+		char *parametro2 = malloc(MAX_LINE_LENGTH * sizeof(char));
+		char *parametro3 = malloc(MAX_LINE_LENGTH * sizeof(char));
+		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
+
+		// Esta pija rompe y no se porque pero puede que aca este la solucion:
+		// https://github.com/sisoputnfrba/foro/issues/2600
+		// usar string_split()?
+
 		// Obtener la instrucción y los parámetros de la línea
 		instruccion_token = strtok(buffer, " ");
 		parametro1 = strtok(NULL, " ");
 		parametro2 = strtok(NULL, " ");
 		parametro3 = strtok(NULL, " ");
 
-		instruccion.instruccion = instruccion_token; // @suppress("Field cannot be resolved")
-		instruccion.parametro1 = parametro1;
-		instruccion.parametro2 = parametro2;
-		instruccion.parametro3 = parametro3;
+		instruccion->instruccion = instruccion_token; // @suppress("Field cannot be resolved")
+		instruccion->parametro1 = parametro1;
+		instruccion->parametro2 = parametro2;
+		instruccion->parametro3 = parametro3;
 
-		list_add(lista_de_instrucciones, &instruccion);
+		log_info(logger, "inst: %s", instruccion->instruccion);
+		int pos = list_add(&lista_de_instrucciones, instruccion);
+
+		t_instruccion* inst = list_get(&lista_de_instrucciones, pos);
+		log_info(logger, "inst pos %d: %s", pos, inst->instruccion);
 	}
 
 	// Cerrar el archivo

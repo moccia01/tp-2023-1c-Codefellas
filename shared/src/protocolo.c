@@ -133,8 +133,8 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
 	for(int i=0; i<list_size(lista_de_instrucciones); i++){
-		t_instruccion* instruccion = list_get(lista_de_instrucciones, i);
-		agregar_a_paquete(instrucciones_a_mandar, instruccion, sizeof(instruccion));
+		t_instruccion* instruccion = (t_instruccion*) list_get(lista_de_instrucciones, i);
+		agregar_a_paquete(instrucciones_a_mandar, instruccion, strlen(instruccion->instruccion) + strlen(instruccion->parametro1) + strlen(instruccion->parametro2) + strlen(instruccion->parametro3));
 	}
 	enviar_paquete(instrucciones_a_mandar, fd_modulo);
 }

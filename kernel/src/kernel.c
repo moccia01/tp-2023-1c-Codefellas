@@ -54,7 +54,6 @@ void leer_config() {
 	ESTIMACION_INICIAL = config_get_int_value(config, "ESTIMACION_INICIAL");
 	// HRRN_ALFA;
 	GRADO_MAX_MULTIPROGRAMACION = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
-	log_info(logger, "Grado multi prog: %d", GRADO_MAX_MULTIPROGRAMACION);
 	// RECURSOS;
 	// INSTANCIAS_RECURSOS;
 }

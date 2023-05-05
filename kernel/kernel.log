@@ -260,3 +260,56 @@
 
 [INFO] 23:34:49:508 kernel_main/(8089:8089): Me llego el mensaje: Hola, soy consola.
 [INFO] 23:35:07:625 kernel_main/(8089:8089): Se recibió una lista de instrucciones.
+[INFO] 23:44:36:515 kernel_main/(8447:8447): Grado multi prog: 4
+[INFO] 23:44:36:535 kernel_main/(8447:8447): Listo para escuchar a mi cliente
+[INFO] 23:45:11:163 kernel_main/(8447:8447): Cliente conectado a (null)
+
+[INFO] 23:45:12:978 kernel_main/(8447:8447): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:46:52:067 kernel_main/(8447:8447): Se recibió una lista de instrucciones.
+[INFO] 23:47:36:917 kernel_main/(8545:8545): Grado multi prog: 4
+[INFO] 23:47:36:918 kernel_main/(8545:8545): Listo para escuchar a mi cliente
+[INFO] 23:54:01:547 kernel_main/(8926:8926): Grado multi prog: 4
+[INFO] 23:54:01:550 kernel_main/(8926:8926): Listo para escuchar a mi cliente
+[INFO] 23:54:06:024 kernel_main/(8926:8926): Cliente conectado a (null)
+
+[INFO] 23:54:06:026 kernel_main/(8926:8926): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:54:06:026 kernel_main/(8926:8926): Se recibió una lista de instrucciones.
+[INFO] 23:54:36:806 kernel_main/(8956:8956): Grado multi prog: 4
+[INFO] 23:54:36:807 kernel_main/(8956:8956): Listo para escuchar a mi cliente
+[INFO] 23:54:55:644 kernel_main/(8981:8981): Grado multi prog: 4
+[INFO] 23:54:55:645 kernel_main/(8981:8981): Listo para escuchar a mi cliente
+[INFO] 23:56:19:772 kernel_main/(9065:9065): Listo para escuchar a mi cliente
+[INFO] 23:56:26:026 kernel_main/(9065:9065): Cliente conectado a (null)
+
+[INFO] 23:56:26:027 kernel_main/(9065:9065): Me llego el mensaje: Hola, soy consola.
+[INFO] 23:56:26:027 kernel_main/(9065:9065): Se recibió una lista de instrucciones.
+[INFO] 00:04:24:636 kernel_main/(9392:9392): Listo para escuchar a mi cliente
+[INFO] 00:04:29:593 kernel_main/(9392:9392): Cliente conectado a (null)
+
+[INFO] 00:04:29:594 kernel_main/(9392:9392): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:04:29:843 kernel_main/(9392:9392): El cliente se desconecto de (null) server
+[INFO] 00:04:49:189 kernel_main/(9427:9427): Listo para escuchar a mi cliente
+[INFO] 00:04:52:487 kernel_main/(9427:9427): Cliente conectado a (null)
+
+[INFO] 00:04:52:491 kernel_main/(9427:9427): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:04:52:660 kernel_main/(9427:9427): El cliente se desconecto de (null) server
+[INFO] 00:05:15:536 kernel_main/(9455:9455): Listo para escuchar a mi cliente
+[INFO] 00:05:26:362 kernel_main/(9455:9455): Cliente conectado a (null)
+
+[INFO] 00:05:26:998 kernel_main/(9455:9455): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:05:54:036 kernel_main/(9455:9455): El cliente se desconecto de (null) server
+[INFO] 00:06:57:629 kernel_main/(9534:9534): Listo para escuchar a mi cliente
+[INFO] 00:07:10:153 kernel_main/(9534:9534): Cliente conectado a (null)
+
+[INFO] 00:07:10:699 kernel_main/(9534:9534): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:07:29:498 kernel_main/(9534:9534): El cliente se desconecto de (null) server
+[INFO] 00:08:53:705 kernel_main/(9714:9714): Listo para escuchar a mi cliente
+[INFO] 00:08:57:942 kernel_main/(9714:9714): Cliente conectado a (null)
+
+[INFO] 00:08:57:945 kernel_main/(9714:9714): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:08:58:093 kernel_main/(9714:9714): El cliente se desconecto de (null) server
+[INFO] 00:11:14:080 kernel_main/(9987:9987): Listo para escuchar a mi cliente
+[INFO] 00:11:18:469 kernel_main/(9987:9987): Cliente conectado a (null)
+
+[INFO] 00:11:18:470 kernel_main/(9987:9987): Me llego el mensaje: Hola, soy consola.
+[INFO] 00:11:18:647 kernel_main/(9987:9987): El cliente se desconecto de (null) server
