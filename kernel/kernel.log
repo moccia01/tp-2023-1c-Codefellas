@@ -500,3 +500,58 @@
 [INFO] 21:41:31:933 kernel_main/(15032:15051): La instruccion 15 es: F_CLOSE ARCHIVO  
 [INFO] 21:41:31:933 kernel_main/(15032:15051): La instruccion 16 es: EXIT   
 [INFO] 21:41:31:933 kernel_main/(15032:15039): El proceso 1 se pone en ejecucion
+[INFO] 14:50:52:307 kernel_main/(3073:3073): Se inició la planificacion de largo plazo
+[INFO] 14:50:52:372 kernel_main/(3073:3073): Se inició la planificacion de corto plazo
+[INFO] 14:50:52:372 kernel_main/(3073:3073): Listo para escuchar a mi cliente
+[INFO] 14:50:58:253 kernel_main/(3073:3073): Cliente conectado a Kernel
+
+[INFO] 14:50:58:264 kernel_main/(3073:3092): Me llego el mensaje: Hola, soy consola.
+[INFO] 14:50:58:269 kernel_main/(3073:3092): Se recibió una lista de instrucciones.
+[INFO] 14:50:58:277 kernel_main/(3073:3092): Se crea el proceso 1 en NEW
+[INFO] 14:50:58:282 kernel_main/(3073:3080): El proceso 1 se pone en ejecucion
+[INFO] 14:52:49:587 kernel_main/(3157:3157): Se inició la planificacion de largo plazo
+[INFO] 14:52:49:589 kernel_main/(3157:3157): Se inició la planificacion de corto plazo
+[INFO] 14:52:49:589 kernel_main/(3157:3157): Listo para escuchar a mi cliente
+[INFO] 14:52:54:529 kernel_main/(3157:3157): Cliente conectado a Kernel
+
+[INFO] 14:52:54:529 kernel_main/(3157:3177): Me llego el mensaje: Hola, soy consola.
+[INFO] 14:52:54:529 kernel_main/(3157:3177): Se recibió una lista de instrucciones.
+[INFO] 14:52:54:529 kernel_obligatorio/(3157:3177): Se crea el proceso 1 en NEW
+[INFO] 14:52:54:529 kernel_obligatorio/(3157:3163): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 14:52:54:529 kernel_obligatorio/(3157:3163): Cola Ready FIFO: [1]
+[INFO] 14:52:54:529 kernel_obligatorio/(3157:3164): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 14:52:54:529 kernel_main/(3157:3164): El proceso 1 se pone en ejecucion
+[INFO] 14:54:30:962 kernel_main/(3212:3212): Se inició la planificacion de largo plazo
+[INFO] 14:54:30:962 kernel_main/(3212:3212): Se inició la planificacion de corto plazo
+[INFO] 14:54:30:962 kernel_main/(3212:3212): Listo para escuchar a mi cliente
+[INFO] 14:54:35:728 kernel_main/(3212:3212): Cliente conectado a Kernel
+
+[INFO] 14:54:35:729 kernel_main/(3212:3231): Me llego el mensaje: Hola, soy consola.
+[INFO] 14:54:35:729 kernel_main/(3212:3231): Se recibió una lista de instrucciones.
+[INFO] 14:54:35:729 kernel_main/(3212:3231): el tamaño de la lista es 3
+[INFO] 14:54:35:729 kernel_main/(3212:3231): La instruccion 1 es: SET AX HOLA 
+[INFO] 14:54:35:729 kernel_main/(3212:3231): La instruccion 2 es: YIELD   
+[INFO] 14:54:35:730 kernel_main/(3212:3231): La instruccion 3 es: EXIT   
+[INFO] 14:54:35:730 kernel_obligatorio/(3212:3231): Se crea el proceso 1 en NEW
+[INFO] 14:54:35:730 kernel_obligatorio/(3212:3214): PID: <1> - Estado Anterior: <NEW> - Estado Actual: <READY>
+[INFO] 14:54:35:730 kernel_obligatorio/(3212:3214): Cola Ready FIFO: [1]
+[INFO] 14:54:35:730 kernel_obligatorio/(3212:3215): PID: <1> - Estado Anterior: <READY> - Estado Actual: <EXEC>
+[INFO] 14:54:35:730 kernel_main/(3212:3215): El proceso 1 se pone en ejecucion
+[INFO] 14:58:51:924 kernel_main/(3500:3500): Se inició la planificacion de largo plazo
+[INFO] 14:58:51:925 kernel_main/(3500:3500): Se inició la planificacion de corto plazo
+[INFO] 14:58:51:925 kernel_main/(3500:3500): Listo para escuchar a mi cliente
+[INFO] 14:58:57:174 kernel_main/(3500:3500): Cliente conectado a Kernel
+
+[INFO] 14:58:57:182 kernel_main/(3500:3524): Me llego el mensaje: Hola, soy consola.
+[INFO] 14:58:57:182 kernel_main/(3500:3524): Se recibió una lista de instrucciones.
+[INFO] 14:58:57:182 kernel_main/(3500:3524): el tamaño de la lista es 3
+[INFO] 14:58:57:182 kernel_main/(3500:3524): La instruccion 1 es: SET AX HOLA 
+[INFO] 14:58:57:182 kernel_main/(3500:3524): La instruccion 2 es: YIELD   
+[INFO] 14:58:57:182 kernel_main/(3500:3524): La instruccion 3 es: EXIT   
+[INFO] 14:58:57:182 kernel_obligatorio/(3500:3524): Se crea el proceso 1 en NEW
+[INFO] 14:58:57:182 kernel_obligatorio/(3500:3510): PID: 1 - Estado Anterior: NEW - Estado Actual: READY
+[INFO] 14:58:57:182 kernel_obligatorio/(3500:3510): Cola Ready FIFO: [1]
+[INFO] 14:58:57:182 kernel_obligatorio/(3500:3511): PID: 1 - Estado Anterior: READY - Estado Actual: EXEC
+[INFO] 14:58:57:182 kernel_main/(3500:3511): El proceso 1 se pone en ejecucion
+[INFO] 14:58:57:593 kernel_main/(3500:3506): El cliente se desconecto de Kernel server
+[INFO] 14:59:18:993 kernel_main/(3500:3524): El cliente se desconecto de Kernel server

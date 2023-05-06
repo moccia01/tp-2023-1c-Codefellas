@@ -130,27 +130,23 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	free(a_enviar);
 }
 
-void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
-	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
+void empaquetar_instrucciones(t_paquete* instrucciones_a_mandar, t_list* lista_de_instrucciones){
 	int cantidad_instrucciones = list_size(lista_de_instrucciones);
-	agregar_a_paquete(instrucciones_a_mandar, &(cantidad_instrucciones), sizeof(int));
-	for(int i=0; i<cantidad_instrucciones; i++){
-		t_instruccion* instruccion = list_get(lista_de_instrucciones, i);
-		agregar_a_paquete(instrucciones_a_mandar, &(instruccion->instruccion), sizeof(cod_instruccion));
-		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro1, strlen(instruccion->parametro1) + 1);
-		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro2, strlen(instruccion->parametro2) + 1);
-		agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro3, strlen(instruccion->parametro3) + 1);
-	}
-	enviar_paquete(instrucciones_a_mandar, fd_modulo);
+		agregar_a_paquete(instrucciones_a_mandar, &(cantidad_instrucciones), sizeof(int));
+		for(int i=0; i<cantidad_instrucciones; i++){
+			t_instruccion* instruccion = list_get(lista_de_instrucciones, i);
+			agregar_a_paquete(instrucciones_a_mandar, &(instruccion->instruccion), sizeof(cod_instruccion));
+			agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro1, strlen(instruccion->parametro1) + 1);
+			agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro2, strlen(instruccion->parametro2) + 1);
+			agregar_a_paquete(instrucciones_a_mandar, instruccion->parametro3, strlen(instruccion->parametro3) + 1);
+		}
 }
 
-t_list* recv_instrucciones(t_log* logger, int fd_modulo){
-	t_list* paquete = recibir_paquete(fd_modulo);
+t_list* desempaquetar_instrucciones(t_list* paquete, int comienzo){
 	t_list* instrucciones = list_create();
-	int* cantidad_instrucciones = list_get(paquete, 0);
-	int i = 1;
+	int* cantidad_instrucciones = list_get(paquete, comienzo);
+	int i = comienzo + 1;
 
-	log_info(logger, "intentado recibir instrucciones de cantidad %d", *cantidad_instrucciones);
 	while(i<(*cantidad_instrucciones* 4)){
 		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 		cod_instruccion* cod = list_get(paquete, i);
@@ -174,7 +170,18 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 
 		list_add(instrucciones, instruccion);
 	}
+	return instrucciones;
+}
 
+void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
+	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
+	empaquetar_instrucciones(instrucciones_a_mandar, lista_de_instrucciones);
+	enviar_paquete(instrucciones_a_mandar, fd_modulo);
+}
+
+t_list* recv_instrucciones(t_log* logger, int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_list* instrucciones = desempaquetar_instrucciones(paquete, 0);
 	log_info(logger, "Se recibió una lista de instrucciones.");
 	return instrucciones;
 }
@@ -192,7 +199,6 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 }
 
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){
-
 	t_paquete* contexto_a_mandar = crear_paquete(CAMBIAR_ESTADO);
 	agregar_a_paquete(contexto_a_mandar, contexto, sizeof(t_contexto_ejecucion));
 	enviar_paquete(contexto_a_mandar, fd_modulo);

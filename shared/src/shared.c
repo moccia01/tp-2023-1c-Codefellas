@@ -137,3 +137,12 @@ char* instruccion_to_string(t_log* logger, cod_instruccion cod){
 				return NULL;
 		}
 }
+
+char* motivo_exit_to_string(motivo_exit motivo){
+	switch(motivo){
+	case SUCCESS: return "SUCCESS";
+	case SEG_FAULT: return "SEG_FAULT";
+	case OUT_OF_MEMORY: return "OUT_OF_MEMORY";
+	default: return NULL;
+	}
+}

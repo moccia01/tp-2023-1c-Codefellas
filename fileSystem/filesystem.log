@@ -83,3 +83,8 @@
 
 [INFO] 23:01:28:158 filesystem_main/(7268:7273): Me llego el mensaje: Hola, Soy Kernel!
 [INFO] 23:08:10:026 filesystem_main/(7268:7273): El cliente se desconecto de Filesystem server
+[INFO] 14:58:47:287 filesystem_main/(3487:3487): Listo para escuchar a mi cliente
+[INFO] 14:58:51:922 filesystem_main/(3487:3493): Cliente conectado a Filesystem
+
+[INFO] 14:58:51:924 filesystem_main/(3487:3493): Me llego el mensaje: Hola, Soy Kernel!
+[INFO] 14:59:19:937 filesystem_main/(3487:3493): El cliente se desconecto de Filesystem server

@@ -2,7 +2,6 @@
 
 int main(int argc, char **argv) {
 	logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
-	logger_obligatorio = log_create("consola_obligatorio.log", "consola_obligatorio", true, LOG_LEVEL_INFO);
 
 	if (argc > 3) {
 		return EXIT_FAILURE;

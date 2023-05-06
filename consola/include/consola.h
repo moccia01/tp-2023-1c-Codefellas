@@ -14,7 +14,6 @@
 
 // Variables globales
 t_log* logger;
-t_log* logger_obligatorio;
 t_config* config;
 
 // Variables config

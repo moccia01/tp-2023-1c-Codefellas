@@ -2,7 +2,7 @@
 
 int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
-	logger_obligatorio = log_create("kernel_obligatorio.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("kernel.config");
 	lista_pcbs = list_create();
 
@@ -14,17 +14,17 @@ int main(void) {
 
 	// Conecto kernel con cpu, memoria y filesystem
 	fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
-//	if (!generar_conexiones()) {
-//		log_error(logger, "Alguna conexion falló :(");
-//		terminar_programa(logger, config);
-//		exit(1);
-//	}
+	if (!generar_conexiones()) {
+		log_error(logger, "Alguna conexion falló :(");
+		terminar_programa(logger, config);
+		exit(1);
+	}
 
 	// Intercambio de mensajes...
 
-//	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
-//	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
-//	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
+	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
+	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
+	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
 
 	inicializar_variables();
 	planificar();
@@ -210,7 +210,7 @@ void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
 	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
 	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion->estado));
 	pcb->contexto_de_ejecucion->estado = nuevo_estado;
-	log_info(logger_obligatorio, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>", pcb->contexto_de_ejecucion->pid, estado_anterior_string, nuevo_estado_string);
+	log_info(logger_obligatorio, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb->contexto_de_ejecucion->pid, estado_anterior_string, nuevo_estado_string);
 	free(estado_anterior_string);
 	free(nuevo_estado_string);
 }
@@ -243,7 +243,8 @@ void armar_pcb(t_list *instrucciones) {
 	generador_pid++;
 	pthread_mutex_unlock(&mutex_generador_pid);
 	t_pcb *pcb = pcb_create(instrucciones, pid);
-	log_info(logger_obligatorio, "Se crea el proceso <%d> en NEW", pid);
+	log_info(logger_obligatorio, "Se crea el proceso %d en NEW", pid);
+
 	// mutex
 	//list_add(lista_pcbs, pcb);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
@@ -274,10 +275,8 @@ void exit_pcb(void) {
 	{
 		sem_wait(&sem_exit);
 		t_pcb *pcb = safe_pcb_pop(cola_exit, &mutex_cola_exit);
-		// Falta el motivo de finalizacion de proceso
-		// el contexto de ejecucion deberia incluir el motivo de error.
-		// pcb->contexto_de_ejecucion.motivo
-		log_info(logger_obligatorio, "Finaliza el proceso %d - Motivo: <>", pcb->contexto_de_ejecucion->pid);
+		char* motivo = motivo_exit_to_string(pcb->contexto_de_ejecucion->motivo_exit);
+		log_info(logger_obligatorio, "Finaliza el proceso %d - Motivo: %s", pcb->contexto_de_ejecucion->pid, motivo);
 		pcb_destroy(pcb);
 	}
 }

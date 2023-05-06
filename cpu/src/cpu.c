@@ -2,7 +2,7 @@
 
 int main(void) {
 	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
-	logger_obligatorio = log_create("cpu_obligatorio.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("cpu.config");
 	registros = inicializar_registro();
 
