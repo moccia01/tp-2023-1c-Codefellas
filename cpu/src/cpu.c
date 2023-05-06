@@ -55,7 +55,6 @@ static void procesar_conexion() {
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
 			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
 			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
-			//socket_cliente = fd_kernel
 			break;
 		// ...
 		default:

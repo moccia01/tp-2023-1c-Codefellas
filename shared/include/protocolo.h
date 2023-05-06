@@ -48,18 +48,25 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente);
 void eliminar_paquete(t_paquete* paquete);
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
-//Operaciones
+// LA EMPAQUETASION O.o
 void empaquetar_instrucciones(t_paquete* instrucciones_a_mandar, t_list* lista_de_instrucciones);
 t_list* desempaquetar_instrucciones(t_list* paquete, int comienzo);
+
+void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos);
+t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo);
+
+void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto);
+t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
+
+// Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
-t_list* recv_instrucciones(t_log* logger, int fd_modulo);
-
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo);
-t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
-
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
+
+// Recvs
+t_list* recv_instrucciones(t_log* logger, int fd_modulo);
+t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
-//recv_cambiar_estado()
 
 #endif /* PROTOCOLO_H_ */
 

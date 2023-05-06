@@ -181,19 +181,19 @@ int server_escuchar(int server_socket) {
 
 t_pcb* pcb_create(t_list* instrucciones, int pid) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
-	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
+	pcb->registros = NULL;
+	pcb->interrupcion = false;
+	pcb->seg_fault = NULL;
+	//  pcb->con_desalojo = false;
+	// pcb->tamanio_segmentos = proceso->segmentos;
 
+	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
 	pcb->contexto_de_ejecucion = contexto;
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	pcb->contexto_de_ejecucion->tabla_de_segmentos = NULL;
 	pcb->contexto_de_ejecucion->estado = NEW;
-
-
-	pcb->interrupcion = false;
-	//  pcb->con_desalojo = false;
-	// pcb->tamanio_segmentos = proceso->segmentos;
 
 	return pcb;
 }

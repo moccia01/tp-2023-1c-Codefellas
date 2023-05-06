@@ -8,7 +8,6 @@
 #include <shared.h>
 #include <pthread.h>
 
-#endif /* CPU_H_ */
 
 t_log* logger;
 t_log* logger_obligatorio;
@@ -56,3 +55,5 @@ void ejecutar_create_segment(int id_segmento, int tamanio);
 void ejecutar_delete_segment(int id_segmento);
 void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
+
+#endif /* CPU_H_ */

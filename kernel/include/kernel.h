@@ -9,9 +9,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#endif /* KERNEL_H_ */
 
-//sss
 typedef enum
 {
 	FIFO,
@@ -30,38 +28,13 @@ typedef struct
 	//t_list *segmentos;
 } t_proceso;
 
-
-// INSTRUCCIONES QUE TIENEN DOS PARAMETROS
 typedef struct
 {
-	op_code operacion;		//ANTES ERA DE TIPO cod_instruccion
-	char *parametro1;
-	char *parametro2;
-} instruccion;
 
-
-typedef struct
-{
-	int id;
-	int direccion_fisica;
-	int tamanio_segmentos;
-
-}t_segmento;
-
-
-typedef struct
-{
-	//int pid;
-	//int program_counter;
-	//estado_proceso estado;
-	//int socket_consola;
 	bool interrupcion;
-	//t_list *instrucciones;
-	// punteros de las listas en dudaa
-	//t_list *tabla_de_segmentos;
-	t_registros registros;
+	t_registros* registros;
 	t_contexto_ejecucion* contexto_de_ejecucion;
-	t_segmento seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
+	t_segmento* seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
 	//bool con_desalojo;
 
 } t_pcb;
@@ -146,4 +119,4 @@ void planificar_FIFO();
 void run_pcb(t_pcb* pcb);
 void planificar_HRRN();
 
-
+#endif /* KERNEL_H_ */

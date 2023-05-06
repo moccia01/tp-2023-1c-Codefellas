@@ -79,6 +79,13 @@ typedef enum{
 	OUT_OF_MEMORY
 }motivo_exit;
 
+typedef struct
+{
+	int id;
+	int direccion_fisica;
+	int tamanio_segmentos;
+}t_segmento;
+
 //CONTEXTO DE EJECUCION
 typedef struct{
     int pid;
