@@ -16,16 +16,16 @@ int main(void) {
 	leer_config();
 
 	// Conecto CPU con memoria
-	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	enviar_mensaje("Hola, soy CPU!", fd_memoria);
+//	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+//	enviar_mensaje("Hola, soy CPU!", fd_memoria);
 
 	// Inicio de servidor
 	fd_cpu = iniciar_servidor(logger, IP, PUERTO);
-
+	server_escuchar();
 	// Conexion Kernel
-	pthread_t conexion_kernel;
-	pthread_create(&conexion_kernel, NULL, (void*) server_escuchar, NULL);
-	pthread_join(conexion_kernel, NULL);
+//	pthread_t conexion_kernel;
+//	pthread_create(&conexion_kernel, NULL, (void*) server_escuchar, NULL);
+//	pthread_join(conexion_kernel, NULL);
 
 	terminar_programa(logger, config);
 	return 0;
@@ -68,7 +68,7 @@ static void procesar_conexion() {
 }
 
 void server_escuchar() {
-	char *server_name = "CPU";
+	server_name = "CPU";
 	socket_cliente = esperar_cliente(logger, server_name, fd_cpu);
 
 	if (socket_cliente == -1) {
@@ -115,9 +115,7 @@ t_registros* inicializar_registro(){
 void fetch(t_contexto_ejecucion* contexto){
 	log_info(logger, "se ejecuta fetch");
 	t_instruccion* proxima_instruccion = list_get(contexto->instrucciones, contexto->program_counter);
-	log_info(logger, "1");
 	contexto->program_counter += 1;
-	log_info(logger, "1");
 	decode(proxima_instruccion, contexto);
 }
 

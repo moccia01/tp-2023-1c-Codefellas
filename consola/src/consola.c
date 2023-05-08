@@ -69,26 +69,27 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
             parametros[param_count++] = token;
         }
 
-        cod_instruccion cod_inst = instruccion_to_enum(instruccion_leida);
+        if(instruccion_leida != NULL){
+            cod_instruccion cod_inst = instruccion_to_enum(instruccion_leida);
 
-        instruccion->instruccion = cod_inst;
-        if(param_count > 0){
-        	strcpy(instruccion->parametro1, parametros[0]);
-        }else{
-        	strcpy(instruccion->parametro1, "");
+            instruccion->instruccion = cod_inst;
+            if(param_count > 0){
+            	strcpy(instruccion->parametro1, parametros[0]);
+            }else{
+            	strcpy(instruccion->parametro1, "");
+            }
+            if(param_count > 1){
+            	strcpy(instruccion->parametro2, parametros[1]);
+            }else{
+            	strcpy(instruccion->parametro2, "");
+            }
+            if(param_count > 2){
+            	strcpy(instruccion->parametro3, parametros[2]);
+            }else{
+            	strcpy(instruccion->parametro3, "");
+            }
+            list_add(lista_de_instrucciones, instruccion);
         }
-        if(param_count > 1){
-        	strcpy(instruccion->parametro2, parametros[1]);
-        }else{
-        	strcpy(instruccion->parametro2, "");
-        }
-        if(param_count > 2){
-        	strcpy(instruccion->parametro3, parametros[2]);
-        }else{
-        	strcpy(instruccion->parametro3, "");
-        }
-        list_add(lista_de_instrucciones, instruccion);
-
 	}
 
 	// Cerrar el archivo

@@ -22,8 +22,8 @@ int main(void) {
 
 	// Intercambio de mensajes...
 
-	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
-	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
+//	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
+//	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
 	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
 
 	inicializar_variables();
@@ -70,23 +70,24 @@ int inicializar_servidor() {
 }
 
 bool generar_conexiones() {
-	pthread_t conexion_filesystem;
+//	pthread_t conexion_filesystem;
 	pthread_t conexion_cpu;
-	pthread_t conexion_memoria;
-
-	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
-	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
-	pthread_detach(conexion_filesystem);
+//	pthread_t conexion_memoria;
+//
+//	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
+//	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
+//	pthread_detach(conexion_filesystem);
 
 	fd_cpu = crear_conexion(IP_CPU, PUERTO_CPU);
 	pthread_create(&conexion_cpu, NULL, (void*) procesar_conexion, (void*) &fd_cpu);
 	pthread_detach(conexion_cpu);
+//
+//	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+//	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
+//	pthread_detach(conexion_memoria);
 
-	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
-	pthread_detach(conexion_memoria);
-
-	return fd_filesystem != 0 && fd_cpu != 0 && fd_memoria != 0;
+//	return fd_filesystem != 0 && fd_cpu != 0 && fd_memoria != 0;
+	return true;
 }
 
 void inicializar_variables() {
@@ -136,7 +137,6 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case INSTRUCCIONES_CONSOLA:
 			t_list *instrucciones = recv_instrucciones(logger, cliente_socket);
-			loggear_instrucciones_test(logger, instrucciones);
 			armar_pcb(instrucciones);
 			break;
 		case CAMBIAR_ESTADO:
@@ -192,7 +192,17 @@ t_pcb* pcb_create(t_list* instrucciones, int pid) {
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
-	pcb->contexto_de_ejecucion->tabla_de_segmentos = NULL;
+
+	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
+	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla
+	// despues un recv tabla y ahi se asigna
+	t_segmento* segmento = malloc(sizeof(t_segmento));
+	segmento->direccion_fisica = 0;
+	segmento->id = 0;
+	segmento->tamanio_segmentos = 0;
+	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
+	list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento);
+
 	pcb->contexto_de_ejecucion->estado = NEW;
 
 	return pcb;

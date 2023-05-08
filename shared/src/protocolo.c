@@ -236,20 +236,22 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	contexto->instrucciones = instrucciones;
 	int cantidad_instrucciones = list_size(instrucciones);
 
-	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 5 + cantidad_instrucciones + 1);
+	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 5 + (cantidad_instrucciones * 4) + 1);
 	contexto->tabla_de_segmentos = tabla_segmentos;
+
 	return contexto;
 }
 
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CONTEXTO_EJECUCION);
 	empaquetar_contexto_ejecucion(paquete, contexto);
-	eliminar_paquete(paquete);
+	enviar_paquete(paquete, fd_modulo);
 }
 
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
-	return desempaquetar_contexto_ejecucion(paquete);
+	t_contexto_ejecucion* contexto_recibido = desempaquetar_contexto_ejecucion(paquete);
+	return contexto_recibido;
 }
 
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){

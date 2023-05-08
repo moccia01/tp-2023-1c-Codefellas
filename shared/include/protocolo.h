@@ -51,10 +51,8 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 // LA EMPAQUETASION O.o
 void empaquetar_instrucciones(t_paquete* instrucciones_a_mandar, t_list* lista_de_instrucciones);
 t_list* desempaquetar_instrucciones(t_list* paquete, int comienzo);
-
 void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos);
 t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo);
-
 void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto);
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
 
