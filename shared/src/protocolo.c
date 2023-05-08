@@ -147,7 +147,7 @@ t_list* desempaquetar_instrucciones(t_list* paquete, int comienzo){
 	int* cantidad_instrucciones = list_get(paquete, comienzo);
 	int i = comienzo + 1;
 
-	while(i<(*cantidad_instrucciones* 4)){
+	while(i - comienzo - 1< (*cantidad_instrucciones* 4)){
 		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 		cod_instruccion* cod = list_get(paquete, i);
 		instruccion->instruccion = *cod;
@@ -255,12 +255,12 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 }
 
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){
-	t_paquete* contexto_a_mandar = crear_paquete(CAMBIAR_ESTADO);
-	agregar_a_paquete(contexto_a_mandar, contexto, sizeof(t_contexto_ejecucion));
-	enviar_paquete(contexto_a_mandar, fd_modulo);
-
+	t_paquete* paquete = crear_paquete(CAMBIAR_ESTADO);
+	empaquetar_contexto_ejecucion(paquete, contexto);
+	enviar_paquete(paquete, fd_modulo);
 }
 
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){
-	return recv_contexto_ejecucion(fd_modulo);
+	t_contexto_ejecucion* contexto_recibido = recv_contexto_ejecucion(fd_modulo);
+	return contexto_recibido;
 }

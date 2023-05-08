@@ -102,6 +102,7 @@ void pcb_destroy(t_pcb* pcb);
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
 void procesar_cambio_estado(t_pcb* pcb);
 void armar_pcb(t_list *instrucciones);
+void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto);
 
 // PLANIFICACION
 void planificar();

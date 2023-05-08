@@ -54,6 +54,8 @@ static void procesar_conexion() {
 		case CONTEXTO_EJECUCION:
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
 			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
+			loggear_instrucciones_test(logger, contexto_de_ejecucion->instrucciones);
+			flag_execute = true;
 			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
 			break;
 		// ...
@@ -222,13 +224,13 @@ void ejecutar_set(char* registro, char* valor){
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){
-	contexto->estado = YIELD;
+	contexto->estado = READY;
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en ready.
 	send_cambiar_estado(contexto, socket_cliente);
 }
 
 void ejecutar_exit(t_contexto_ejecucion* contexto){
-	contexto->estado = EXIT;
+	contexto->estado = FINISH_EXIT;
 	contexto->motivo_exit = SUCCESS;
 	send_cambiar_estado(contexto, socket_cliente);
 	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.

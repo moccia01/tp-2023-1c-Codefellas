@@ -140,12 +140,11 @@ static void procesar_conexion(void* void_args) {
 			armar_pcb(instrucciones);
 			break;
 		case CAMBIAR_ESTADO:
+			log_info(logger, "recibi un aviso de cambio de estado");
 			t_contexto_ejecucion* contexto_recibido = recv_cambiar_estado(cliente_socket);
-			estado_proceso nuevo_estado = contexto_recibido->estado;
 			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			sem_post(&sem_exec);
-			cambiar_estado(pcb, nuevo_estado);
-			procesar_cambio_estado(pcb);
+			actualizar_contexto_pcb(pcb, contexto_recibido);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s",
@@ -217,12 +216,14 @@ void pcb_destroy(t_pcb* pcb){
 }
 
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
-	char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
-	char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion->estado));
-	pcb->contexto_de_ejecucion->estado = nuevo_estado;
-	log_info(logger_obligatorio, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb->contexto_de_ejecucion->pid, estado_anterior_string, nuevo_estado_string);
-	free(estado_anterior_string);
-	free(nuevo_estado_string);
+	if(pcb->contexto_de_ejecucion->estado != nuevo_estado){
+		char *nuevo_estado_string = strdup(estado_to_string(nuevo_estado));
+		char *estado_anterior_string = strdup(estado_to_string(pcb->contexto_de_ejecucion->estado));
+		pcb->contexto_de_ejecucion->estado = nuevo_estado;
+		log_info(logger_obligatorio, "PID: %d - Estado Anterior: %s - Estado Actual: %s", pcb->contexto_de_ejecucion->pid, estado_anterior_string, nuevo_estado_string);
+		free(estado_anterior_string);
+		free(nuevo_estado_string);
+	}
 }
 
 void procesar_cambio_estado(t_pcb* pcb){
@@ -259,6 +260,17 @@ void armar_pcb(t_list *instrucciones) {
 	//list_add(lista_pcbs, pcb);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
+}
+
+void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
+	pcb->contexto_de_ejecucion->program_counter = contexto->program_counter;
+	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
+	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
+	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
+	cambiar_estado(pcb, contexto->estado);
+	procesar_cambio_estado(pcb);
+
+	//contexto_destroy(contexto);
 }
 
 // ------------------ PLANIFICACION ------------------
@@ -386,6 +398,7 @@ void planificar_FIFO() {
 void run_pcb(t_pcb* pcb){
 	cambiar_estado(pcb, EXEC);
 	log_info(logger, "El proceso %d se pone en ejecucion", pcb->contexto_de_ejecucion->pid);
+	safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 	send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 }
 
