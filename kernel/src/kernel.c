@@ -388,9 +388,9 @@ void planificar_corto_plazo() {
 void planificar_FIFO() {
 	while (1) {
 		sem_wait(&sem_ready);
+		sem_wait(&sem_exec);
 		t_pcb *pcb = safe_pcb_pop(cola_ready, &mutex_cola_ready);
 		sem_post(&sem_multiprog);
-		sem_wait(&sem_exec);
 		run_pcb(pcb);
 	}
 }

@@ -36,6 +36,7 @@ void leer_config(){
 	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
 	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
 	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+	RETARDO_INSTRUCCION = config_get_int_value(config, "RETARDO_INSTRUCCION");
 }
 
 // --------------- COMUNICACION ---------------
@@ -54,7 +55,6 @@ static void procesar_conexion() {
 		case CONTEXTO_EJECUCION:
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
 			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
-			loggear_instrucciones_test(logger, contexto_de_ejecucion->instrucciones);
 			flag_execute = true;
 			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
 			break;
@@ -115,14 +115,12 @@ t_registros* inicializar_registro(){
 }
 
 void fetch(t_contexto_ejecucion* contexto){
-	log_info(logger, "se ejecuta fetch");
 	t_instruccion* proxima_instruccion = list_get(contexto->instrucciones, contexto->program_counter);
 	contexto->program_counter += 1;
 	decode(proxima_instruccion, contexto);
 }
 
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
-	log_info(logger, "se ejecuta decode");
 	cod_instruccion cod_instruccion = proxima_instruccion->instruccion;
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
@@ -218,8 +216,7 @@ void ejecutar_set(char* registro, char* valor){
 	}
 
 	log_info(logger, "a mimir");
-	sleep(RETARDO_INSTRUCCION);
-	//VER EL TEMA DEL SLEEP PARA EL RETARDO DE LA INSTRUCCION
+	usleep(RETARDO_INSTRUCCION * 1000);
 
 }
 
@@ -240,5 +237,4 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
 	while(flag_execute){
 		fetch(contexto);
 	}
-
 }
