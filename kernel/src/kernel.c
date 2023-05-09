@@ -226,18 +226,20 @@ void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado) {
 	}
 }
 
-void procesar_cambio_estado(t_pcb* pcb){
+void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 
-	switch(pcb->contexto_de_ejecucion->estado){
+	switch(estado_nuevo){
 	case READY:
 		safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_ready);
 		sem_post(&sem_listos_ready);
 		break;
 	case FINISH_EXIT:
+		cambiar_estado(pcb, estado_nuevo);
 		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		break;
 	case FINISH_ERROR:
+		cambiar_estado(pcb, estado_nuevo);
 		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		break;
@@ -267,8 +269,7 @@ void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
 	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
 	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
-	cambiar_estado(pcb, contexto->estado);
-	procesar_cambio_estado(pcb);
+	procesar_cambio_estado(pcb, contexto->estado);
 
 	//contexto_destroy(contexto);
 }
@@ -330,9 +331,8 @@ void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex)
 }
 
 void setear_pcb_ready(t_pcb *pcb) {
-	// mutex cambiar_estado??
-	cambiar_estado(pcb, READY);
 	pthread_mutex_lock(&mutex_cola_ready);
+	cambiar_estado(pcb, READY);
 	// no safe_pcb_push
 	queue_push(cola_ready, pcb);
 	log_cola_ready();

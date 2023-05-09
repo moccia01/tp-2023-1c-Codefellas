@@ -100,7 +100,7 @@ int server_escuchar(int server_socket);
 t_pcb *pcb_create(t_list* instrucciones, int pid);
 void pcb_destroy(t_pcb* pcb);
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
-void procesar_cambio_estado(t_pcb* pcb);
+void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo);
 void armar_pcb(t_list *instrucciones);
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto);
 
