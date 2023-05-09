@@ -370,28 +370,29 @@ char* algoritmo_to_string(t_algoritmo algoritmo){
 
 void planificar_corto_plazo() {
 	pthread_t hilo_corto_plazo;
-
-	switch (ALGORITMO_PLANIFICACION) {
-	case FIFO:
-		pthread_create(&hilo_corto_plazo, NULL, (void*) planificar_FIFO, NULL);
-		pthread_detach(hilo_corto_plazo);
-		break;
-	case HRRN:
-		pthread_create(&hilo_corto_plazo, NULL, (void*) planificar_HRRN, NULL);
-		pthread_detach(hilo_corto_plazo);
-		break;
-	default:
-		log_error(logger, "No se reconocio el algoritmo de planifacion");
-	}
+	pthread_create(&hilo_corto_plazo, NULL, (void*)exec_pcb, NULL);
+	pthread_detach(hilo_corto_plazo);
 }
 
-void planificar_FIFO() {
+void exec_pcb(){
 	while (1) {
 		sem_wait(&sem_ready);
 		sem_wait(&sem_exec);
-		t_pcb *pcb = safe_pcb_pop(cola_ready, &mutex_cola_ready);
+		t_pcb *pcb = elegir_pcb_segun_algoritmo();
 		sem_post(&sem_multiprog);
 		run_pcb(pcb);
+	}
+}
+
+t_pcb* elegir_pcb_segun_algoritmo(){
+	switch (ALGORITMO_PLANIFICACION) {
+	case FIFO:
+		return safe_pcb_pop(cola_ready, &mutex_cola_ready);
+	case HRRN:
+		return NULL;
+	default:
+		log_error(logger, "No se reconocio el algoritmo de planifacion");
+		exit(1);
 	}
 }
 
@@ -402,6 +403,4 @@ void run_pcb(t_pcb* pcb){
 	send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 }
 
-void planificar_HRRN(){
 
-}
