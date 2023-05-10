@@ -24,9 +24,11 @@ typedef struct
 
 typedef struct
 {
-	t_list *instrucciones;
-	//t_list *segmentos;
-} t_proceso;
+	char* recurso;
+	int id;
+	int instancias;
+	t_queue* cola_block_asignada;
+}t_recurso;
 
 typedef struct
 {
@@ -36,6 +38,8 @@ typedef struct
 	uint16_t estimado_proxima_rafaga;
 	time_t tiempo_ingreso_ready;
 	time_t tiempo_ingreso_exec;
+
+	int tiempo_io; // va en el contexto
 } t_pcb;
 
 t_log* logger;
@@ -62,6 +66,7 @@ double HRRN_ALFA;
 int GRADO_MAX_MULTIPROGRAMACION;
 char** RECURSOS;
 int* INSTANCIAS_RECURSOS;
+t_list* lista_recursos;
 
 // Variables PCBs
 int generador_pid;
@@ -69,7 +74,6 @@ t_list* lista_ready;
 t_queue* cola_exit;
 t_queue* cola_listos_para_ready;
 t_queue* cola_exec;
-
 
 // Semaforos y pthread
 pthread_mutex_t mutex_generador_pid;
@@ -85,10 +89,13 @@ sem_t sem_exit;
 
 // INIT
 void leer_config();
+int* string_to_int_array(char** array_de_strings);
 void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
 int inicializar_servidor();
 void inicializar_variables();
+t_list* get_recursos();
+
 // COMUNICACION
 static void procesar_conexion(void* args);
 void iterator(char* value);
@@ -109,7 +116,7 @@ void exit_pcb();
 void ready_pcb();
 t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
 void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex);
-void setear_pcb_ready(t_pcb* pcb);
+void set_pcb_ready(t_pcb* pcb);
 void log_cola_ready();
 t_list *pcb_to_pid_list(t_list *list);
 char* algoritmo_to_string(t_algoritmo algoritmo);
@@ -121,6 +128,7 @@ t_pcb* obtener_pcb_HRRN();
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
 double response_ratio(t_pcb* pcb);
 void calcular_estimacion(t_pcb* pcb);
-
+void manejar_io(t_pcb* pcb);
+void exec_io(void* void_arg);
 
 #endif /* KERNEL_H_ */

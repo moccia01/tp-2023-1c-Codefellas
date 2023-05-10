@@ -52,7 +52,19 @@ void leer_config() {
 	HRRN_ALFA = config_get_double_value(config, "HRRN_ALFA");
 	GRADO_MAX_MULTIPROGRAMACION = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
 	RECURSOS = config_get_array_value(config, "RECURSOS");
-	// INSTANCIAS_RECURSOS; (?
+	char** instancias = string_array_new();
+	instancias = config_get_array_value(config, "INSTANCIAS_RECURSOS");
+	INSTANCIAS_RECURSOS = string_to_int_array(instancias);
+}
+
+int* string_to_int_array(char** array_de_strings){
+	int count = string_array_size(array_de_strings);
+	int *numbers = malloc(sizeof(int) * count);
+	for(int i = 0; i < count; i++){
+		int num = atoi(array_de_strings[i]);
+		numbers[i] = num;
+	}
+	return numbers;
 }
 
 void asignar_algoritmo(char *algoritmo) {
@@ -98,6 +110,7 @@ void inicializar_variables() {
 	cola_exit = queue_create();
 	cola_listos_para_ready = queue_create();
 	cola_exec = queue_create();
+	lista_recursos = get_recursos();
 
 	//Semaforos
 	pthread_mutex_init(&mutex_generador_pid, NULL);
@@ -111,6 +124,23 @@ void inicializar_variables() {
 	sem_init(&sem_exec, 0, 1);
 	sem_init(&sem_exit, 0, 0);
 
+}
+
+t_list* get_recursos(){
+	t_list* lista = list_create();
+	int cantidad_recursos = string_array_size(RECURSOS);
+	for(int i = 0; i < cantidad_recursos; i++){
+		char* string = RECURSOS[i];
+		t_recurso* recurso = malloc(sizeof(t_recurso));
+		recurso->recurso = malloc(sizeof(char) * strlen(string) + 1);
+		strcpy(recurso->recurso, string);
+		t_queue* cola_block = queue_create();
+		recurso->id = i;
+		recurso->instancias = INSTANCIAS_RECURSOS[i];
+		recurso->cola_block_asignada = cola_block;
+		list_add(lista, recurso);
+	}
+	return lista;
 }
 
 // ------------------ COMUNICACION ------------------
@@ -304,7 +334,7 @@ void ready_pcb(void) {
 		sem_wait(&sem_listos_ready);
 		t_pcb *pcb = safe_pcb_pop(cola_listos_para_ready, &mutex_cola_listos_para_ready);
 		sem_wait(&sem_multiprog);
-		setear_pcb_ready(pcb);
+		set_pcb_ready(pcb);
 		sem_post(&sem_ready);
 	}
 }
@@ -339,7 +369,7 @@ void safe_pcb_add(t_list* list, t_pcb* pcb, pthread_mutex_t* mutex){
 	pthread_mutex_unlock(mutex);
 }
 
-void setear_pcb_ready(t_pcb *pcb) {
+void set_pcb_ready(t_pcb *pcb) {
 	pthread_mutex_lock(&mutex_cola_ready);
 	cambiar_estado(pcb, READY);
 	pcb->tiempo_ingreso_ready = time(NULL);
@@ -442,4 +472,18 @@ void calcular_estimacion(t_pcb* pcb){
 	pcb->estimado_proxima_rafaga = nueva_estimacion;
 	log_info(logger, "La estimacion para el proceso %d es: %d", pcb->contexto_de_ejecucion->pid, nueva_estimacion);
 }
+
+void manejar_io(t_pcb* pcb){
+	pthread_t hilo_io;
+	pthread_create(&hilo_io, NULL, (void*)exec_io, (void*)pcb);
+	pthread_detach(hilo_io);
+}
+
+void exec_io(void* void_arg){
+	t_pcb* pcb = (t_pcb*) void_arg;
+	cambiar_estado(pcb, BLOCK);
+	usleep(pcb->tiempo_io);
+	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
+}
+
 
