@@ -49,10 +49,10 @@ void leer_config() {
 	char *algoritmo = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
 	asignar_algoritmo(algoritmo);
 	ESTIMACION_INICIAL = config_get_int_value(config, "ESTIMACION_INICIAL");
-	// HRRN_ALFA;
+	HRRN_ALFA = config_get_double_value(config, "HRRN_ALFA");
 	GRADO_MAX_MULTIPROGRAMACION = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
-	// RECURSOS;
-	// INSTANCIAS_RECURSOS;
+	RECURSOS = config_get_array_value(config, "RECURSOS");
+	// INSTANCIAS_RECURSOS; (?
 }
 
 void asignar_algoritmo(char *algoritmo) {
@@ -179,10 +179,8 @@ int server_escuchar(int server_socket) {
 t_pcb* pcb_create(t_list* instrucciones, int pid) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 	pcb->registros = NULL;
-	pcb->interrupcion = false;
 	pcb->seg_fault = NULL;
-	//  pcb->con_desalojo = false;
-	// pcb->tamanio_segmentos = proceso->segmentos;
+	pcb->estimado_proxima_rafaga = ESTIMACION_INICIAL;
 
 	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
 	pcb->contexto_de_ejecucion = contexto;
@@ -342,6 +340,7 @@ void safe_pcb_add(t_list* list, t_pcb* pcb, pthread_mutex_t* mutex){
 void setear_pcb_ready(t_pcb *pcb) {
 	pthread_mutex_lock(&mutex_cola_ready);
 	cambiar_estado(pcb, READY);
+	pcb->tiempo_ingreso_ready = time(NULL);
 	// no safe_pcb_push
 	list_add(lista_ready, pcb);
 	log_cola_ready();
@@ -408,6 +407,7 @@ t_pcb* elegir_pcb_segun_algoritmo(){
 void run_pcb(t_pcb* pcb){
 	cambiar_estado(pcb, EXEC);
 	log_info(logger, "El proceso %d se pone en ejecucion", pcb->contexto_de_ejecucion->pid);
+	pcb->tiempo_ingreso_exec = time(NULL);
 	safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 	send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 }
@@ -416,6 +416,7 @@ t_pcb* obtener_pcb_HRRN(){
 	pthread_mutex_lock(&mutex_cola_ready);
 	list_sort(lista_ready, (void*)maximo_HRRN);
 	t_pcb* pcb = list_remove(lista_ready, 0);
+	log_info(logger, "Se eligio el proceso %d por HRRN", pcb->contexto_de_ejecucion->pid);
 	pthread_mutex_unlock(&mutex_cola_ready);
 	return pcb;
 }
@@ -425,6 +426,18 @@ bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2){
 }
 
 double obtener_HRRN(t_pcb* pcb){
-	// cuentas locas con time_t y difftime
-	return 0;
+	time_t tiempo_actual = time(NULL);
+	double espera = difftime(tiempo_actual, pcb->tiempo_ingreso_ready);
+	double rr = (pcb->estimado_proxima_rafaga + espera * 1000) / pcb->estimado_proxima_rafaga;
+	log_info(logger, "El response ratio del proceso %d es:  %f", pcb->contexto_de_ejecucion->pid, rr);
+	return rr;
+}
+
+// ver donde calculo la estimacion
+uint16_t calcular_estimacion(t_pcb* pcb){
+	time_t tiempo_actual = time(NULL);
+	double rafaga = difftime(tiempo_actual, pcb->tiempo_ingreso_exec);
+	uint16_t estimacion = HRRN_ALFA * rafaga * 1000 + (1-HRRN_ALFA) * pcb->estimado_proxima_rafaga;
+	log_info(logger, "La estimacion para el proceso %d es: %d", pcb->contexto_de_ejecucion->pid, estimacion);
+	return estimacion;
 }

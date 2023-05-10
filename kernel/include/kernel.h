@@ -30,13 +30,12 @@ typedef struct
 
 typedef struct
 {
-
-	bool interrupcion;
 	t_registros* registros;
 	t_contexto_ejecucion* contexto_de_ejecucion;
 	t_segmento* seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
-	//bool con_desalojo;
-
+	uint16_t estimado_proxima_rafaga;
+	time_t tiempo_ingreso_ready;
+	time_t tiempo_ingreso_exec;
 } t_pcb;
 
 t_log* logger;
@@ -58,8 +57,8 @@ char* PUERTO_CPU;
 char* IP_MEMORIA;
 char* PUERTO_MEMORIA;
 t_algoritmo ALGORITMO_PLANIFICACION;
-int ESTIMACION_INICIAL;
-float HRRN_ALFA;
+uint16_t ESTIMACION_INICIAL;
+double HRRN_ALFA;
 int GRADO_MAX_MULTIPROGRAMACION;
 char** RECURSOS;
 int* INSTANCIAS_RECURSOS;
@@ -121,6 +120,7 @@ void run_pcb(t_pcb* pcb);
 t_pcb* obtener_pcb_HRRN();
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
 double obtener_HRRN(t_pcb* pcb);
+uint16_t calcular_estimacion(t_pcb* pcb);
 
 
 #endif /* KERNEL_H_ */
