@@ -4,7 +4,6 @@ int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("kernel.config");
-	lista_pcbs = list_create();
 
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
@@ -92,9 +91,8 @@ bool generar_conexiones() {
 
 void inicializar_variables() {
 	//PCBs
-	lista_pcbs = list_create();
 	generador_pid = 1;
-	cola_ready = queue_create();
+	lista_ready = list_create();
 	cola_exit = queue_create();
 	cola_listos_para_ready = queue_create();
 	cola_exec = queue_create();
@@ -257,9 +255,6 @@ void armar_pcb(t_list *instrucciones) {
 	pthread_mutex_unlock(&mutex_generador_pid);
 	t_pcb *pcb = pcb_create(instrucciones, pid);
 	log_info(logger_obligatorio, "Se crea el proceso %d en NEW", pid);
-
-	// mutex
-	//list_add(lista_pcbs, pcb);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
 }
@@ -330,34 +325,48 @@ void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex)
 	pthread_mutex_unlock(mutex);
 }
 
+t_pcb* safe_pcb_remove(t_list* list, pthread_mutex_t* mutex){
+	t_pcb* pcb;
+	pthread_mutex_lock(mutex);
+	pcb = list_remove(list, 0);
+	pthread_mutex_unlock(mutex);
+	return pcb;
+}
+
+void safe_pcb_add(t_list* list, t_pcb* pcb, pthread_mutex_t* mutex){
+	pthread_mutex_lock(mutex);
+	list_add(list, pcb);
+	pthread_mutex_unlock(mutex);
+}
+
 void setear_pcb_ready(t_pcb *pcb) {
 	pthread_mutex_lock(&mutex_cola_ready);
 	cambiar_estado(pcb, READY);
 	// no safe_pcb_push
-	queue_push(cola_ready, pcb);
+	list_add(lista_ready, pcb);
 	log_cola_ready();
 	pthread_mutex_unlock(&mutex_cola_ready);
 }
 
 void log_cola_ready(){
-	t_list *lista_a_loguear = pcb_queue_to_pid_list(cola_ready);
+	t_list *lista_a_loguear = pcb_to_pid_list(lista_ready);
 	char *lista = list_to_string(lista_a_loguear);
 	log_info(logger_obligatorio, "Cola Ready %s: [%s]", algoritmo_to_string(ALGORITMO_PLANIFICACION), lista);
 	list_destroy(lista_a_loguear);
 	free(lista);
 }
 
-t_list *pcb_queue_to_pid_list(t_queue *queue)
+t_list *pcb_to_pid_list(t_list *list)
 {
-    t_list *lista = list_create();
-    for (int i = 0; i < queue_size(queue); i++)
+	t_list* lista_de_pids = list_create();
+    for (int i = 0; i < list_size(list); i++)
     {
-        t_pcb *pcb = (t_pcb *)queue_pop(queue);
-        int *valor = &pcb->contexto_de_ejecucion->pid;
-        list_add(lista, valor);
-        queue_push(queue, pcb);
+        t_pcb *pcb = (t_pcb *)list_remove(list, 0);
+        int *valor = &(pcb->contexto_de_ejecucion->pid);
+        list_add(lista_de_pids, valor);
+        list_add(list, pcb);
     }
-    return lista;
+    return lista_de_pids;
 }
 
 char* algoritmo_to_string(t_algoritmo algoritmo){
@@ -387,9 +396,9 @@ void exec_pcb(){
 t_pcb* elegir_pcb_segun_algoritmo(){
 	switch (ALGORITMO_PLANIFICACION) {
 	case FIFO:
-		return safe_pcb_pop(cola_ready, &mutex_cola_ready);
+		return safe_pcb_remove(lista_ready, &mutex_cola_ready);
 	case HRRN:
-		return NULL;
+		return obtener_pcb_HRRN();
 	default:
 		log_error(logger, "No se reconocio el algoritmo de planifacion");
 		exit(1);
@@ -403,4 +412,19 @@ void run_pcb(t_pcb* pcb){
 	send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 }
 
+t_pcb* obtener_pcb_HRRN(){
+	pthread_mutex_lock(&mutex_cola_ready);
+	list_sort(lista_ready, (void*)maximo_HRRN);
+	t_pcb* pcb = list_remove(lista_ready, 0);
+	pthread_mutex_unlock(&mutex_cola_ready);
+	return pcb;
+}
 
+bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2){
+	return obtener_HRRN(pcb1) >= obtener_HRRN(pcb2);
+}
+
+double obtener_HRRN(t_pcb* pcb){
+	// cuentas locas con time_t y difftime
+	return 0;
+}

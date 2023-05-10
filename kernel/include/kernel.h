@@ -65,9 +65,8 @@ char** RECURSOS;
 int* INSTANCIAS_RECURSOS;
 
 // Variables PCBs
-t_list* lista_pcbs;
 int generador_pid;
-t_queue* cola_ready;
+t_list* lista_ready;
 t_queue* cola_exit;
 t_queue* cola_listos_para_ready;
 t_queue* cola_exec;
@@ -113,11 +112,15 @@ t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
 void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex);
 void setear_pcb_ready(t_pcb* pcb);
 void log_cola_ready();
-t_list *pcb_queue_to_pid_list(t_queue *queue);
+t_list *pcb_to_pid_list(t_list *list);
 char* algoritmo_to_string(t_algoritmo algoritmo);
 void planificar_corto_plazo();
-void planificar_FIFO();
+void exec_pcb();
+t_pcb* elegir_pcb_segun_algoritmo();
 void run_pcb(t_pcb* pcb);
-void planificar_HRRN();
+t_pcb* obtener_pcb_HRRN();
+bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
+double obtener_HRRN(t_pcb* pcb);
+
 
 #endif /* KERNEL_H_ */
