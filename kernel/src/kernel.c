@@ -56,10 +56,12 @@ void leer_config() {
 }
 
 void asignar_algoritmo(char *algoritmo) {
-	if (strcmp(algoritmo, "FIFO")) {
+	if (strcmp(algoritmo, "FIFO") == 0) {
 		ALGORITMO_PLANIFICACION = FIFO;
-	} else if (strcmp(algoritmo, "FIFO")) {
+	} else if (strcmp(algoritmo, "HRRN") == 0) {
 		ALGORITMO_PLANIFICACION = HRRN;
+	}else{
+		log_error(logger, "El algoritmo no es valido");
 	}
 }
 
@@ -141,12 +143,12 @@ static void procesar_conexion(void* void_args) {
 			log_info(logger, "recibi un aviso de cambio de estado");
 			t_contexto_ejecucion* contexto_recibido = recv_cambiar_estado(cliente_socket);
 			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			sem_post(&sem_exec);
+			calcular_estimacion(pcb);
 			actualizar_contexto_pcb(pcb, contexto_recibido);
+			sem_post(&sem_exec);
 			break;
 		default:
-			log_error(logger, "Algo anduvo mal en el server de %s",
-					server_name);
+			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
 			return;
 		}
 	}
@@ -422,10 +424,10 @@ t_pcb* obtener_pcb_HRRN(){
 }
 
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2){
-	return obtener_HRRN(pcb1) >= obtener_HRRN(pcb2);
+	return response_ratio(pcb1) >= response_ratio(pcb2);
 }
 
-double obtener_HRRN(t_pcb* pcb){
+double response_ratio(t_pcb* pcb){
 	time_t tiempo_actual = time(NULL);
 	double espera = difftime(tiempo_actual, pcb->tiempo_ingreso_ready);
 	double rr = (pcb->estimado_proxima_rafaga + espera * 1000) / pcb->estimado_proxima_rafaga;
@@ -433,11 +435,11 @@ double obtener_HRRN(t_pcb* pcb){
 	return rr;
 }
 
-// ver donde calculo la estimacion
-uint16_t calcular_estimacion(t_pcb* pcb){
+void calcular_estimacion(t_pcb* pcb){
 	time_t tiempo_actual = time(NULL);
 	double rafaga = difftime(tiempo_actual, pcb->tiempo_ingreso_exec);
-	uint16_t estimacion = HRRN_ALFA * rafaga * 1000 + (1-HRRN_ALFA) * pcb->estimado_proxima_rafaga;
-	log_info(logger, "La estimacion para el proceso %d es: %d", pcb->contexto_de_ejecucion->pid, estimacion);
-	return estimacion;
+	uint16_t nueva_estimacion = (1-HRRN_ALFA) * rafaga * 1000 + HRRN_ALFA * pcb->estimado_proxima_rafaga;
+	pcb->estimado_proxima_rafaga = nueva_estimacion;
+	log_info(logger, "La estimacion para el proceso %d es: %d", pcb->contexto_de_ejecucion->pid, nueva_estimacion);
 }
+

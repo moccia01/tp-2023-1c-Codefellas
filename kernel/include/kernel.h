@@ -119,8 +119,8 @@ t_pcb* elegir_pcb_segun_algoritmo();
 void run_pcb(t_pcb* pcb);
 t_pcb* obtener_pcb_HRRN();
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
-double obtener_HRRN(t_pcb* pcb);
-uint16_t calcular_estimacion(t_pcb* pcb);
+double response_ratio(t_pcb* pcb);
+void calcular_estimacion(t_pcb* pcb);
 
 
 #endif /* KERNEL_H_ */
