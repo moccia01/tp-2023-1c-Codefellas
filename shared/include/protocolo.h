@@ -18,6 +18,9 @@ typedef enum
 	PAQUETE,
 	CONTEXTO_EJECUCION,
 	CAMBIAR_ESTADO,
+	MANEJAR_IO,
+	MANEJAR_WAIT,
+	MANEJAR_SIGNAL,
 }op_code;
 
 typedef struct

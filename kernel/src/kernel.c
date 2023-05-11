@@ -110,7 +110,9 @@ void inicializar_variables() {
 	cola_exit = queue_create();
 	cola_listos_para_ready = queue_create();
 	cola_exec = queue_create();
+	cola_block = queue_create();
 	lista_recursos = get_recursos();
+
 
 	//Semaforos
 	pthread_mutex_init(&mutex_generador_pid, NULL);
@@ -118,6 +120,7 @@ void inicializar_variables() {
 	pthread_mutex_init(&mutex_cola_listos_para_ready, NULL);
 	pthread_mutex_init(&mutex_cola_exit, NULL);
 	pthread_mutex_init(&mutex_cola_exec, NULL);
+	pthread_mutex_init(&mutex_cola_block, NULL);
 	sem_init(&sem_multiprog, 0, GRADO_MAX_MULTIPROGRAMACION);
 	sem_init(&sem_listos_ready, 0, 0);
 	sem_init(&sem_ready, 0, 0);
@@ -176,6 +179,23 @@ static void procesar_conexion(void* void_args) {
 			calcular_estimacion(pcb);
 			actualizar_contexto_pcb(pcb, contexto_recibido);
 			sem_post(&sem_exec);
+			break;
+		case MANEJAR_IO:
+			t_contexto_ejecucion* contexto_recibido = recv_manejo_io();
+			int tiempo = recv_tiempo_io();
+			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			actualizar_contexto_pcb(pcb, contexto_recibido);
+			manejar_io(pcb, tiempo);
+			break;
+		case MANEJAR_WAIT:
+			t_contexto_ejecucion* contexto_recibido = recv_manejo_wait();
+			char* recurso = recv_recurso();
+			manejar_wait();
+			break;
+		case MANEJAR_SIGNAL:
+			t_contexto_ejecucion* contexto_recibido = recv_manejo_signal();
+			char* recurso = recv_recurso();
+
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
@@ -272,7 +292,12 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 		sem_post(&sem_exit);
 		break;
 	case BLOCK:
-		// lo que tengamos que hacer en block
+		switch(pcb->contexto_de_ejecucion->motivo_block){
+		case IO_BLOCK:
+			cambiar_estado(pcb, estado_nuevo);
+			safe_pcb_push(cola_block, &mutex_cola_block);
+		}
+
 		break;
 	default: break;
 	}
@@ -473,17 +498,26 @@ void calcular_estimacion(t_pcb* pcb){
 	log_info(logger, "La estimacion para el proceso %d es: %d", pcb->contexto_de_ejecucion->pid, nueva_estimacion);
 }
 
-void manejar_io(t_pcb* pcb){
+void manejar_io(t_pcb* pcb, int tiempo){
 	pthread_t hilo_io;
-	pthread_create(&hilo_io, NULL, (void*)exec_io, (void*)pcb);
+	t_manejo_io* args = malloc(sizeof(t_manejo_io));
+	args->pcb = pcb;
+	args->tiempo = tiempo;
+	pthread_create(&hilo_io, NULL, (void*)exec_io, (void*)args);
 	pthread_detach(hilo_io);
 }
 
 void exec_io(void* void_arg){
-	t_pcb* pcb = (t_pcb*) void_arg;
-	cambiar_estado(pcb, BLOCK);
+	t_manejo_io* args = (t_manejo_io*) void_arg;
+	t_pcb* pcb =  args->pcb;
+	int tiempo = args->tiempo;
 	usleep(pcb->tiempo_io);
+	safe_pcb_pop(cola_block, &mutex_cola_block);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
+	sem_post(&sem_listos_ready);
 }
 
+void manejar_wait(){
+
+}
 

@@ -42,6 +42,12 @@ typedef struct
 	int tiempo_io; // va en el contexto
 } t_pcb;
 
+typedef struct
+{
+	t_pcb* pcb;
+	int tiempo;
+}t_manejo_io;
+
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
@@ -74,6 +80,7 @@ t_list* lista_ready;
 t_queue* cola_exit;
 t_queue* cola_listos_para_ready;
 t_queue* cola_exec;
+t_queue* cola_block;
 
 // Semaforos y pthread
 pthread_mutex_t mutex_generador_pid;
@@ -81,6 +88,7 @@ pthread_mutex_t mutex_cola_ready;
 pthread_mutex_t mutex_cola_listos_para_ready;
 pthread_mutex_t mutex_cola_exit;
 pthread_mutex_t mutex_cola_exec;
+pthread_mutex_t mutex_cola_block;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;
