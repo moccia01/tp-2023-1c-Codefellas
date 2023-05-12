@@ -291,3 +291,15 @@ void send_recurso_signal(char* recurso, int fd_modulo){
 	empaquetar_recurso(paquete, recurso);
 	enviar_paquete(paquete, fd_modulo);
 }
+
+int recv_tiempo_io(int fd_modulo){
+	return 0;
+}
+
+char* recv_recurso_wait(int fd_modulo){
+	return NULL;
+}
+
+char* recv_recurso_signal(int fd_modulo){
+	return NULL;
+}

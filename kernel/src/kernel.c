@@ -152,6 +152,10 @@ static void procesar_conexion(void* void_args) {
 	int *args = (int*) void_args;
 	int cliente_socket = *args;
 
+	t_contexto_ejecucion* contexto_recibido;
+	t_pcb* pcb;
+	char* recurso;
+
 	op_code cop;
 	while (cliente_socket != -1) {
 		if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
@@ -174,27 +178,27 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case CAMBIAR_ESTADO:
 			log_info(logger, "recibi un aviso de cambio de estado");
-			t_contexto_ejecucion* contexto_recibido = recv_cambiar_estado(cliente_socket);
-			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			contexto_recibido = recv_cambiar_estado(cliente_socket);
+			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			calcular_estimacion(pcb);
 			actualizar_contexto_pcb(pcb, contexto_recibido);
 			sem_post(&sem_exec);
 			break;
 		case MANEJAR_IO:
-			t_contexto_ejecucion* contexto_recibido = recv_manejo_io();
-			int tiempo = recv_tiempo_io();
-			t_pcb* pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
+			int tiempo = recv_tiempo_io(cliente_socket);
+			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			actualizar_contexto_pcb(pcb, contexto_recibido);
 			manejar_io(pcb, tiempo);
 			break;
 		case MANEJAR_WAIT:
-			t_contexto_ejecucion* contexto_recibido = recv_manejo_wait();
-			char* recurso = recv_recurso();
+			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
+			recurso = recv_recurso_wait(cliente_socket);
 			manejar_wait();
 			break;
 		case MANEJAR_SIGNAL:
-			t_contexto_ejecucion* contexto_recibido = recv_manejo_signal();
-			char* recurso = recv_recurso();
+			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
+			recurso = recv_recurso_signal(cliente_socket);
 
 			break;
 		default:
@@ -295,7 +299,7 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 		switch(pcb->contexto_de_ejecucion->motivo_block){
 		case IO_BLOCK:
 			cambiar_estado(pcb, estado_nuevo);
-			safe_pcb_push(cola_block, &mutex_cola_block);
+			safe_pcb_push(cola_block, pcb, &mutex_cola_block);
 		}
 
 		break;
