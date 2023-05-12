@@ -137,6 +137,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			break;
 		case IO:
 			flag_execute = false;
+			ejecutar_io(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un I/O");
 			break;
 		case F_OPEN:
@@ -158,9 +159,11 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			log_info(logger,"Se esta ejecutando un F_TRUNCATE");
 			break;
 		case WAIT:
+			ejecutar_wait(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un WAIT");
 			break;
 		case SIGNAL:
+			ejecutar_signal(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un SIGNAL");
 			break;
 		case CREATE_SEGMENT:
@@ -218,6 +221,22 @@ void ejecutar_set(char* registro, char* valor){
 	log_info(logger, "a mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
 
+}
+
+void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_tiempo_io(tiempo_io, socket_cliente);
+}
+
+void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_recurso_wait(recurso, socket_cliente);
+
+}
+
+void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_recurso_signal(recurso, socket_cliente);
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){

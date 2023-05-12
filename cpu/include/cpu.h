@@ -42,7 +42,7 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 void ejecutar_set(char* registro, char* valor);
 void ejecutar_mov_in(t_registros registro, int dir_logica);
 void ejecutar_mov_out(int dir_logica, t_registros registro);
-void ejecutar_i_o(int tiempo);
+void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto);
 void ejecutar_f_open(char nombre_archivo);			//Verificar tipo de nombre de archivo
 void ejecutar_f_close(char nombre_archivo);
 void ejecutar_f_seek(char nombre_archivo);

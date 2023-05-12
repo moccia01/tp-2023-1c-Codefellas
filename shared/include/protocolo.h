@@ -58,11 +58,16 @@ void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos);
 t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo);
 void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto);
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
+void empaquetar_tiempo_io(t_paquete* paquete, char* tiempo_io);
+void empaquetar_recurso(t_paquete* paquete, char* recurso);
 
 // Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo);
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
+void send_tiempo_io(char* tiempo_io, int fd_modulo);
+void send_recurso_wait(char* recurso, int fd_modulo);
+void send_recurso_signal(char* recurso, int fd_modulo);
 
 // Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);

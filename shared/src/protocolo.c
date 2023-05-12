@@ -264,3 +264,30 @@ t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){
 	t_contexto_ejecucion* contexto_recibido = recv_contexto_ejecucion(fd_modulo);
 	return contexto_recibido;
 }
+
+void empaquetar_tiempo_io(t_paquete* paquete, char* tiempo_io){
+	int tiempo = atoi(tiempo_io);
+	agregar_a_paquete(paquete, &(tiempo), sizeof(int));
+}
+
+void send_tiempo_io(char* tiempo_io, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_IO);
+	empaquetar_tiempo_io(paquete, tiempo_io);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void empaquetar_recurso(t_paquete* paquete, char* recurso){
+	agregar_a_paquete(paquete, &(recurso), sizeof(char) * strlen(recurso));
+}
+
+void send_recurso_wait(char* recurso, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_WAIT);
+	empaquetar_recurso(paquete, recurso);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_recurso_signal(char* recurso, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_SIGNAL);
+	empaquetar_recurso(paquete, recurso);
+	enviar_paquete(paquete, fd_modulo);
+}
