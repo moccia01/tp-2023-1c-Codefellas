@@ -38,8 +38,6 @@ typedef struct
 	uint16_t estimado_proxima_rafaga;
 	time_t tiempo_ingreso_ready;
 	time_t tiempo_ingreso_exec;
-
-	int tiempo_io; // va en el contexto
 } t_pcb;
 
 typedef struct
@@ -102,7 +100,7 @@ void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
 int inicializar_servidor();
 void inicializar_variables();
-t_list* get_recursos();
+t_list* inicializar_recursos();
 
 // COMUNICACION
 static void procesar_conexion(void* args);

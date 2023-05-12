@@ -111,7 +111,7 @@ void inicializar_variables() {
 	cola_listos_para_ready = queue_create();
 	cola_exec = queue_create();
 	cola_block = queue_create();
-	lista_recursos = get_recursos();
+	lista_recursos = inicializar_recursos();
 
 
 	//Semaforos
@@ -129,7 +129,7 @@ void inicializar_variables() {
 
 }
 
-t_list* get_recursos(){
+t_list* inicializar_recursos(){
 	t_list* lista = list_create();
 	int cantidad_recursos = string_array_size(RECURSOS);
 	for(int i = 0; i < cantidad_recursos; i++){
@@ -182,32 +182,40 @@ static void procesar_conexion(void* void_args) {
 			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			calcular_estimacion(pcb);
 			actualizar_contexto_pcb(pcb, contexto_recibido);
+			procesar_cambio_estado(pcb, contexto_recibido->estado);
 			sem_post(&sem_exec);
 			break;
-		case MANEJAR_IO:
+		case CONTEXTO_EJECUCION:
 			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
-			int tiempo = recv_tiempo_io(cliente_socket);
-			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			actualizar_contexto_pcb(pcb, contexto_recibido);
-			manejar_io(pcb, tiempo);
-			break;
-		case MANEJAR_WAIT:
-			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
-			recurso = recv_recurso_wait(cliente_socket);
-			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			actualizar_contexto_pcb(pcb,contexto_recibido);
-			manejar_wait(pcb, recurso);
-			break;
-		case MANEJAR_SIGNAL:
-			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
-			recurso = recv_recurso_signal(cliente_socket);
-			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			actualizar_contexto_pcb(pcb,contexto_recibido);
-			manejar_signal(pcb, recurso);
-			send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+			cop = recv(cliente_socket, &cop, sizeof(op_code), 0);
+			switch(cop){
+			case MANEJAR_IO:
+				int tiempo = recv_tiempo_io(cliente_socket);
+				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+				actualizar_contexto_pcb(pcb, contexto_recibido);
+				manejar_io(pcb, tiempo);
+				break;
+			case MANEJAR_WAIT:
+				recurso = recv_recurso_wait(cliente_socket);
+				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+				actualizar_contexto_pcb(pcb,contexto_recibido);
+				manejar_wait(pcb, recurso);
+				break;
+			case MANEJAR_SIGNAL:
+				recurso = recv_recurso_signal(cliente_socket);
+				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+				actualizar_contexto_pcb(pcb,contexto_recibido);
+				manejar_signal(pcb, recurso);
+				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				break;
+			default:
+				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
+				return;
+			}
 			break;
 		default:
-			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
+			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 			return;
 		}
 	}
@@ -300,15 +308,6 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		break;
-	case BLOCK:
-		switch(pcb->contexto_de_ejecucion->motivo_block){
-		case IO_BLOCK:
-			cambiar_estado(pcb, estado_nuevo);
-			safe_pcb_push(cola_block, pcb, &mutex_cola_block);
-		}
-
-
-		break;
 	default: break;
 	}
 }
@@ -329,7 +328,6 @@ void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
 	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
 	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
-	procesar_cambio_estado(pcb, contexto->estado);
 
 	//contexto_destroy(contexto);
 }
@@ -524,58 +522,56 @@ void exec_io(void* void_arg){
 	t_manejo_io* args = (t_manejo_io*) void_arg;
 	t_pcb* pcb =  args->pcb;
 	int tiempo = args->tiempo;
-	usleep(pcb->tiempo_io);
+	usleep(tiempo);
 	safe_pcb_pop(cola_block, &mutex_cola_block);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
 }
 
 void manejar_wait(t_pcb* pcb, char* recurso){
-t_recurso* recursobuscado= buscar_recurso(recurso);
-if(recursobuscado->id == -1){
-log_error(logger, "No existe el recurso: %s solicitado",recurso);
-safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
-sem_post(&sem_exit);
-}
-recursobuscado->instancias --;
-if(recursobuscado->instancias < 0){
-	recursobuscado->instancias ++;
-	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-	log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
-	queue_push(recursobuscado->cola_block_asignada, pcb);
-}
-else{
-	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-}
+	t_recurso* recursobuscado= buscar_recurso(recurso);
+	if(recursobuscado->id == -1){
+		log_error(logger, "No existe el recurso: %s solicitado",recurso);
+		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
+		sem_post(&sem_exit);
+	}
+	recursobuscado->instancias --;
+	if(recursobuscado->instancias < 0){
+		recursobuscado->instancias ++;
+		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+		log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
+		queue_push(recursobuscado->cola_block_asignada, pcb);
+	}
+	else{
+		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+	}
 }
 void manejar_signal(t_pcb* pcb, char* recurso){
-t_recurso* recursobuscado= buscar_recurso(recurso);
-if(recursobuscado->id == -1){
-log_error(logger, "No existe el recurso: %s solicitado",recurso);
-safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
-sem_post(&sem_exit);
-}
-recursobuscado->instancias ++;
-log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
- if(queue_size(recursobuscado->cola_block_asignada) > 0){
-	 t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
-	 safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
-	 sem_post(&sem_listos_ready);
- }
-
-
+	t_recurso* recursobuscado = buscar_recurso(recurso);
+	if(recursobuscado->id == -1){
+		log_error(logger, "No existe el recurso: %s solicitado",recurso);
+		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
+		sem_post(&sem_exit);
+	}
+	recursobuscado->instancias++;
+	log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+	if(queue_size(recursobuscado->cola_block_asignada) > 0){
+		t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
+		safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
+		sem_post(&sem_listos_ready);
+	}
 }
 
 t_recurso* buscar_recurso(char* recurso){
 	int longitudLista = list_size(lista_recursos);
 	t_recurso* recursobuscado;
-	for(int i=0; i<longitudLista;i++){
+	for(int i = 0; i < longitudLista; i++){
 		recursobuscado = list_get(lista_recursos, i);
 		if (strcmp(recursobuscado->recurso, recurso) == 0){
-		            return recursobuscado;
+			return recursobuscado;
 		}
 	}
 	recursobuscado->id=-1;
-		    return recursobuscado;
+	return recursobuscado;
 }
 

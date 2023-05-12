@@ -68,8 +68,6 @@ typedef struct{
 //MOTIVOS DE BLOQUEO POSIBLES
 typedef enum{
 	IO_BLOCK,
-	NOMBRE_RECURSO,
-	NOMBRE_ARCHIVO
 }motivo_block;
 
 //MOTIVOS DE EXIT
