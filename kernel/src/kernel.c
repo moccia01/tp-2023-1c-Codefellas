@@ -194,12 +194,17 @@ static void procesar_conexion(void* void_args) {
 		case MANEJAR_WAIT:
 			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
 			recurso = recv_recurso_wait(cliente_socket);
-			manejar_wait();
+			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			actualizar_contexto_pcb(pcb,contexto_recibido);
+			manejar_wait(pcb, recurso);
 			break;
 		case MANEJAR_SIGNAL:
 			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
 			recurso = recv_recurso_signal(cliente_socket);
-
+			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			actualizar_contexto_pcb(pcb,contexto_recibido);
+			manejar_signal(pcb, recurso);
+			send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
@@ -301,6 +306,7 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 			cambiar_estado(pcb, estado_nuevo);
 			safe_pcb_push(cola_block, pcb, &mutex_cola_block);
 		}
+
 
 		break;
 	default: break;
@@ -503,6 +509,9 @@ void calcular_estimacion(t_pcb* pcb){
 }
 
 void manejar_io(t_pcb* pcb, int tiempo){
+	log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,"IO");
+	log_info(logger_obligatorio,"PID: %d - Ejecuta IO: %d", pcb->contexto_de_ejecucion->pid, tiempo);
+
 	pthread_t hilo_io;
 	t_manejo_io* args = malloc(sizeof(t_manejo_io));
 	args->pcb = pcb;
@@ -521,7 +530,52 @@ void exec_io(void* void_arg){
 	sem_post(&sem_listos_ready);
 }
 
-void manejar_wait(){
+void manejar_wait(t_pcb* pcb, char* recurso){
+t_recurso* recursobuscado= buscar_recurso(recurso);
+if(recursobuscado->id == -1){
+log_error(logger, "No existe el recurso: %s solicitado",recurso);
+safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
+sem_post(&sem_exit);
+}
+recursobuscado->instancias --;
+if(recursobuscado->instancias < 0){
+	recursobuscado->instancias ++;
+	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+	log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
+	queue_push(recursobuscado->cola_block_asignada, pcb);
+}
+else{
+	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+}
+}
+void manejar_signal(t_pcb* pcb, char* recurso){
+t_recurso* recursobuscado= buscar_recurso(recurso);
+if(recursobuscado->id == -1){
+log_error(logger, "No existe el recurso: %s solicitado",recurso);
+safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
+sem_post(&sem_exit);
+}
+recursobuscado->instancias ++;
+log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+ if(queue_size(recursobuscado->cola_block_asignada) > 0){
+	 t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
+	 safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
+	 sem_post(&sem_listos_ready);
+ }
 
+
+}
+
+t_recurso* buscar_recurso(char* recurso){
+	int longitudLista = list_size(lista_recursos);
+	t_recurso* recursobuscado;
+	for(int i=0; i<longitudLista;i++){
+		recursobuscado = list_get(lista_recursos, i);
+		if (strcmp(recursobuscado->recurso, recurso) == 0){
+		            return recursobuscado;
+		}
+	}
+	recursobuscado->id=-1;
+		    return recursobuscado;
 }
 

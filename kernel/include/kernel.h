@@ -138,6 +138,8 @@ double response_ratio(t_pcb* pcb);
 void calcular_estimacion(t_pcb* pcb);
 void manejar_io(t_pcb* pcb,  int tiempo);
 void exec_io(void* void_arg);
-void manejar_wait();
+void manejar_wait(t_pcb* pcb, char* recurso);
+t_recurso* buscar_recurso(char* recurso);
+void manejar_signal(t_pcb* pcb, char* recurso);
 
 #endif /* KERNEL_H_ */
