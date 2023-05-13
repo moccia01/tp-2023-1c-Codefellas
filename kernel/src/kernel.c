@@ -196,13 +196,13 @@ static void procesar_conexion(void* void_args) {
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
-				recurso = recv_recurso_wait(cliente_socket);
+				recurso = recv_recurso(cliente_socket);
 				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 				actualizar_contexto_pcb(pcb,contexto_recibido);
 				manejar_wait(pcb, recurso);
 				break;
 			case MANEJAR_SIGNAL:
-				recurso = recv_recurso_signal(cliente_socket);
+				recurso = recv_recurso(cliente_socket);
 				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 				actualizar_contexto_pcb(pcb,contexto_recibido);
 				manejar_signal(pcb, recurso);

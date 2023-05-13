@@ -293,13 +293,14 @@ void send_recurso_signal(char* recurso, int fd_modulo){
 }
 
 int recv_tiempo_io(int fd_modulo){
-	return 0;
+	t_list* paquete = recibir_paquete(fd_modulo);
+	int* tiempo = list_get(paquete, 0);
+	return *tiempo;
 }
 
-char* recv_recurso_wait(int fd_modulo){
-	return NULL;
+char* recv_recurso(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	char* recurso = list_get(paquete, 0);
+	return recurso;
 }
 
-char* recv_recurso_signal(int fd_modulo){
-	return NULL;
-}

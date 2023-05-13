@@ -74,8 +74,7 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo);
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
-char* recv_recurso_wait(int fd_modulo);
-char* recv_recurso_signal(int fd_modulo);
+char* recv_recurso(int fd_modulo);
 
 
 #endif /* PROTOCOLO_H_ */
