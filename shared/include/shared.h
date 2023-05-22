@@ -77,8 +77,7 @@ typedef enum{
 	OUT_OF_MEMORY
 }motivo_exit;
 
-typedef struct
-{
+typedef struct{
 	int id;
 	int direccion_fisica;
 	int tamanio_segmentos;

@@ -3,6 +3,7 @@
 int main(void) {
 	logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
 	config = config_create("filesystem.config");
+	levantar_archivos();
 
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
@@ -31,10 +32,34 @@ void leer_config(){
 	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
 	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
 	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
+	PATH_SUPERBLOQUE = config_get_string_value(config, "PATH_SUPERBLOQUE");
+	PATH_BITMAP = config_get_string_value(config, "PATH_BITMAP");
+	PATH_BLOQUES = config_get_string_value(config, "PATH_BLOQUES");
 }
 
 void inicializar_variables(){
 
+}
+
+void levantar_archivos(){
+	superbloque = fopen(PATH_SUPERBLOQUE, "r");
+	bitmap = fopen(PATH_BITMAP, "r+w");
+	bloques = fopen(PATH_BLOQUES, "r+w");
+
+	if (superbloque == NULL) {
+			log_error(logger, "No se pudo abrir el archivo de superbloque.\n");
+			exit(1);
+		}
+
+	if (bitmap == NULL) {
+			log_error(logger, "No se pudo abrir el archivo de bitmap.\n");
+			exit(1);
+		}
+
+	if (bloques == NULL) {
+			log_error(logger, "No se pudo abrir el archivo de bloques.\n");
+			exit(1);
+		}
 }
 
 // ------------------ COMUNICACION ------------------
