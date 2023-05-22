@@ -8,14 +8,73 @@ int main(void) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
+	leer_config();
 
 	// Inicio servidor
-	int fd_memoria = inicializar_servidor(logger, config);
+	fd_memoria = iniciar_servidor(logger, IP, PUERTO);
 
-	while(server_escuchar(logger, fd_memoria));
+	while(server_escuchar(fd_memoria));
 
 	// Termino programa
 	terminar_programa(logger, config);
 
+	return 0;
+}
+
+// --------------------- INIT ---------------------
+
+void leer_config(){
+	IP = config_get_string_value(config, "IP_ESCUCHA");
+	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+}
+
+// --------------------- COMUNICACION ---------------------
+
+static void procesar_conexion(void *void_args) {
+	int *args = (int*) void_args;
+	int cliente_socket = *args;
+
+	op_code cop;
+	while (cliente_socket != -1) {
+		if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+			log_info(logger, "El cliente se desconecto de %s server",
+					server_name);
+			return;
+		}
+		switch (cop) {
+		case MENSAJE:
+			recibir_mensaje(logger, cliente_socket);
+			break;
+		case PAQUETE:
+			t_list *paquete_recibido = recibir_paquete(cliente_socket);
+			log_info(logger, "Recibí un paquete con los siguientes valores: ");
+			list_iterate(paquete_recibido, (void*) iterator);
+			break;
+			default:
+				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
+				return;
+			}
+
+		}
+	log_warning(logger, "El cliente se desconecto de %s server", server_name);
+	return;
+}
+
+void iterator(char *value) {
+	log_info(logger, "%s", value);
+}
+
+int server_escuchar(int server_socket) {
+	server_name = "Memoria";
+	int cliente_socket = esperar_cliente(logger, server_name, server_socket);
+
+	if (cliente_socket != -1) {
+		pthread_t hilo;
+		int *args = malloc(sizeof(int));
+		args = &cliente_socket;
+		pthread_create(&hilo, NULL, (void*) procesar_conexion, (void*) args);
+		pthread_detach(hilo);
+		return 1;
+	}
 	return 0;
 }

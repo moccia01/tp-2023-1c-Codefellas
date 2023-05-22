@@ -98,7 +98,6 @@ void leer_config();
 int* string_to_int_array(char** array_de_strings);
 void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
-int inicializar_servidor();
 void inicializar_variables();
 t_list* inicializar_recursos();
 
@@ -129,7 +128,7 @@ char* algoritmo_to_string(t_algoritmo algoritmo);
 void planificar_corto_plazo();
 void exec_pcb();
 t_pcb* elegir_pcb_segun_algoritmo();
-void run_pcb(t_pcb* pcb);
+void dispatch(t_pcb* pcb);
 t_pcb* obtener_pcb_HRRN();
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
 double response_ratio(t_pcb* pcb);

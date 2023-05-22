@@ -28,7 +28,7 @@ int main(void) {
 	inicializar_variables();
 	planificar();
 
-	server_socket = inicializar_servidor();
+	server_socket = iniciar_servidor(logger, IP, PUERTO);
 	while (server_escuchar(server_socket));
 
 	terminar_programa(logger, config);
@@ -75,11 +75,6 @@ void asignar_algoritmo(char *algoritmo) {
 	}else{
 		log_error(logger, "El algoritmo no es valido");
 	}
-}
-
-int inicializar_servidor() {
-	int fd_kernel = iniciar_servidor(logger, IP, PUERTO);
-	return fd_kernel;
 }
 
 bool generar_conexiones() {
@@ -453,7 +448,7 @@ void exec_pcb(){
 		sem_wait(&sem_exec);
 		t_pcb *pcb = elegir_pcb_segun_algoritmo();
 		sem_post(&sem_multiprog);
-		run_pcb(pcb);
+		dispatch(pcb);
 	}
 }
 
@@ -469,7 +464,7 @@ t_pcb* elegir_pcb_segun_algoritmo(){
 	}
 }
 
-void run_pcb(t_pcb* pcb){
+void dispatch(t_pcb* pcb){
 	cambiar_estado(pcb, EXEC);
 	log_info(logger, "El proceso %d se pone en ejecucion", pcb->contexto_de_ejecucion->pid);
 	pcb->tiempo_ingreso_exec = time(NULL);
@@ -536,16 +531,13 @@ void manejar_wait(t_pcb* pcb, char* recurso){
 		sem_post(&sem_exit);
 	}
 	recursobuscado->instancias --;
+	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 	if(recursobuscado->instancias < 0){
-		recursobuscado->instancias ++;
-		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 		log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
 		queue_push(recursobuscado->cola_block_asignada, pcb);
 	}
-	else{
-		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-	}
 }
+
 void manejar_signal(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado = buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
@@ -555,7 +547,7 @@ void manejar_signal(t_pcb* pcb, char* recurso){
 	}
 	recursobuscado->instancias++;
 	log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-	if(queue_size(recursobuscado->cola_block_asignada) > 0){
+	if(recursobuscado->instancias <= 0){
 		t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
 		safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
 		sem_post(&sem_listos_ready);

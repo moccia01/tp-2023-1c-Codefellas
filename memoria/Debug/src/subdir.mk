@@ -4,18 +4,12 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/comunicacion.c \
-../src/init.c \
 ../src/memoria.c 
 
 C_DEPS += \
-./src/comunicacion.d \
-./src/init.d \
 ./src/memoria.d 
 
 OBJS += \
-./src/comunicacion.o \
-./src/init.o \
 ./src/memoria.o 
 
 
@@ -31,7 +25,7 @@ src/%.o: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/comunicacion.d ./src/comunicacion.o ./src/init.d ./src/init.o ./src/memoria.d ./src/memoria.o
+	-$(RM) ./src/memoria.d ./src/memoria.o
 
 .PHONY: clean-src
 
