@@ -277,7 +277,7 @@ void send_tiempo_io(char* tiempo_io, int fd_modulo){
 }
 
 void empaquetar_recurso(t_paquete* paquete, char* recurso){
-	agregar_a_paquete(paquete, &(recurso), sizeof(char) * strlen(recurso));
+	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 }
 
 void send_recurso_wait(char* recurso, int fd_modulo){

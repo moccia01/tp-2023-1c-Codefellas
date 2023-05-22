@@ -2,6 +2,7 @@
 
 int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
+	// TODO: cambiar archivo de logs obligatorios
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create("kernel.config");
 
@@ -136,6 +137,7 @@ t_list* inicializar_recursos(){
 		recurso->id = i;
 		recurso->instancias = INSTANCIAS_RECURSOS[i];
 		recurso->cola_block_asignada = cola_block;
+		// TODO: mutex cola block asignada, añadir en struct
 		list_add(lista, recurso);
 	}
 	return lista;
@@ -182,16 +184,18 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case CONTEXTO_EJECUCION:
 			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
-			cop = recv(cliente_socket, &cop, sizeof(op_code), 0);
+			recv(cliente_socket, &cop, sizeof(op_code), 0);
 			switch(cop){
 			case MANEJAR_IO:
 				int tiempo = recv_tiempo_io(cliente_socket);
 				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+				sem_post(&sem_exec);
 				actualizar_contexto_pcb(pcb, contexto_recibido);
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
 				recurso = recv_recurso(cliente_socket);
+				log_info(logger, "recurso recibido del wait: %s", recurso);
 				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 				actualizar_contexto_pcb(pcb,contexto_recibido);
 				manejar_wait(pcb, recurso);
@@ -517,7 +521,9 @@ void exec_io(void* void_arg){
 	t_manejo_io* args = (t_manejo_io*) void_arg;
 	t_pcb* pcb =  args->pcb;
 	int tiempo = args->tiempo;
-	usleep(tiempo);
+	log_info(logger, "ejecutando IO por tiempo: %d", tiempo);
+	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
+	usleep(tiempo * 100000);
 	safe_pcb_pop(cola_block, &mutex_cola_block);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
@@ -526,15 +532,21 @@ void exec_io(void* void_arg){
 void manejar_wait(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado= buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
-		log_error(logger, "No existe el recurso: %s solicitado",recurso);
+		log_error(logger, "No existe el recurso: %s solicitado", recurso);
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
-	}
-	recursobuscado->instancias --;
-	log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-	if(recursobuscado->instancias < 0){
-		log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
-		queue_push(recursobuscado->cola_block_asignada, pcb);
+		sem_post(&sem_exec);
+	}else{
+		recursobuscado->instancias --;
+		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+		if(recursobuscado->instancias < 0){
+			log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
+			queue_push(recursobuscado->cola_block_asignada, pcb);
+			sem_post(&sem_exec);
+		}else{
+			safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
+			send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
+		}
 	}
 }
 
@@ -544,13 +556,14 @@ void manejar_signal(t_pcb* pcb, char* recurso){
 		log_error(logger, "No existe el recurso: %s solicitado",recurso);
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
-	}
-	recursobuscado->instancias++;
-	log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
-	if(recursobuscado->instancias <= 0){
-		t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
-		safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
-		sem_post(&sem_listos_ready);
+	}else{
+		recursobuscado->instancias++;
+		log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
+		if(recursobuscado->instancias <= 0){
+			t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
+			safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
+			sem_post(&sem_listos_ready);
+		}
 	}
 }
 

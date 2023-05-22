@@ -159,10 +159,11 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			log_info(logger,"Se esta ejecutando un F_TRUNCATE");
 			break;
 		case WAIT:
+			flag_execute = false;
 			ejecutar_wait(proxima_instruccion->parametro1, contexto);
-			log_info(logger,"Se esta ejecutando un WAIT");
 			break;
 		case SIGNAL:
+			flag_execute = false;
 			ejecutar_signal(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un SIGNAL");
 			break;
@@ -229,6 +230,7 @@ void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto){
 }
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
+	log_info(logger,"Se esta ejecutando un WAIT al recurso %s", recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_wait(recurso, socket_cliente);
 
