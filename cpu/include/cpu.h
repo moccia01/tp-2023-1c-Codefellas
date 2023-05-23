@@ -38,21 +38,21 @@ void fetch(t_contexto_ejecucion* contexto);
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto);
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 
-//Instrucciones	VERIFICAR TIPOS DE RETORNO
+//Instrucciones
 void ejecutar_set(char* registro, char* valor);
 void ejecutar_mov_in(t_registros registro, int dir_logica);
 void ejecutar_mov_out(int dir_logica, t_registros registro);
 void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto);
-void ejecutar_f_open(char nombre_archivo);			//Verificar tipo de nombre de archivo
-void ejecutar_f_close(char nombre_archivo);
-void ejecutar_f_seek(char nombre_archivo);
-void ejecutar_f_read(char nombre_archivo);
-void ejecutar_f_write(char nombre_archivo);
-void ejecutar_f_truncate(char nombre_De_Archivo, int tamanio);
-void ejecutar_wait();		//Verificar el tipo de recurso
-void ejecutar_signal();		//Verificar el tipo de recurso
-void ejecutar_create_segment(int id_segmento, int tamanio);
-void ejecutar_delete_segment(int id_segmento);
+void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto);			//Verificar tipo de nombre de archivo
+void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto);
+void ejecutar_f_seek(char* nombre_archivo, int* posicion, t_contexto_ejecucion* contexto);
+void ejecutar_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto);
+void ejecutar_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto);
+void ejecutar_f_truncate(char* nombre_De_Archivo, int* tamanio, t_contexto_ejecucion* contexto);
+void ejecutar_wait();
+void ejecutar_signal();
+void ejecutar_create_segment(int* id_segmento, int* tamanio, t_contexto_ejecucion* contexto);
+void ejecutar_delete_segment(int* id_segmento, t_contexto_ejecucion* contexto);
 void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
 

@@ -21,16 +21,22 @@ typedef enum
 	MANEJAR_IO,
 	MANEJAR_WAIT,
 	MANEJAR_SIGNAL,
+	MANEJAR_F_OPEN,
+	MANEJAR_F_CLOSE,
+	MANEJAR_F_SEEK,
+	MANEJAR_F_READY,
+	MANEJAR_F_WRITE,
+	MANEJAR_F_TRUNCATE,
+	MANEJAR_CREATE_SEGMENT,
+	MANEJAR_DELETE_SEGMENT,
 }op_code;
 
-typedef struct
-{
+typedef struct{
 	int size;
 	void* stream;
 } t_buffer;
 
-typedef struct
-{
+typedef struct{
 	op_code codigo_operacion;
 	t_buffer* buffer;
 } t_paquete;
@@ -60,6 +66,11 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
 void empaquetar_tiempo_io(t_paquete* paquete, char* tiempo_io);
 void empaquetar_recurso(t_paquete* paquete, char* recurso);
+void empaquetar_nombre_archivo(t_paquete* paquete, char* nombre);
+void empaquetar_dir_logica(t_paquete* paquete, int* dir_logica);
+void empaquetar_bytes(t_paquete* paquete, int* cantidad_bytes);
+void empaquetar_tamanio(t_paquete* paquete, int* cantidad_bytes);
+void empaquetar_id_segmento(t_paquete* paquete, int* id_segmento);
 
 // Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
@@ -68,6 +79,15 @@ void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
 void send_tiempo_io(char* tiempo_io, int fd_modulo);
 void send_recurso_wait(char* recurso, int fd_modulo);
 void send_recurso_signal(char* recurso, int fd_modulo);
+void send_nombre_f_open(char* nombre_archivo, int fd_modulo);
+void send_nombre_f_close(char* nombre_archivo, int fd_modulo);
+void send_nombre_f_seek(char* nombre_archivo, int fd_modulo);
+void send_nombre_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo);
+void send_nombre_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo);
+void send_nombre_f_wait(char* nombre_archivo, int fd_modulo);
+void send_nombre_f_truncate(char* nombre_archivo, int* tamanio, int fd_modulo);
+void send_create_segment(int* id_segmento, int* tamanio, int fd_modulo);
+void send_delete_segment(int* id_segmento, int fd_modulo);
 
 // Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);

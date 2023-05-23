@@ -304,3 +304,77 @@ char* recv_recurso(int fd_modulo){
 	return recurso;
 }
 
+///////////// PROBABLEMENTE CAMBIE ESTE EMPAQUETAR POR EMPAQUETAR_RECURSO
+void empaquetar_nombre_archivo(t_paquete* paquete, char* nombre){
+	agregar_a_paquete(paquete, nombre, strlen(nombre) + 1);
+}
+
+void empaquetar_dir_logica(t_paquete* paquete, int* dir_logica){
+	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));		//ANALIZAR SI DIR_LOGICA ES PUNTERO O NO
+}																//SI ES PUNTERO, AGREGAR & EN EL SEGUNDO PARAMETRO DE AGREGAR A PAQUETE
+
+void empaquetar_bytes(t_paquete* paquete, int* cantidad_bytes){
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
+}
+
+void empaquetar_tamanio(t_paquete* paquete, int* cantidad_bytes){
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
+}
+
+void empaquetar_id_segmento(t_paquete* paquete, int* id_segmento){
+	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
+}
+
+void send_nombre_f_open(char* nombre_archivo, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_OPEN);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_nombre_f_close(char* nombre_archivo, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_CLOSE);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_nombre_f_seek(char* nombre_archivo, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_SEEK);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_nombre_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_READY);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	empaquetar_dir_logica(paquete, dir_logica);
+	empaquetar_bytes(paquete, cantidad_bytes);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_nombre_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_WRITE);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	empaquetar_dir_logica(paquete, dir_logica);
+	empaquetar_bytes(paquete, cantidad_bytes);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_nombre_f_truncate(char* nombre_archivo, int* tamanio, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_TRUNCATE);
+	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	empaquetar_tamanio(paquete, tamanio);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_create_segment(int* id_segmento, int* tamanio, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_CREATE_SEGMENT);
+	empaquetar_id_segmento(paquete, id_segmento);
+	empaquetar_tamanio(paquete, tamanio);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_delete_segment(int* id_segmento, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_DELETE_SEGMENT);
+	empaquetar_id_segmento(paquete, id_segmento);
+	enviar_paquete(paquete, fd_modulo);
+}

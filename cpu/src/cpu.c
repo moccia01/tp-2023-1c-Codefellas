@@ -84,7 +84,6 @@ void server_escuchar() {
 t_registros* inicializar_registro(){
 	registros = malloc(sizeof(t_registros));
 
-	//FUNCÓ PERO SUPONGO QUE HAY QUE CAMBIAR EL SIZE OF
 	registros->ax = malloc(sizeof(5));
 	registros->bx = malloc(sizeof(5));
 	registros->cx = malloc(sizeof(5));
@@ -224,21 +223,68 @@ void ejecutar_set(char* registro, char* valor){
 
 }
 
+void ejecutar_mov_in(t_registros registro, int dir_logica){
+
+}
+
+void ejecutar_mov_out(int dir_logica, t_registros registro){
+
+}
+
 void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_tiempo_io(tiempo_io, socket_cliente);
+}
+
+void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_open(nombre_archivo, socket_cliente);
+}
+
+void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_close(nombre_archivo, socket_cliente);
+}
+
+void ejecutar_f_seek(char* nombre_archivo, int* posicion, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_seek(nombre_archivo, socket_cliente);
+}
+
+void ejecutar_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_read(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+}
+
+void ejecutar_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_write(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+}
+
+void ejecutar_f_truncate(char* nombre_archivo, int* tamanio, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_nombre_f_truncate(nombre_archivo, tamanio, socket_cliente);
 }
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 	log_info(logger,"Se esta ejecutando un WAIT al recurso %s", recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_wait(recurso, socket_cliente);
-
 }
 
 void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_signal(recurso, socket_cliente);
+}
+
+void ejecutar_create_segment(int* id_segmento, int* tamanio, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_create_segment(id_segmento, tamanio, socket_cliente);
+}
+
+void ejecutar_delete_segment(int* id_segmento, t_contexto_ejecucion* contexto){
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_delete_segment(id_segmento, socket_cliente);
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){
