@@ -28,6 +28,7 @@ typedef enum{
 	MANEJAR_F_TRUNCATE,
 	MANEJAR_CREATE_SEGMENT,
 	MANEJAR_DELETE_SEGMENT,
+	MANEJAR_MOV_IN,
 }op_code;
 
 typedef struct{
@@ -64,7 +65,7 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo);
 void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto);
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
 
-// Sends
+//Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo);
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
@@ -80,14 +81,18 @@ void send_nombre_f_wait(char* nombre_archivo, int fd_modulo);
 void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo);
 void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
 void send_delete_segment(int id_segmento, int fd_modulo);
+void send_leer_valor(int dir_fisica, int fd_modulo);
 
-// Recvs
+//Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
+char* recv_valor(int fd_modulo);
 
+//Traducción
+int traducir_direccion(int dir_logica);
 
 #endif /* PROTOCOLO_H_ */
 

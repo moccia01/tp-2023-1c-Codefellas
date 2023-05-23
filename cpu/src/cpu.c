@@ -135,6 +135,8 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			log_info(logger,"Se esta ejecutando un SET");
 			break;
 		case MOV_IN:
+			dir_logica = atoi(proxima_instruccion->parametro2);
+			ejecutar_mov_in(proxima_instruccion->parametro1, dir_logica, contexto);
 			log_info(logger,"Se esta ejecutando un MOV_IN");
 			break;
 		case MOV_OUT:
@@ -213,6 +215,11 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	}
 }
 
+int traducir_direccion(int dir_logica){
+
+	return 1;
+}
+
 void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
@@ -253,14 +260,14 @@ void ejecutar_set(char* registro, char* valor){
 }
 
 //TODO ejecutar_mov_in y ejecutar_mov_out, estos se envían para MEMORIA, NO KERNEL
-void ejecutar_mov_in(t_registros registro, int dir_logica, t_contexto_ejecucion* contexto){
-	//dir_fisica = mmu(dir_logica);
-	//send_leer_valor(registro, dir_fisica, socket_cliente);
-	//valor_escrito_en_memoria = rcv_valor(socket_cliente);
-	//set_valor_registro(registro, valor);
+void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto){
+	int dir_fisica = traducir_direccion(dir_logica);		//TODO definir traducir_direccion
+	send_leer_valor(dir_fisica, socket_cliente);
+	char* valor_escrito_en_memoria = recv_valor(socket_cliente);
+	set_valor_registro(registro, valor_escrito_en_memoria);
 }
 
-void ejecutar_mov_out(int dir_logica, t_registros registro, t_contexto_ejecucion* contexto){
+void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* contexto){
 
 	//send_escribir_valor(registro, dir_logica);
 }

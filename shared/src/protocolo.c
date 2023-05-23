@@ -348,3 +348,15 @@ void send_delete_segment(int id_segmento, int fd_modulo){
 	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
+
+void send_leer_valor(int dir_fisica, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_MOV_IN);
+	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+}
+
+
+char* recv_valor(int fd_modulo){
+	return NULL;						//TODO Hacer esta funcion para mov_in y mov_out
+}
+

@@ -40,8 +40,8 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 
 //Instrucciones
 void ejecutar_set(char* registro, char* valor);
-void ejecutar_mov_in(t_registros registro, int dir_logica, t_contexto_ejecucion* contexto);
-void ejecutar_mov_out(int dir_logica, t_registros registro, t_contexto_ejecucion* contexto);
+void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto);
+void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* contexto);
 void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto);
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto);			//Verificar tipo de nombre de archivo
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto);
