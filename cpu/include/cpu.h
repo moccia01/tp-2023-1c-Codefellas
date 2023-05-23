@@ -40,8 +40,8 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 
 //Instrucciones
 void ejecutar_set(char* registro, char* valor);
-void ejecutar_mov_in(t_registros registro, int dir_logica);
-void ejecutar_mov_out(int dir_logica, t_registros registro);
+void ejecutar_mov_in(t_registros registro, int dir_logica, t_contexto_ejecucion* contexto);
+void ejecutar_mov_out(int dir_logica, t_registros registro, t_contexto_ejecucion* contexto);
 void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto);
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto);			//Verificar tipo de nombre de archivo
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto);
@@ -55,5 +55,6 @@ void ejecutar_create_segment(int* id_segmento, int* tamanio, t_contexto_ejecucio
 void ejecutar_delete_segment(int* id_segmento, t_contexto_ejecucion* contexto);
 void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
+void set_valor_registro(char* registro, char* valor);
 
 #endif /* CPU_H_ */

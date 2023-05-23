@@ -11,8 +11,7 @@
 #include<commons/log.h>
 #include"shared.h"
 
-typedef enum
-{
+typedef enum{
 	MENSAJE,
 	INSTRUCCIONES_CONSOLA,
 	PAQUETE,
@@ -24,7 +23,7 @@ typedef enum
 	MANEJAR_F_OPEN,
 	MANEJAR_F_CLOSE,
 	MANEJAR_F_SEEK,
-	MANEJAR_F_READY,
+	MANEJAR_F_READ,
 	MANEJAR_F_WRITE,
 	MANEJAR_F_TRUNCATE,
 	MANEJAR_CREATE_SEGMENT,

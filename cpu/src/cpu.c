@@ -123,6 +123,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	cod_instruccion cod_instruccion = proxima_instruccion->instruccion;
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
+	// TODO EN CADA SWITCH HACER EL CAST DE CHAR* DEL PARAMETRO QUE SEA INT PARA PASARLO A INT
 	switch(cod_instruccion){
 		case SET:
 			ejecutar_set(proxima_instruccion->parametro1, proxima_instruccion->parametro2);
@@ -188,47 +189,58 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	}
 }
 
-void ejecutar_set(char* registro, char* valor){
-	// les falta asignar el \0 al final de cada una
+void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
-	if(strcmp(registro, "AX") == 0){
-		registros->ax = valor;
-	}else if(strcmp(registro, "BX") == 0){
-		registros->bx = valor;
-	}else if(strcmp(registro, "CX") == 0){
-		registros->cx = valor;
-	}else if(strcmp(registro, "DX") == 0){
-		registros->dx = valor;
-	}else if(strcmp(registro, "EAX") == 0){
-		registros->eax = valor;
-	}else if(strcmp(registro, "EBX") == 0){
-		registros->ebx = valor;
-	}else if(strcmp(registro, "ECX") == 0){
-		registros->ecx = valor;
-	}else if(strcmp(registro, "EDX") == 0){
-		registros->edx = valor;
-	}else if(strcmp(registro, "RAX") == 0){
-		registros->rax = valor;
-	}else if(strcmp(registro, "RBX") == 0){
-		registros->rbx = valor;
-	}else if(strcmp(registro, "RCX") == 0){
-		registros->rcx = valor;
-	}else if(strcmp(registro, "RDX") == 0){
-		registros->rdx = valor;
-	}
+		if(strcmp(registro, "AX") == 0){
+			registros->ax = valor;
+		}else if(strcmp(registro, "BX") == 0){
+			registros->bx = valor;
+		}else if(strcmp(registro, "CX") == 0){
+			registros->cx = valor;
+		}else if(strcmp(registro, "DX") == 0){
+			registros->dx = valor;
+		}else if(strcmp(registro, "EAX") == 0){
+			registros->eax = valor;
+		}else if(strcmp(registro, "EBX") == 0){
+			registros->ebx = valor;
+		}else if(strcmp(registro, "ECX") == 0){
+			registros->ecx = valor;
+		}else if(strcmp(registro, "EDX") == 0){
+			registros->edx = valor;
+		}else if(strcmp(registro, "RAX") == 0){
+			registros->rax = valor;
+		}else if(strcmp(registro, "RBX") == 0){
+			registros->rbx = valor;
+		}else if(strcmp(registro, "RCX") == 0){
+			registros->rcx = valor;
+		}else if(strcmp(registro, "RDX") == 0){
+			registros->rdx = valor;
+		}
+
+		log_info(logger, "Se seteo el valor %s en registro %s", valor, registro);
+}
+
+
+void ejecutar_set(char* registro, char* valor){
+
+	set_valor_registro(registro, valor);
 
 	log_info(logger, "a mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
 
 }
 
-void ejecutar_mov_in(t_registros registro, int dir_logica){
-
+void ejecutar_mov_in(t_registros registro, int dir_logica, t_contexto_ejecucion* contexto){
+	//dir_fisica = mmu(dir_logica);
+	//send_leer_valor(registro, dir_fisica, socket_cliente);
+	//valor_escrito_en_memoria = rcv_valor(socket_cliente);
+	//set_valor_registro(registro, valor);
 }
 
-void ejecutar_mov_out(int dir_logica, t_registros registro){
+void ejecutar_mov_out(int dir_logica, t_registros registro, t_contexto_ejecucion* contexto){
 
+	//send_escribir_valor(registro, dir_logica);
 }
 
 void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto){
@@ -289,7 +301,6 @@ void ejecutar_delete_segment(int* id_segmento, t_contexto_ejecucion* contexto){
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){
 	contexto->estado = READY;
-	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en ready.
 	send_cambiar_estado(contexto, socket_cliente);
 }
 
@@ -297,7 +308,6 @@ void ejecutar_exit(t_contexto_ejecucion* contexto){
 	contexto->estado = FINISH_EXIT;
 	contexto->motivo_exit = SUCCESS;
 	send_cambiar_estado(contexto, socket_cliente);
-	// Avisarle al kernel q ponga al proceso asociado al contexto de ejecucion en exit.
 }
 
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
