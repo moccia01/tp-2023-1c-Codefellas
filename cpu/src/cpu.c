@@ -121,6 +121,11 @@ void fetch(t_contexto_ejecucion* contexto){
 
 void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	cod_instruccion cod_instruccion = proxima_instruccion->instruccion;
+	int tiempo;
+	int posicion;
+	int dir_logica;
+	int cantidad_bytes;
+	int tamanio;
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
 	// TODO EN CADA SWITCH HACER EL CAST DE CHAR* DEL PARAMETRO QUE SEA INT PARA PASARLO A INT
@@ -137,25 +142,44 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			break;
 		case IO:
 			flag_execute = false;
-			ejecutar_io(proxima_instruccion->parametro1, contexto);
+			tiempo = atoi(proxima_instruccion->parametro1);
+			ejecutar_io(tiempo, contexto);
 			log_info(logger,"Se esta ejecutando un I/O");
 			break;
 		case F_OPEN:
+			flag_execute = false;
+			ejecutar_f_open(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un F_OPEN");
 			break;
 		case F_CLOSE:
+			flag_execute = false;
+			ejecutar_f_close(proxima_instruccion->parametro1, contexto);
 			log_info(logger,"Se esta ejecutando un F_CLOSE");
 			break;
 		case F_SEEK:
+			flag_execute = false;
+			posicion = atoi(proxima_instruccion->parametro2);
+			ejecutar_f_seek(proxima_instruccion->parametro1, posicion, contexto);
 			log_info(logger,"Se esta ejecutando un F_SEEK");
 			break;
 		case F_READ:
+			flag_execute = false;
+			dir_logica = atoi(proxima_instruccion->parametro2);
+			cantidad_bytes = atoi(proxima_instruccion->parametro3);
+			ejecutar_f_read(proxima_instruccion->parametro1, dir_logica, cantidad_bytes, contexto);
 			log_info(logger,"Se esta ejecutando un F_READ");
 			break;
 		case F_WRITE:
+			flag_execute = false;
+			dir_logica = atoi(proxima_instruccion->parametro2);
+			cantidad_bytes = atoi(proxima_instruccion->parametro3);
+			ejecutar_f_write(proxima_instruccion->parametro1, dir_logica, cantidad_bytes, contexto);
 			log_info(logger,"Se esta ejecutando un F_WRITE");
 			break;
 		case F_TRUNCATE:
+			flag_execute = false;
+			tamanio = atoi(proxima_instruccion->parametro2);
+			ejecutar_f_truncate(proxima_instruccion->parametro1, tamanio, contexto);
 			log_info(logger,"Se esta ejecutando un F_TRUNCATE");
 			break;
 		case WAIT:
@@ -223,14 +247,12 @@ void set_valor_registro(char* registro, char* valor){
 
 
 void ejecutar_set(char* registro, char* valor){
-
 	set_valor_registro(registro, valor);
-
 	log_info(logger, "a mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
-
 }
 
+//TODO ejecutar_mov_in y ejecutar_mov_out, estos se envían para MEMORIA, NO KERNEL
 void ejecutar_mov_in(t_registros registro, int dir_logica, t_contexto_ejecucion* contexto){
 	//dir_fisica = mmu(dir_logica);
 	//send_leer_valor(registro, dir_fisica, socket_cliente);
@@ -243,7 +265,7 @@ void ejecutar_mov_out(int dir_logica, t_registros registro, t_contexto_ejecucion
 	//send_escribir_valor(registro, dir_logica);
 }
 
-void ejecutar_io(char* tiempo_io, t_contexto_ejecucion* contexto){
+void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_tiempo_io(tiempo_io, socket_cliente);
 }
@@ -258,22 +280,22 @@ void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
 	send_nombre_f_close(nombre_archivo, socket_cliente);
 }
 
-void ejecutar_f_seek(char* nombre_archivo, int* posicion, t_contexto_ejecucion* contexto){
+void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_seek(nombre_archivo, socket_cliente);
 }
 
-void ejecutar_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto){
+void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_read(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
 }
 
-void ejecutar_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, t_contexto_ejecucion* contexto){
+void ejecutar_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_write(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
 }
 
-void ejecutar_f_truncate(char* nombre_archivo, int* tamanio, t_contexto_ejecucion* contexto){
+void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_truncate(nombre_archivo, tamanio, socket_cliente);
 }
@@ -289,12 +311,12 @@ void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
 	send_recurso_signal(recurso, socket_cliente);
 }
 
-void ejecutar_create_segment(int* id_segmento, int* tamanio, t_contexto_ejecucion* contexto){
+void ejecutar_create_segment(int id_segmento, int tamanio, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_create_segment(id_segmento, tamanio, socket_cliente);
 }
 
-void ejecutar_delete_segment(int* id_segmento, t_contexto_ejecucion* contexto){
+void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_delete_segment(id_segmento, socket_cliente);
 }

@@ -265,32 +265,21 @@ t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){
 	return contexto_recibido;
 }
 
-// TODO VOLAR EMPAQUETAR IO Y DEJAR EN SEND TIEMPO IO AGERGAR PAQUETE
-void empaquetar_tiempo_io(t_paquete* paquete, char* tiempo_io){
-	int tiempo = atoi(tiempo_io);								//TODO VOLAR ESTO Y PASARLO AL SWITCH CON EL RESTO
-	agregar_a_paquete(paquete, &(tiempo), sizeof(int));
-}
-
-void send_tiempo_io(char* tiempo_io, int fd_modulo){
+void send_tiempo_io(int tiempo_io, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_IO);
-	empaquetar_tiempo_io(paquete, tiempo_io);
+	agregar_a_paquete(paquete, &(tiempo_io), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-}
-
-/// TODO CAMBIARLE EL NOMBRE A EMPAQUETAR_STRING Y USAR ESTA
-void empaquetar_recurso(t_paquete* paquete, char* recurso){
-	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 }
 
 void send_recurso_wait(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_WAIT);
-	empaquetar_recurso(paquete, recurso);
+	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
 }
 
 void send_recurso_signal(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_SIGNAL);
-	empaquetar_recurso(paquete, recurso);
+	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -306,79 +295,56 @@ char* recv_recurso(int fd_modulo){
 	return recurso;
 }
 
-///////////// TODO PROBABLEMENTE CAMBIE ESTE EMPAQUETAR POR EMPAQUETAR_RECURSO
-void empaquetar_nombre_archivo(t_paquete* paquete, char* nombre){
-	agregar_a_paquete(paquete, nombre, strlen(nombre) + 1);
-}
-
-// TODO SE PODRÍAN REEMPLAZAR POR EMPAQUETAR_INT LAS 4 DE ABAJO
-void empaquetar_dir_logica(t_paquete* paquete, int* dir_logica){
-	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));		//ANALIZAR SI DIR_LOGICA ES PUNTERO O NO
-}																//SI ES PUNTERO, AGREGAR & EN EL SEGUNDO PARAMETRO DE AGREGAR A PAQUETE
-																// SACRLE EL * A LOS INT
-void empaquetar_bytes(t_paquete* paquete, int* cantidad_bytes){
-	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
-}
-
-void empaquetar_tamanio(t_paquete* paquete, int* cantidad_bytes){
-	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
-}
-
-void empaquetar_id_segmento(t_paquete* paquete, int* id_segmento){
-	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
-}
-
 void send_nombre_f_open(char* nombre_archivo, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_OPEN);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	enviar_paquete(paquete, fd_modulo);
 }
 
 void send_nombre_f_close(char* nombre_archivo, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_CLOSE);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	enviar_paquete(paquete, fd_modulo);
 }
 
 void send_nombre_f_seek(char* nombre_archivo, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_SEEK);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_nombre_f_read(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo){
+void send_nombre_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_READ);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
-	empaquetar_dir_logica(paquete, dir_logica);
-	empaquetar_bytes(paquete, cantidad_bytes);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-/// TODO ANAALIZAR SI USAR EMPAQUETAR INT Y EMPAQUETAR STRING YA QUE NO ES NECESARIO, ES ESTÉTICO, YA LA LOGICA ESTA ABSTRAIDA POR AGREGAR A PAQUETE
-void send_nombre_f_write(char* nombre_archivo, int* dir_logica, int* cantidad_bytes, int fd_modulo){
+void send_nombre_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_WRITE);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
-	empaquetar_dir_logica(paquete, dir_logica);
-	empaquetar_bytes(paquete, cantidad_bytes);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_nombre_f_truncate(char* nombre_archivo, int* tamanio, int fd_modulo){
+void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_TRUNCATE);
-	empaquetar_nombre_archivo(paquete, nombre_archivo);
-	empaquetar_tamanio(paquete, tamanio);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_create_segment(int* id_segmento, int* tamanio, int fd_modulo){
+void send_create_segment(int id_segmento, int tamanio, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_CREATE_SEGMENT);
-	empaquetar_id_segmento(paquete, id_segmento);
-	empaquetar_tamanio(paquete, tamanio);
+	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
+	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_delete_segment(int* id_segmento, int fd_modulo){
+void send_delete_segment(int id_segmento, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_DELETE_SEGMENT);
-	empaquetar_id_segmento(paquete, id_segmento);
+	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
