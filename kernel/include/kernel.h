@@ -28,10 +28,12 @@ typedef struct
 	int id;
 	int instancias;
 	t_queue* cola_block_asignada;
+	pthread_mutex_t mutex_asignado;
 }t_recurso;
 
 typedef struct
 {
+	int fd_consola;
 	t_registros* registros;
 	t_contexto_ejecucion* contexto_de_ejecucion;
 	t_segmento* seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
@@ -100,6 +102,7 @@ void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
 void inicializar_variables();
 t_list* inicializar_recursos();
+void liberar_variables();
 
 // COMUNICACION
 static void procesar_conexion(void* args);
@@ -107,11 +110,11 @@ void iterator(char* value);
 int server_escuchar(int server_socket);
 
 // PCBS
-t_pcb *pcb_create(t_list* instrucciones, int pid);
+t_pcb *pcb_create(t_list* instrucciones, int pid, int cliente_socket);
 void pcb_destroy(t_pcb* pcb);
 void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
 void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo);
-void armar_pcb(t_list *instrucciones);
+void armar_pcb(t_list *instrucciones, int cliente_socket);
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto);
 
 // PLANIFICACION

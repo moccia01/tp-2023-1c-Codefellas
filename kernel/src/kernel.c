@@ -4,7 +4,7 @@ int main(void) {
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
 	// TODO: cambiar archivo de logs obligatorios
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
-	config = config_create("kernel.config");
+	config = config_create("/home/utnso/tp-2023-1c-Codefellas/kernel/kernel.config");
 
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
@@ -32,7 +32,7 @@ int main(void) {
 	server_socket = iniciar_servidor(logger, IP, PUERTO);
 	while (server_escuchar(server_socket));
 
-	terminar_programa(logger, config);
+	liberar_variables();
 	return 0;
 }
 
@@ -56,6 +56,7 @@ void leer_config() {
 	char** instancias = string_array_new();
 	instancias = config_get_array_value(config, "INSTANCIAS_RECURSOS");
 	INSTANCIAS_RECURSOS = string_to_int_array(instancias);
+	string_array_destroy(instancias);
 }
 
 int* string_to_int_array(char** array_de_strings){
@@ -96,7 +97,7 @@ bool generar_conexiones() {
 //	pthread_detach(conexion_memoria);
 
 //	return fd_filesystem != 0 && fd_cpu != 0 && fd_memoria != 0;
-	return true;
+	return fd_cpu != 0;
 }
 
 void inicializar_variables() {
@@ -137,10 +138,18 @@ t_list* inicializar_recursos(){
 		recurso->id = i;
 		recurso->instancias = INSTANCIAS_RECURSOS[i];
 		recurso->cola_block_asignada = cola_block;
-		// TODO: mutex cola block asignada, añadir en struct
+		pthread_mutex_init(&recurso->mutex_asignado, NULL);
 		list_add(lista, recurso);
 	}
 	return lista;
+}
+
+void liberar_variables(){
+	log_destroy(logger);
+	log_destroy(logger_obligatorio);
+	config_destroy(config);
+	free(INSTANCIAS_RECURSOS);
+	free(RECURSOS);
 }
 
 // ------------------ COMUNICACION ------------------
@@ -171,7 +180,7 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case INSTRUCCIONES_CONSOLA:
 			t_list *instrucciones = recv_instrucciones(logger, cliente_socket);
-			armar_pcb(instrucciones);
+			armar_pcb(instrucciones, cliente_socket);
 			break;
 		case CAMBIAR_ESTADO:
 			log_info(logger, "recibi un aviso de cambio de estado");
@@ -184,26 +193,24 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case CONTEXTO_EJECUCION:
 			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
+			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			actualizar_contexto_pcb(pcb, contexto_recibido);
 			recv(cliente_socket, &cop, sizeof(op_code), 0);
 			switch(cop){
 			case MANEJAR_IO:
 				int tiempo = recv_tiempo_io(cliente_socket);
-				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+				calcular_estimacion(pcb);
+				cambiar_estado(pcb, BLOCK);
 				sem_post(&sem_exec);
-				actualizar_contexto_pcb(pcb, contexto_recibido);
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
 				recurso = recv_recurso(cliente_socket);
 				log_info(logger, "recurso recibido del wait: %s", recurso);
-				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-				actualizar_contexto_pcb(pcb,contexto_recibido);
 				manejar_wait(pcb, recurso);
 				break;
 			case MANEJAR_SIGNAL:
 				recurso = recv_recurso(cliente_socket);
-				pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-				actualizar_contexto_pcb(pcb,contexto_recibido);
 				manejar_signal(pcb, recurso);
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
@@ -244,8 +251,9 @@ int server_escuchar(int server_socket) {
 
 // ------------------ PCBS ------------------
 
-t_pcb* pcb_create(t_list* instrucciones, int pid) {
+t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
+	pcb->fd_consola = cliente_socket;
 	pcb->registros = NULL;
 	pcb->seg_fault = NULL;
 	pcb->estimado_proxima_rafaga = ESTIMACION_INICIAL;
@@ -311,12 +319,12 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 	}
 }
 
-void armar_pcb(t_list *instrucciones) {
+void armar_pcb(t_list *instrucciones, int cliente_socket) {
 	pthread_mutex_lock(&mutex_generador_pid);
 	int pid = generador_pid;
 	generador_pid++;
 	pthread_mutex_unlock(&mutex_generador_pid);
-	t_pcb *pcb = pcb_create(instrucciones, pid);
+	t_pcb *pcb = pcb_create(instrucciones, pid, cliente_socket);
 	log_info(logger_obligatorio, "Se crea el proceso %d en NEW", pid);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
@@ -357,6 +365,7 @@ void exit_pcb(void) {
 		t_pcb *pcb = safe_pcb_pop(cola_exit, &mutex_cola_exit);
 		char* motivo = motivo_exit_to_string(pcb->contexto_de_ejecucion->motivo_exit);
 		log_info(logger_obligatorio, "Finaliza el proceso %d - Motivo: %s", pcb->contexto_de_ejecucion->pid, motivo);
+		enviar_mensaje("Fin del proceso", pcb->fd_consola);
 		pcb_destroy(pcb);
 	}
 }
@@ -523,7 +532,7 @@ void exec_io(void* void_arg){
 	int tiempo = args->tiempo;
 	log_info(logger, "ejecutando IO por tiempo: %d", tiempo);
 	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
-	usleep(tiempo * 100000);
+	usleep(tiempo * 1000000);
 	safe_pcb_pop(cola_block, &mutex_cola_block);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
@@ -532,7 +541,7 @@ void exec_io(void* void_arg){
 void manejar_wait(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado= buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
-		log_error(logger, "No existe el recurso: %s solicitado", recurso);
+		log_error(logger, "No existe el recurso solicitado: %s", recurso);
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		sem_post(&sem_exec);
@@ -541,7 +550,8 @@ void manejar_wait(t_pcb* pcb, char* recurso){
 		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 		if(recursobuscado->instancias < 0){
 			log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
-			queue_push(recursobuscado->cola_block_asignada, pcb);
+			calcular_estimacion(pcb);
+			safe_pcb_push(recursobuscado->cola_block_asignada, pcb, &recursobuscado->mutex_asignado);
 			sem_post(&sem_exec);
 		}else{
 			safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
@@ -553,14 +563,14 @@ void manejar_wait(t_pcb* pcb, char* recurso){
 void manejar_signal(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado = buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
-		log_error(logger, "No existe el recurso: %s solicitado",recurso);
+		log_error(logger, "No existe el recurso solicitado: %s",recurso);
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 	}else{
 		recursobuscado->instancias++;
 		log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 		if(recursobuscado->instancias <= 0){
-			t_pcb* pcb = queue_pop(recursobuscado->cola_block_asignada);
+			t_pcb* pcb = safe_pcb_pop(recursobuscado->cola_block_asignada, &recursobuscado->mutex_asignado);
 			safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
 			sem_post(&sem_listos_ready);
 		}
