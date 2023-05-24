@@ -190,7 +190,6 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 		case WAIT:
 			flag_execute = false;
 			ejecutar_wait(proxima_instruccion->parametro1, contexto);
-			log_info(logger, "Se esta ejecutando un WAIT");
 			break;
 		case SIGNAL:
 			flag_execute = false;
