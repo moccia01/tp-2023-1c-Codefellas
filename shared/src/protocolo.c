@@ -355,8 +355,13 @@ void send_leer_valor(int dir_fisica, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-
 char* recv_valor(int fd_modulo){
 	return NULL;						//TODO Hacer esta funcion para mov_in y mov_out
 }
 
+void send_escribir_valor(char* registro, int dir_logica, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_MOV_OUT);
+	agregar_a_paquete(paquete, &(registro), strlen(registro) + 1);
+	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+}

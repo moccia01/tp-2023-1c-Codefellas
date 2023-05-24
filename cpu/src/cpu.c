@@ -37,6 +37,7 @@ void leer_config(){
 	IP_MEMORIA = config_get_string_value(config, "IP_MEMORIA");
 	PUERTO_MEMORIA = config_get_string_value(config, "PUERTO_MEMORIA");
 	RETARDO_INSTRUCCION = config_get_int_value(config, "RETARDO_INSTRUCCION");
+	TAM_MAX_SEGMENTO = config_get_int_value(config, "TAM_MAX_SEGMENTO");
 }
 
 // --------------- COMUNICACION ---------------
@@ -126,9 +127,9 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	int dir_logica;
 	int cantidad_bytes;
 	int tamanio;
+	int id_segmento;
 
 	//los logs son para testear e ir sabiendo lo que se va ejecutando
-	// TODO EN CADA SWITCH HACER EL CAST DE CHAR* DEL PARAMETRO QUE SEA INT PARA PASARLO A INT
 	switch(cod_instruccion){
 		case SET:
 			ejecutar_set(proxima_instruccion->parametro1, proxima_instruccion->parametro2);
@@ -140,6 +141,8 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			log_info(logger,"Se esta ejecutando un MOV_IN");
 			break;
 		case MOV_OUT:
+			dir_logica = atoi(proxima_instruccion->parametro1);
+			ejecutar_mov_out(dir_logica, proxima_instruccion->parametro2);
 			log_info(logger,"Se esta ejecutando un MOV_OUT");
 			break;
 		case IO:
@@ -187,6 +190,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 		case WAIT:
 			flag_execute = false;
 			ejecutar_wait(proxima_instruccion->parametro1, contexto);
+			log_info(logger, "Se esta ejecutando un WAIT");
 			break;
 		case SIGNAL:
 			flag_execute = false;
@@ -194,9 +198,16 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			log_info(logger,"Se esta ejecutando un SIGNAL");
 			break;
 		case CREATE_SEGMENT:
+			flag_execute = false;
+			id_segmento = atoi(proxima_instruccion->parametro1);
+			tamanio = atoi(proxima_instruccion->parametro2);
+			ejecutar_create_segment(id_segmento, tamanio, contexto);
 			log_info(logger,"Se esta ejecutando un CREATE_SEGMENT");
 			break;
 		case DELETE_SEGMENT:
+			flag_execute = false;
+			id_segmento = atoi(proxima_instruccion->parametro1);
+			ejecutar_delete_segment(id_segmento, contexto);
 			log_info(logger,"Se esta ejecutando un DELETE_SEGMENT");
 			break;
 		case YIELD:
@@ -215,9 +226,21 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 	}
 }
 
-int traducir_direccion(int dir_logica){
+int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto){
 
-	return 1;
+	int num_segmento = floor(dir_logica/TAM_MAX_SEGMENTO);
+
+	int desplazamiento_segmento = dir_logica % TAM_MAX_SEGMENTO;
+
+	int direccion_fisica = desplazamiento_segmento + num_segmento;	//TODO Chequear si la suma en el último párrafo de MMU es así
+
+	if(direccion_fisica < TAM_MAX_SEGMENTO){
+		return direccion_fisica;
+	}else{
+		send_contexto_ejecucion(contexto, socket_cliente);
+		log_error(logger, "Error: Segmentation Fault (SEG_FAULT)");	//TODO Chequear como terminar la función en caso de que el kernel deba finalizar
+		exit(1);
+	}
 }
 
 void set_valor_registro(char* registro, char* valor){
@@ -259,17 +282,16 @@ void ejecutar_set(char* registro, char* valor){
 	usleep(RETARDO_INSTRUCCION * 1000);
 }
 
-//TODO ejecutar_mov_in y ejecutar_mov_out, estos se envían para MEMORIA, NO KERNEL
+//TODO Ejecutar_mov_in y ejecutar_mov_out, estos se envían para MEMORIA, NO KERNEL
 void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto){
-	int dir_fisica = traducir_direccion(dir_logica);		//TODO definir traducir_direccion
+	int dir_fisica = traducir_direccion(dir_logica, contexto);
 	send_leer_valor(dir_fisica, socket_cliente);
 	char* valor_escrito_en_memoria = recv_valor(socket_cliente);
 	set_valor_registro(registro, valor_escrito_en_memoria);
 }
 
-void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* contexto){
-
-	//send_escribir_valor(registro, dir_logica);
+void ejecutar_mov_out(int dir_logica, char* registro){
+	send_escribir_valor(registro, dir_logica, socket_cliente);
 }
 
 void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){

@@ -29,6 +29,7 @@ typedef enum{
 	MANEJAR_CREATE_SEGMENT,
 	MANEJAR_DELETE_SEGMENT,
 	MANEJAR_MOV_IN,
+	MANEJAR_MOV_OUT,
 }op_code;
 
 typedef struct{
@@ -82,6 +83,7 @@ void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo);
 void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
 void send_delete_segment(int id_segmento, int fd_modulo);
 void send_leer_valor(int dir_fisica, int fd_modulo);
+void send_escribir_valor(char* registro, int dir_logica, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -90,9 +92,6 @@ t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
-
-//Traducción
-int traducir_direccion(int dir_logica);
 
 #endif /* PROTOCOLO_H_ */
 

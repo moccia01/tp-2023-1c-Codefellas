@@ -7,6 +7,7 @@
 #include <protocolo.h>
 #include <shared.h>
 #include <pthread.h>
+#include <math.h>
 
 
 t_log* logger;
@@ -26,6 +27,7 @@ char* PUERTO;
 char* IP_MEMORIA;
 char* PUERTO_MEMORIA;
 int RETARDO_INSTRUCCION;
+int TAM_MAX_SEGMENTO;
 
 void leer_config();
 
@@ -41,7 +43,7 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto);
 //Instrucciones
 void ejecutar_set(char* registro, char* valor);
 void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto);
-void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* contexto);
+void ejecutar_mov_out(int dir_logica, char* registro);
 void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto);
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto);			//Verificar tipo de nombre de archivo
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto);
@@ -49,12 +51,15 @@ void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* c
 void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto);
 void ejecutar_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto);
 void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion* contexto);
-void ejecutar_wait();
-void ejecutar_signal();
+void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto);
+void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto);
 void ejecutar_create_segment(int id_segmento, int tamanio, t_contexto_ejecucion* contexto);
 void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto);
 void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
 void set_valor_registro(char* registro, char* valor);
+int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto);
 
+//Traducción
+//int traducir_direccion(int dir_logica);
 #endif /* CPU_H_ */
