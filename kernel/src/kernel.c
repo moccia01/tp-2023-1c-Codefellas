@@ -208,7 +208,6 @@ static void procesar_conexion(void* void_args) {
 				break;
 			case MANEJAR_WAIT:
 				recurso = recv_recurso(cliente_socket);
-				log_info(logger, "recurso recibido del wait: %s", recurso);
 				manejar_wait(pcb, recurso);
 				break;
 			case MANEJAR_SIGNAL:
@@ -551,6 +550,7 @@ void manejar_wait(t_pcb* pcb, char* recurso){
 		recursobuscado->instancias --;
 		log_info(logger_obligatorio,"PID: %d - Wait: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 		if(recursobuscado->instancias < 0){
+			cambiar_estado(pcb, BLOCK);
 			log_info(logger_obligatorio,"PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid,recurso);
 			calcular_estimacion(pcb);
 			safe_pcb_push(recursobuscado->cola_block_asignada, pcb, &recursobuscado->mutex_asignado);
