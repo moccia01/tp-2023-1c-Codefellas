@@ -216,6 +216,30 @@ static void procesar_conexion(void* void_args) {
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
+			case MANEJAR_CREATE_SEGMENT:
+//				recibir parametros del create_segment
+//				mandarle a memoria aviso de create_segment
+//				recibir de memoria respuesta del create_segment
+//				switch(respuesta_memoria){
+//				case: segmento_creado / case: out_of_memory / case: compactacion
+//				en caso de compactacion:
+//		        	 - usar semaforo para verificar si se esta ejecutando
+//				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op);
+//					 - recibir de memoria las tablas de segmentos actualizadas post compact
+//					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
+//					 - mandarle memoria aviso de create_segment.
+//				}
+				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				break;
+			case MANEJAR_DELETE_SEGMENT:
+				// recibir parametros del delete_segment
+				// mandarle a memoria aviso de delete_segment
+				// recibir de memoria tabla de segmentos actualizada
+				// actualizar contexto de pcb con tabla de segmentos actualizada
+				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 				return;
