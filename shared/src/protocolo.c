@@ -1,7 +1,6 @@
 #include "../include/protocolo.h"
 
-void* serializar_paquete(t_paquete* paquete, int bytes)
-{
+void* serializar_paquete(t_paquete* paquete, int bytes){
 	void * magic = malloc(bytes);
 	int desplazamiento = 0;
 
@@ -15,8 +14,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
-void enviar_mensaje(char* mensaje, int socket_cliente)
-{
+void enviar_mensaje(char* mensaje, int socket_cliente){
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 
 	paquete->codigo_operacion = MENSAJE;
@@ -35,15 +33,13 @@ void enviar_mensaje(char* mensaje, int socket_cliente)
 	eliminar_paquete(paquete);
 }
 
-void eliminar_paquete(t_paquete* paquete)
-{
+void eliminar_paquete(t_paquete* paquete){
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
 }
 
-int recibir_operacion(int socket_cliente)
-{
+int recibir_operacion(int socket_cliente){
 	int cod_op;
 	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
 		return cod_op;
@@ -54,8 +50,7 @@ int recibir_operacion(int socket_cliente)
 	}
 }
 
-void* recibir_buffer(int* size, int socket_cliente)
-{
+void* recibir_buffer(int* size, int socket_cliente){
 	void * buffer;
 
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
@@ -65,16 +60,14 @@ void* recibir_buffer(int* size, int socket_cliente)
 	return buffer;
 }
 
-void recibir_mensaje(t_log* logger, int socket_cliente)
-{
+void recibir_mensaje(t_log* logger, int socket_cliente){
 	int size;
 	char* buffer = recibir_buffer(&size, socket_cliente);
 	log_info(logger, "Me llego el mensaje: %s", buffer);
 	free(buffer);
 }
 
-t_list* recibir_paquete(int socket_cliente)
-{
+t_list* recibir_paquete(int socket_cliente){
 	int size;
 	int desplazamiento = 0;
 	void * buffer;
@@ -95,23 +88,20 @@ t_list* recibir_paquete(int socket_cliente)
 	return valores;
 }
 
-void crear_buffer(t_paquete* paquete)
-{
+void crear_buffer(t_paquete* paquete){
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer->size = 0;
 	paquete->buffer->stream = NULL;
 }
 
-t_paquete* crear_paquete(op_code codigo_op)
-{
+t_paquete* crear_paquete(op_code codigo_op){
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	paquete->codigo_operacion = codigo_op;
 	crear_buffer(paquete);
 	return paquete;
 }
 
-void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
-{
+void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio){
 	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio + sizeof(int));
 
 	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio, sizeof(int));
@@ -120,8 +110,7 @@ void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
 	paquete->buffer->size += tamanio + sizeof(int);
 }
 
-void enviar_paquete(t_paquete* paquete, int socket_cliente)
-{
+void enviar_paquete(t_paquete* paquete, int socket_cliente){
 	int bytes = paquete->buffer->size + sizeof(int) + sizeof(op_code);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
@@ -356,7 +345,11 @@ void send_leer_valor(int dir_fisica, int fd_modulo){
 }
 
 char* recv_valor(int fd_modulo){
-	return NULL;						//TODO Hacer esta funcion para mov_in y mov_out
+	//return NULL;						//TODO Chequear esta funcion para mov_in y mov_out
+	t_list* paquete = recibir_paquete(fd_modulo);
+	char* valor_en_memoria = list_get(paquete, 0);
+
+	return valor_en_memoria;
 }
 
 void send_escribir_valor(char* registro, int dir_logica, int fd_modulo){
