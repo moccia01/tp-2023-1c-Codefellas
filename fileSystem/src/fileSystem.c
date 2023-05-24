@@ -1,15 +1,18 @@
 #include "../include/fileSystem.h"
 
-int main(void) {
+int main(int argc, char **argv) {
+	if (argc > 2) {
+		return EXIT_FAILURE;
+	}
 	logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
-	config = config_create("filesystem.config");
-	levantar_archivos();
-
+	config = config_create(argv[1]);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
 	leer_config();
+
+	levantar_archivos();
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);

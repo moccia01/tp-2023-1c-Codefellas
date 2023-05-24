@@ -1,11 +1,13 @@
 #include "../include/kernel.h"
 
-int main(void) {
+int main(int argc, char **argv) {
+	if (argc > 2) {
+		return EXIT_FAILURE;
+	}
 	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
 	// TODO: cambiar archivo de logs obligatorios
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
-	config = config_create("/home/utnso/tp-2023-1c-Codefellas/kernel/kernel.config");
-
+	config = config_create(argv[1]);
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);

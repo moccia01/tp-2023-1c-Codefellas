@@ -1,19 +1,21 @@
 #include "../include/cpu.h"
 
-int main(void) {
+int main(int argc, char **argv) {
+	if (argc > 2) {
+		return EXIT_FAILURE;
+	}
 	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
 	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
-	config = config_create("cpu.config");
-	registros = inicializar_registro();
-
-	//Inicializar variables (CUANDO ESCALE PASARLO A UNA FUNCION)
-	flag_execute = true;
-
+	config = config_create(argv[1]);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
 	leer_config();
+
+	//Inicializar variables (CUANDO ESCALE PASARLO A UNA FUNCION)
+	registros = inicializar_registro();
+	flag_execute = true;
 
 	// Conecto CPU con memoria
 //	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);

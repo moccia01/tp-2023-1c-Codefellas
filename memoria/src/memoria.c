@@ -1,9 +1,11 @@
 #include "../include/memoria.h"
 
-int main(void) {
+int main(int argc, char **argv) {
+	if (argc > 2) {
+		return EXIT_FAILURE;
+	}
 	logger = log_create("memoria.log", "memoria_main", true, LOG_LEVEL_INFO);
-	config = config_create("memoria.config");
-
+	config = config_create(argv[1]);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);

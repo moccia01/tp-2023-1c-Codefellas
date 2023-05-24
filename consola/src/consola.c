@@ -1,12 +1,10 @@
 #include "../include/consola.h"
 
 int main(int argc, char **argv) {
-	logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
-
 	if (argc > 3) {
 		return EXIT_FAILURE;
 	}
-
+	logger = log_create("consola.log", "consola_main", true, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
@@ -100,21 +98,17 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
 
 static void procesar_conexion(){
 	op_code cop;
-	while (fd_kernel != -1) {
-        if (recv(fd_kernel, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
-            return;
-        }
-		switch (cop) {
-		case MENSAJE:
-			recibir_mensaje(logger, fd_kernel);
-			break;
-		default:
-			log_error(logger, "Algo anduvo mal en el server de consola");
-			return;
-		}
+    if (recv(fd_kernel, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
+    	return;
+    }
+	switch (cop) {
+	case MENSAJE:
+		recibir_mensaje(logger, fd_kernel);
+		break;
+	default:
+		log_error(logger, "Algo anduvo mal en el server de consola");
+		return;
 	}
-
-	log_warning(logger, "El cliente se desconecto de la consola");
 	return;
 }
 
