@@ -11,10 +11,10 @@
 
 
 typedef enum {
-	FirstFit,
-	BestFit,
-	WorstFit
-} t_algoritmoMEMORIA;
+	FIRST_FIT,
+	BEST_FIT,
+	WORST_FIT
+} t_algoritmo_memoria;
 
 //Config
 char* IP;
@@ -25,7 +25,7 @@ char* TAM_SEGMENTO_0;
 char* CANT_SEGMENTOS;
 char* RETARDO_MEMORIA;
 char* RETARDO_COMPACTACION;
-t_algoritmoMEMORIA ALGORITMO_ASIGNACION;
+t_algoritmo_memoria ALGORITMO_ASIGNACION;
 
 // Variables globales
 t_log* logger;
@@ -37,7 +37,7 @@ char* server_name;
 
 // --------------------- INIT ---------------------
 void leer_config();
-void asignar_algoritmo_memoria(char *algoritmo_MEMORIA);
+void asignar_algoritmo_memoria(char *algoritmo_memoria);
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
@@ -52,6 +52,6 @@ char* TAM_SEGMENTO_0;
 char* CANT_SEGMENTOS;
 char* RETARDO_MEMORIA;
 char* RETARDO_COMPACTACION;
-t_algoritmoMEMORIA ALGORITMO_ASIGNACION;
+t_algoritmo_memoria ALGORITMO_ASIGNACION;
 
 #endif /* MEMORIA_H_ */

@@ -279,7 +279,6 @@ int server_escuchar(int server_socket) {
 t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 	pcb->fd_consola = cliente_socket;
-	pcb->registros = NULL;
 	pcb->seg_fault = NULL;
 	pcb->estimado_proxima_rafaga = ESTIMACION_INICIAL;
 

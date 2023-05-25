@@ -352,9 +352,9 @@ char* recv_valor(int fd_modulo){
 	return valor_en_memoria;
 }
 
-void send_escribir_valor(char* registro, int dir_logica, int fd_modulo){
+void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_MOV_OUT);
-	agregar_a_paquete(paquete, &(registro), strlen(registro) + 1);
-	agregar_a_paquete(paquete, &(dir_logica), sizeof(int));
+	agregar_a_paquete(paquete, &(valor), strlen(valor) + 1);
+	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }

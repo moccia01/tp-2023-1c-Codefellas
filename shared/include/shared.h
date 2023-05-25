@@ -8,8 +8,7 @@
 #include <commons/string.h>
 #include "sockets.h"
 
-typedef struct
-{
+typedef struct{
 	char* ax;
 	char* bx;
 	char* cx;
@@ -24,8 +23,7 @@ typedef struct
 	char* rdx;
 } t_registros;
 
-typedef enum
-{
+typedef enum{
 	NEW,
 	READY,
 	EXEC,
@@ -35,8 +33,7 @@ typedef enum
 	UNKNOWN_STATE
 } estado_proceso;
 
-typedef enum
-{
+typedef enum{
 	SET,
 	ADD,
 	MOV_IN,
@@ -92,6 +89,7 @@ typedef struct{
     estado_proceso estado;
     motivo_exit motivo_exit;
     motivo_block motivo_block;
+    t_registros* registros;
 }t_contexto_ejecucion;
 
 void terminar_programa(t_log* logger, t_config* config);

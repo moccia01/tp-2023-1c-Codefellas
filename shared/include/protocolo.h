@@ -83,7 +83,7 @@ void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo);
 void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
 void send_delete_segment(int id_segmento, int fd_modulo);
 void send_leer_valor(int dir_fisica, int fd_modulo);
-void send_escribir_valor(char* registro, int dir_logica, int fd_modulo);
+void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);

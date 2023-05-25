@@ -10,20 +10,17 @@
 #include <semaphore.h>
 
 
-typedef enum
-{
+typedef enum{
 	FIFO,
 	HRRN,
 } t_algoritmo;
 //Memoria Robado tp Nahu
-typedef struct
-{
+typedef struct{
 	int indice_tabla_de_pagina;
 	int numero_pagina;
 } t_pagina;
 
-typedef struct
-{
+typedef struct{
 	char* recurso;
 	int id;
 	int instancias;
@@ -31,10 +28,8 @@ typedef struct
 	pthread_mutex_t mutex_asignado;
 }t_recurso;
 
-typedef struct
-{
+typedef struct{
 	int fd_consola;
-	t_registros* registros;
 	t_contexto_ejecucion* contexto_de_ejecucion;
 	t_segmento* seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
 	uint16_t estimado_proxima_rafaga;
@@ -42,8 +37,7 @@ typedef struct
 	time_t tiempo_ingreso_exec;
 } t_pcb;
 
-typedef struct
-{
+typedef struct{
 	t_pcb* pcb;
 	int tiempo;
 }t_manejo_io;
