@@ -75,8 +75,7 @@ t_list* recibir_paquete(int socket_cliente){
 	int tamanio;
 
 	buffer = recibir_buffer(&size, socket_cliente);
-	while(desplazamiento < size)
-	{
+	while(desplazamiento < size){
 		memcpy(&tamanio, buffer + desplazamiento, sizeof(int));
 		desplazamiento+=sizeof(int);
 		char* valor = malloc(tamanio);
@@ -194,6 +193,39 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 	return tabla_segmentos;
 }
 
+void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros){
+	agregar_a_paquete(paquete, registros->ax, strlen(registros->ax) + 1);
+	agregar_a_paquete(paquete, registros->bx, strlen(registros->bx) + 1);
+	agregar_a_paquete(paquete, registros->cx, strlen(registros->cx) + 1);
+	agregar_a_paquete(paquete, registros->dx, strlen(registros->dx) + 1);
+	agregar_a_paquete(paquete, registros->eax, strlen(registros->eax) + 1);
+	agregar_a_paquete(paquete, registros->ebx, strlen(registros->ebx) + 1);
+	agregar_a_paquete(paquete, registros->ecx, strlen(registros->ecx) + 1);
+	agregar_a_paquete(paquete, registros->edx, strlen(registros->edx) + 1);
+	agregar_a_paquete(paquete, registros->rax, strlen(registros->rax) + 1);
+	agregar_a_paquete(paquete, registros->rbx, strlen(registros->rbx) + 1);
+	agregar_a_paquete(paquete, registros->rcx, strlen(registros->rcx) + 1);
+	agregar_a_paquete(paquete, registros->rdx, strlen(registros->rdx) + 1);
+}
+
+t_registros* desempaquetar_registros(t_list* paquete, int comienzo){
+	t_registros* registro_contexto = malloc(sizeof(t_registros));
+	registro_contexto->ax = list_get(paquete,comienzo + 1);
+	registro_contexto->bx = list_get(paquete,comienzo + 2);
+	registro_contexto->cx = list_get(paquete,comienzo + 3);
+	registro_contexto->dx = list_get(paquete,comienzo + 4);
+	registro_contexto->eax = list_get(paquete,comienzo + 5);
+	registro_contexto->ebx = list_get(paquete,comienzo + 6);
+	registro_contexto->ecx = list_get(paquete,comienzo + 7);
+	registro_contexto->edx = list_get(paquete,comienzo + 8);
+	registro_contexto->rax = list_get(paquete,comienzo + 9);
+	registro_contexto->rbx = list_get(paquete,comienzo + 10);
+	registro_contexto->rcx = list_get(paquete,comienzo + 11);
+	registro_contexto->rdx = list_get(paquete,comienzo + 12);
+
+	return registro_contexto;
+}
+
 void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto){
 	agregar_a_paquete(paquete, &(contexto->pid), sizeof(int));
 	agregar_a_paquete(paquete, &(contexto->program_counter), sizeof(int));
@@ -202,6 +234,7 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
+	empaquetar_registro_contexto(paquete, contexto->registros);			//TODO Chequear Tomas funcion
 }
 
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
@@ -227,6 +260,10 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 5 + (cantidad_instrucciones * 4) + 1);
 	contexto->tabla_de_segmentos = tabla_segmentos;
+	int cantidad_tabla_segmentos = list_size(tabla_segmentos);
+
+	t_registros* registro_contexto = desempaquetar_registros(paquete, cantidad_tabla_segmentos);	//TODO Chequear Tomas, tanto funcion como si está bien el comienzo
+	contexto->registros = registro_contexto;
 
 	return contexto;
 }

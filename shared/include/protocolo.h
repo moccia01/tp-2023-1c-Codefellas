@@ -65,6 +65,8 @@ void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos);
 t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo);
 void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* contexto);
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete);
+void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros);
+t_registros* desempaquetar_registros(t_list* paquete, int comienzo);
 
 //Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
