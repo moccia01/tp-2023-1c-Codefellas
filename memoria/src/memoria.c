@@ -28,6 +28,26 @@ int main(int argc, char **argv) {
 void leer_config(){
 	IP = config_get_string_value(config, "IP_ESCUCHA");
 	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
+	TAM_MEMORIA = config_get_string_value(config, "TAM_MEMORIA");
+		TAM_SEGMENTO_0 = config_get_string_value(config, "TAM_SEGMENTO_0");
+		CANT_SEGMENTOS = config_get_string_value(config, "CANT_SEGMENTOS");
+		RETARDO_MEMORIA = config_get_string_value(config, "RETARDO_MEMORIA");
+		RETARDO_COMPACTACION = config_get_string_value(config, "RETARDO_COMPACTACION");
+		char *algoritmo_MEMORIA = config_get_string_value(config, "ALGORITMO_ASIGNACION");
+		asignar_algoritmo_memoria(algoritmo_MEMORIA);
+}
+
+void asignar_algoritmo_memoria(char *algoritmo_MEMORIA) {
+	if (strcmp(algoritmo_MEMORIA, "FirstFit") == 0) {
+		ALGORITMO_ASIGNACION = FirstFit;
+	} else if (strcmp(algoritmo_MEMORIA, "BestFit") == 0) {
+		ALGORITMO_ASIGNACION = BestFit;
+	}else if((strcmp(algoritmo_MEMORIA, "WorstFit") == 0)){
+		ALGORITMO_ASIGNACION = WorstFit;
+	}
+	else{
+		log_error(logger, "El algoritmo no es valido");
+	}
 }
 
 // --------------------- COMUNICACION ---------------------

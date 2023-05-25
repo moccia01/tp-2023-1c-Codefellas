@@ -8,6 +8,25 @@
 #include <shared.h>
 #include <pthread.h>
 
+
+
+typedef enum {
+	FirstFit,
+	BestFit,
+	WorstFit
+} t_algoritmoMEMORIA;
+
+//Config
+char* IP;
+char* PUERTO;
+char* PUERTO_ESCUCHA;
+char* TAM_MEMORIA;
+char* TAM_SEGMENTO_0;
+char* CANT_SEGMENTOS;
+char* RETARDO_MEMORIA;
+char* RETARDO_COMPACTACION;
+t_algoritmoMEMORIA ALGORITMO_ASIGNACION;
+
 // Variables globales
 t_log* logger;
 t_config* config;
@@ -15,16 +34,24 @@ t_config* config;
 int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
 char* server_name;
 
-// Variables del config
-char* IP;
-char* PUERTO;
 
 // --------------------- INIT ---------------------
 void leer_config();
-
+void asignar_algoritmo_memoria(char *algoritmo_MEMORIA);
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
 int server_escuchar(int server_socket);
+
+//UTILS
+char* IP;
+char* PUERTO;
+char* PUERTO_ESCUCHA;
+char* TAM_MEMORIA;
+char* TAM_SEGMENTO_0;
+char* CANT_SEGMENTOS;
+char* RETARDO_MEMORIA;
+char* RETARDO_COMPACTACION;
+t_algoritmoMEMORIA ALGORITMO_ASIGNACION;
 
 #endif /* MEMORIA_H_ */
