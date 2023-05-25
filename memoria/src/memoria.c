@@ -33,8 +33,8 @@ void leer_config(){
 	CANT_SEGMENTOS = config_get_string_value(config, "CANT_SEGMENTOS");
 	RETARDO_MEMORIA = config_get_string_value(config, "RETARDO_MEMORIA");
 	RETARDO_COMPACTACION = config_get_string_value(config, "RETARDO_COMPACTACION");
-	char *algoritmo_MEMORIA = config_get_string_value(config, "ALGORITMO_ASIGNACION");
-	asignar_algoritmo_memoria(algoritmo_MEMORIA);
+	char *algoritmo_memoria = config_get_string_value(config, "ALGORITMO_ASIGNACION");
+	asignar_algoritmo_memoria(algoritmo_memoria);
 }
 
 void asignar_algoritmo_memoria(char *algoritmo_memoria) {
