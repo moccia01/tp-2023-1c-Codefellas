@@ -275,9 +275,16 @@ static void procesar_conexion(void* void_args) {
 				break;
 			case MANEJAR_DELETE_SEGMENT:
 				// recibir parametros del delete_segment
+				int id = recv_delete_segment(cliente_socket);
 				// mandarle a memoria aviso de delete_segment
+				send_delete_segment(id, fd_memoria);
 				// recibir de memoria tabla de segmentos actualizada
-				// actualizar contexto de pcb con tabla de segmentos actualizada
+				op_code recv_ts = recibir_operacion(fd_memoria);
+				if(recv_ts == TABLA_SEGMENTOS){
+					t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
+					// actualizar contexto de pcb con tabla de segmentos actualizada
+					pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
+				}
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;

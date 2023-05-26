@@ -30,6 +30,7 @@ typedef enum{
 	MANEJAR_DELETE_SEGMENT,
 	MANEJAR_MOV_IN,
 	MANEJAR_MOV_OUT,
+	TABLA_SEGMENTOS,
 }op_code;
 
 typedef struct{
@@ -96,6 +97,8 @@ char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
 t_list* recv_create_segment(int fd_modulo);
 t_segment_response recv_segment_response(int fd_modulo);
+int recv_delete_segment(int fd_modulo);
+t_list* recv_tabla_segmentos(int fd_modulo);
 
 #endif /* PROTOCOLO_H_ */
 

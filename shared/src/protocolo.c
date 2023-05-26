@@ -412,6 +412,24 @@ void send_delete_segment(int id_segmento, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
+int recv_delete_segment(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	int* id = list_get(paquete, 0);
+	return *id;
+}
+
+void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo){
+	t_paquete* paquete = crear_paquete(TABLA_SEGMENTOS);
+	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
+	enviar_paquete(paquete, fd_modulo);
+}
+
+t_list* recv_tabla_segmentos(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
+	return tabla_segmentos;
+}
+
 void send_leer_valor(int dir_fisica, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_MOV_IN);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
