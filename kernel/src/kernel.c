@@ -162,18 +162,18 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rcx = malloc(sizeof(17));
 	contexto->registros->rdx = malloc(sizeof(17));
 
-	contexto->registros->ax = NULL;
-	contexto->registros->bx = NULL;
-	contexto->registros->cx = NULL;
-	contexto->registros->dx = NULL;
-	contexto->registros->eax = NULL;
-	contexto->registros->ebx = NULL;
-	contexto->registros->ecx = NULL;
-	contexto->registros->edx = NULL;
-	contexto->registros->rax = NULL;
-	contexto->registros->rbx = NULL;
-	contexto->registros->rcx = NULL;
-	contexto->registros->rdx = NULL;
+	contexto->registros->ax = "";
+	contexto->registros->bx = "";
+	contexto->registros->cx = "";
+	contexto->registros->dx = "";
+	contexto->registros->eax = "";
+	contexto->registros->ebx = "";
+	contexto->registros->ecx = "";
+	contexto->registros->edx = "";
+	contexto->registros->rax = "";
+	contexto->registros->rbx = "";
+	contexto->registros->rcx = "";
+	contexto->registros->rdx = "";
 }
 
 
@@ -238,7 +238,6 @@ static void procesar_conexion(void* void_args) {
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
-				log_info(logger, "El registro ax es: %s", contexto_recibido->registros->ax);
 				recurso = recv_recurso(cliente_socket);
 				manejar_wait(pcb, recurso);
 				break;
@@ -392,8 +391,24 @@ void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
 	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
 	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
-
+	actualizar_registros(pcb, contexto);
 	//contexto_destroy(contexto);
+}
+
+void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){
+	pcb->contexto_de_ejecucion->registros->ax = contexto->registros->ax;
+	pcb->contexto_de_ejecucion->registros->bx = contexto->registros->bx;
+	pcb->contexto_de_ejecucion->registros->cx = contexto->registros->cx;
+	pcb->contexto_de_ejecucion->registros->dx = contexto->registros->dx;
+	pcb->contexto_de_ejecucion->registros->eax = contexto->registros->eax;
+	pcb->contexto_de_ejecucion->registros->ebx = contexto->registros->ebx;
+	pcb->contexto_de_ejecucion->registros->ecx = contexto->registros->ecx;
+	pcb->contexto_de_ejecucion->registros->edx = contexto->registros->edx;
+	pcb->contexto_de_ejecucion->registros->rax = contexto->registros->rax;
+	pcb->contexto_de_ejecucion->registros->rbx = contexto->registros->rbx;
+	pcb->contexto_de_ejecucion->registros->rcx = contexto->registros->rcx;
+	pcb->contexto_de_ejecucion->registros->rdx = contexto->registros->rdx;
+
 }
 
 // ------------------ PLANIFICACION ------------------

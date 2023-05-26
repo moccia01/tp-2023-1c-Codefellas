@@ -100,18 +100,18 @@ t_registros* inicializar_registro(){
 	registros->rcx = malloc(sizeof(17));
 	registros->rdx = malloc(sizeof(17));
 
-	registros->ax = NULL;
-	registros->bx = NULL;
-	registros->cx = NULL;
-	registros->dx = NULL;
-	registros->eax = NULL;
-	registros->ebx = NULL;
-	registros->ecx = NULL;
-	registros->edx = NULL;
-	registros->rax = NULL;
-	registros->rbx = NULL;
-	registros->rcx = NULL;
-	registros->rdx = NULL;
+	registros->ax = "";
+	registros->bx = "";
+	registros->cx = "";
+	registros->dx = "";
+	registros->eax = "";
+	registros->ebx = "";
+	registros->ecx = "";
+	registros->edx = "";
+	registros->rax = "";
+	registros->rbx = "";
+	registros->rcx = "";
+	registros->rdx = "";
 
 	return registros;
 }

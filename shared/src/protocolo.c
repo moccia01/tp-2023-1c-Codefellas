@@ -194,6 +194,8 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 }
 
 void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros){
+
+
 	if(registros->ax != NULL){
 		agregar_a_paquete(paquete, registros->ax, strlen(registros->ax) + 1);
 	}
@@ -282,12 +284,13 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	contexto->instrucciones = instrucciones;
 	int cantidad_instrucciones = list_size(instrucciones);
 
-	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 5 + (cantidad_instrucciones * 4) + 1);
+	int comienzo_segmentos = 5 + (cantidad_instrucciones * 4) + 1;
+	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, comienzo_segmentos);
 	contexto->tabla_de_segmentos = tabla_segmentos;
 	int cantidad_tabla_segmentos = list_size(tabla_segmentos);
 
 	//t_registros* registro_contexto = malloc(sizeof(t_registros));
-	t_registros* registro_contexto = desempaquetar_registros(paquete, 5 + (cantidad_instrucciones * 4) + 1 + cantidad_tabla_segmentos);	//TODO Chequear Tomas, tanto funcion como si está bien el comienzo
+	t_registros* registro_contexto = desempaquetar_registros(paquete, comienzo_segmentos + cantidad_tabla_segmentos + 1);	//TODO Chequear Tomas, tanto funcion como si está bien el comienzo
 	contexto->registros = registro_contexto;
 
 	return contexto;
