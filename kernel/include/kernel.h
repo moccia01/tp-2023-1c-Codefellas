@@ -96,6 +96,7 @@ void asignar_algoritmo(char* algoritmo);
 bool generar_conexiones();
 void inicializar_variables();
 t_list* inicializar_recursos();
+void inicializar_registro(t_contexto_ejecucion* contexto);
 void liberar_variables();
 
 // COMUNICACION

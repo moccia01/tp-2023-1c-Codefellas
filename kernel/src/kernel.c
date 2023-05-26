@@ -146,6 +146,37 @@ t_list* inicializar_recursos(){
 	return lista;
 }
 
+void inicializar_registro(t_contexto_ejecucion* contexto){
+	contexto->registros = malloc(sizeof(t_registros));
+
+	contexto->registros->ax = malloc(sizeof(5));
+	contexto->registros->bx = malloc(sizeof(5));
+	contexto->registros->cx = malloc(sizeof(5));
+	contexto->registros->dx = malloc(sizeof(5));
+	contexto->registros->eax = malloc(sizeof(9));
+	contexto->registros->ebx = malloc(sizeof(9));
+	contexto->registros->ecx = malloc(sizeof(9));
+	contexto->registros->edx = malloc(sizeof(9));
+	contexto->registros->rax = malloc(sizeof(17));
+	contexto->registros->rbx = malloc(sizeof(17));
+	contexto->registros->rcx = malloc(sizeof(17));
+	contexto->registros->rdx = malloc(sizeof(17));
+
+	contexto->registros->ax = NULL;
+	contexto->registros->bx = NULL;
+	contexto->registros->cx = NULL;
+	contexto->registros->dx = NULL;
+	contexto->registros->eax = NULL;
+	contexto->registros->ebx = NULL;
+	contexto->registros->ecx = NULL;
+	contexto->registros->edx = NULL;
+	contexto->registros->rax = NULL;
+	contexto->registros->rbx = NULL;
+	contexto->registros->rcx = NULL;
+	contexto->registros->rdx = NULL;
+}
+
+
 void liberar_variables(){
 	log_destroy(logger);
 	log_destroy(logger_obligatorio);
@@ -207,6 +238,7 @@ static void procesar_conexion(void* void_args) {
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
+				log_info(logger, "El registro ax es: %s", contexto_recibido->registros->ax);
 				recurso = recv_recurso(cliente_socket);
 				manejar_wait(pcb, recurso);
 				break;
@@ -287,6 +319,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
+	inicializar_registro(contexto);
 
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
 	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla
