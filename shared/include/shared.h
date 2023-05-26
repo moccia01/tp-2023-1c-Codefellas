@@ -80,6 +80,12 @@ typedef struct{
 	int tamanio_segmentos;
 }t_segmento;
 
+typedef enum{
+	SEGMENT_CREATED,
+	OUT_OF_MEM,
+	COMPACT,
+}t_segment_response;
+
 //CONTEXTO DE EJECUCION
 typedef struct{
     int pid;

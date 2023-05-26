@@ -94,6 +94,8 @@ t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
+t_list* recv_create_segment(int fd_modulo);
+t_segment_response recv_segment_response(int fd_modulo);
 
 #endif /* PROTOCOLO_H_ */
 

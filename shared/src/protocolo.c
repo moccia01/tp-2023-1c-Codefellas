@@ -260,7 +260,7 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
-	empaquetar_registro_contexto(paquete, contexto->registros);			//TODO Chequear Tomas funcion
+	empaquetar_registro_contexto(paquete, contexto->registros);
 }
 
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
@@ -289,8 +289,7 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	contexto->tabla_de_segmentos = tabla_segmentos;
 	int cantidad_tabla_segmentos = list_size(tabla_segmentos);
 
-	//t_registros* registro_contexto = malloc(sizeof(t_registros));
-	t_registros* registro_contexto = desempaquetar_registros(paquete, comienzo_segmentos + cantidad_tabla_segmentos + 1);	//TODO Chequear Tomas, tanto funcion como si está bien el comienzo
+	t_registros* registro_contexto = desempaquetar_registros(paquete, comienzo_segmentos + cantidad_tabla_segmentos + 1);
 	contexto->registros = registro_contexto;
 
 	return contexto;
@@ -397,6 +396,16 @@ void send_create_segment(int id_segmento, int tamanio, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
+t_list* recv_create_segment(int fd_modulo){
+	return recibir_paquete(fd_modulo);
+}
+
+t_segment_response recv_segment_response(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_segment_response* respuesta = list_get(paquete, 0);
+	return *respuesta;
+}
+
 void send_delete_segment(int id_segmento, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_DELETE_SEGMENT);
 	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
@@ -409,8 +418,7 @@ void send_leer_valor(int dir_fisica, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-char* recv_valor(int fd_modulo){
-	//return NULL;						//TODO Chequear esta funcion para mov_in y mov_out
+char* recv_valor(int fd_modulo){						//TODO Chequear esta funcion para mov_in y mov_out
 	t_list* paquete = recibir_paquete(fd_modulo);
 	char* valor_en_memoria = list_get(paquete, 0);
 

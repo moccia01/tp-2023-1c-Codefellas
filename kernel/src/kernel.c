@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 	fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
 	if (!generar_conexiones()) {
 		log_error(logger, "Alguna conexion falló :(");
-		terminar_programa(logger, config);
+		liberar_variables();
 		exit(1);
 	}
 
@@ -249,17 +249,27 @@ static void procesar_conexion(void* void_args) {
 				break;
 			case MANEJAR_CREATE_SEGMENT:
 //				recibir parametros del create_segment
+				t_list* create_sgm_params = recv_create_segment(cliente_socket);
+				int* id_segmento = list_get(create_sgm_params, 0);
+				int* tamanio = list_get(create_sgm_params, 1);
 //				mandarle a memoria aviso de create_segment
+				send_create_segment(*id_segmento, *tamanio, fd_memoria);
 //				recibir de memoria respuesta del create_segment
-//				switch(respuesta_memoria){
-//				case: segmento_creado / case: out_of_memory / case: compactacion
+				t_segment_response respuesta = recv_segment_response(fd_memoria);
+				switch(respuesta){
+				case SEGMENT_CREATED:
+					break;
+				case OUT_OF_MEM:
+					break;
+				case COMPACT:
 //				en caso de compactacion:
 //		        	 - usar semaforo para verificar si se esta ejecutando
-//				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op);
+//				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op); (?)
 //					 - recibir de memoria las tablas de segmentos actualizadas post compact
 //					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 //					 - mandarle memoria aviso de create_segment.
-//				}
+					break;
+				}
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;

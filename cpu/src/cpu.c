@@ -231,7 +231,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto, int *num_segmento, int *desplazamiento_segmento){
 	*num_segmento = floor(dir_logica/TAM_MAX_SEGMENTO);
 	*desplazamiento_segmento = dir_logica % TAM_MAX_SEGMENTO;
-	int direccion_fisica = *desplazamiento_segmento + *num_segmento;	//TODO Chequear si la suma en el último párrafo de MMU es así
+	int direccion_fisica = *desplazamiento_segmento + *num_segmento;
 
 	return direccion_fisica;
 }
