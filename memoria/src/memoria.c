@@ -38,11 +38,11 @@ void leer_config(){
 }
 
 void asignar_algoritmo_memoria(char *algoritmo_memoria) {
-	if (strcmp(algoritmo_memoria, "FirstFit") == 0) {
+	if (strcmp(algoritmo_memoria, "FIRST") == 0) {
 		ALGORITMO_ASIGNACION = FIRST_FIT;
-	} else if (strcmp(algoritmo_memoria, "BestFit") == 0) {
+	} else if (strcmp(algoritmo_memoria, "BEST") == 0) {
 		ALGORITMO_ASIGNACION = BEST_FIT;
-	}else if((strcmp(algoritmo_memoria, "WorstFit") == 0)){
+	}else if((strcmp(algoritmo_memoria, "WORST") == 0)){
 		ALGORITMO_ASIGNACION = WORST_FIT;
 	}
 	else{
@@ -72,6 +72,22 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger, "Recibí un paquete con los siguientes valores: ");
 			list_iterate(paquete_recibido, (void*) iterator);
 			break;
+		case MANEJAR_CREATE_SEGMENT:
+			t_list* create_sgm_params = recv_create_segment(fd_kernel);
+//			int* id = list_get(create_sgm_params, 0);
+			int* tamanio = list_get(create_sgm_params, 1);
+			t_segment_response verificacion_espacio = verificar_espacio_memoria(*tamanio);
+			switch(verificacion_espacio){
+			case SEGMENT_CREATED: //crear segmento
+				break;
+			case OUT_OF_MEM: //avisar a kernel que out_of_mem
+				break;
+			case COMPACT: //solicitar compactacion y cuando kernel de el ok, compactar.
+				break;
+			}
+			break;
+			case MANEJAR_DELETE_SEGMENT:
+				// ...
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 				return;
@@ -99,4 +115,8 @@ int server_escuchar(int server_socket) {
 		return 1;
 	}
 	return 0;
+}
+
+t_segment_response verificar_espacio_memoria(int tamanio){
+	return SEGMENT_CREATED;
 }

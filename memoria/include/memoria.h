@@ -8,8 +8,6 @@
 #include <shared.h>
 #include <pthread.h>
 
-
-
 typedef enum {
 	FIRST_FIT,
 	BEST_FIT,
@@ -38,20 +36,14 @@ char* server_name;
 // --------------------- INIT ---------------------
 void leer_config();
 void asignar_algoritmo_memoria(char *algoritmo_memoria);
+
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
 int server_escuchar(int server_socket);
 
-//UTILS
-char* IP;
-char* PUERTO;
-char* PUERTO_ESCUCHA;
-char* TAM_MEMORIA;
-char* TAM_SEGMENTO_0;
-char* CANT_SEGMENTOS;
-char* RETARDO_MEMORIA;
-char* RETARDO_COMPACTACION;
-t_algoritmo_memoria ALGORITMO_ASIGNACION;
+
+t_segment_response verificar_espacio_memoria(int tamanio);
+
 
 #endif /* MEMORIA_H_ */
