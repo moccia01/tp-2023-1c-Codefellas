@@ -165,6 +165,7 @@ void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 	t_paquete* instrucciones_a_mandar = crear_paquete(INSTRUCCIONES_CONSOLA);
 	empaquetar_instrucciones(instrucciones_a_mandar, lista_de_instrucciones);
 	enviar_paquete(instrucciones_a_mandar, fd_modulo);
+	eliminar_paquete(instrucciones_a_mandar);
 }
 
 t_list* recv_instrucciones(t_log* logger, int fd_modulo){
@@ -173,6 +174,13 @@ t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	list_destroy(paquete);
 	log_info(logger, "Se recibió una lista de instrucciones.");
 	return instrucciones;
+}
+
+void instruccion_destroyer(t_instruccion* instruccion){
+	free(instruccion->parametro1);
+	free(instruccion->parametro2);
+	free(instruccion->parametro3);
+	free(instruccion);
 }
 
 void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos){
@@ -331,6 +339,7 @@ void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CONTEXTO_EJECUCION);
 	empaquetar_contexto_ejecucion(paquete, contexto);
 	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
 }
 
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
@@ -338,6 +347,35 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 	t_contexto_ejecucion* contexto_recibido = desempaquetar_contexto_ejecucion(paquete);
 	list_destroy(paquete);
 	return contexto_recibido;
+}
+
+void contexto_destroyer(t_contexto_ejecucion* contexto){
+	list_destroy_and_destroy_elements(contexto->instrucciones, (void*) instruccion_destroyer);
+	list_destroy_and_destroy_elements(contexto->tabla_de_segmentos, (void*) segmento_destroy);
+	segmento_destroy(contexto->seg_fault);
+	registros_destroy(contexto->registros);
+//	free(contexto->seg_fault); TODO: solucionar error, rompe aca cuando termina un proceso (pcb_destroy)
+	free(contexto);
+}
+
+void segmento_destroy(t_segmento* segmento){
+	free(segmento);
+}
+
+void registros_destroy(t_registros* registros){
+	free(registros->ax);
+	free(registros->bx);
+	free(registros->cx);
+	free(registros->dx);
+	free(registros->eax);
+	free(registros->ebx);
+	free(registros->ecx);
+	free(registros->edx);
+	free(registros->rax);
+	free(registros->rbx);
+	free(registros->rcx);
+	free(registros->rdx);
+	free(registros);
 }
 
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){
@@ -379,6 +417,8 @@ int recv_tiempo_io(int fd_modulo){
 char* recv_recurso(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	char* recurso = list_get(paquete, 0);
+	list_destroy(paquete);
+
 	return recurso;
 }
 

@@ -55,7 +55,7 @@ static void procesar_conexion() {
 		case MENSAJE:
 			recibir_mensaje(logger, socket_cliente);
 			break;
-		case CONTEXTO_EJECUCION:
+		case CONTEXTO_EJECUCION: // TODO: cada vez que se devuelve un contexto al kernel y no se vuelva a usar destruir con contexto_destroyer().
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
 			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
 			flag_execute = true;
@@ -420,6 +420,7 @@ void ejecutar_exit(t_contexto_ejecucion* contexto){
 	contexto->estado = FINISH_EXIT;
 	contexto->motivo_exit = SUCCESS;
 	send_cambiar_estado(contexto, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){

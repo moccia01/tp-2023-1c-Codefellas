@@ -106,5 +106,11 @@ t_list* recv_tabla_segmentos(int fd_modulo);
 int recv_consultar_segmento(int dir_fisica, int fd_modulo);
 t_list* recv_respuesta_segmento(int fd_modulo);
 
+// Destroyers
+void contexto_destroyer(t_contexto_ejecucion* contexto);
+void registros_destroy(t_registros* registros);
+void instruccion_destroyer(t_instruccion* instruccion);
+void segmento_destroy(t_segmento* segmento);
+
 #endif /* PROTOCOLO_H_ */
 

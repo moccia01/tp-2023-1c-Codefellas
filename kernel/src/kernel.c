@@ -200,10 +200,6 @@ static void procesar_conexion(void* void_args) {
 	int *args = (int*) void_args;
 	int cliente_socket = *args;
 
-	t_contexto_ejecucion* contexto_recibido;
-	t_pcb* pcb;
-	char* recurso;
-
 	op_code cop;
 	while (cliente_socket != -1) {
 		if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
@@ -226,35 +222,37 @@ static void procesar_conexion(void* void_args) {
 			break;
 		case CAMBIAR_ESTADO:
 			log_info(logger, "recibi un aviso de cambio de estado");
-			contexto_recibido = recv_cambiar_estado(cliente_socket);
-			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			calcular_estimacion(pcb);
-			actualizar_contexto_pcb(pcb, contexto_recibido);
-			procesar_cambio_estado(pcb, contexto_recibido->estado);
+			t_contexto_ejecucion* contexto_recibido_cambiar_estado = recv_cambiar_estado(cliente_socket);
+			t_pcb* pcb_cambiar_estado = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			calcular_estimacion(pcb_cambiar_estado);
+			actualizar_contexto_pcb(pcb_cambiar_estado, contexto_recibido_cambiar_estado);
+			procesar_cambio_estado(pcb_cambiar_estado, contexto_recibido_cambiar_estado->estado);
 			sem_post(&sem_exec);
 			break;
 		case CONTEXTO_EJECUCION:
-			contexto_recibido = recv_contexto_ejecucion(cliente_socket);
-			pcb = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			actualizar_contexto_pcb(pcb, contexto_recibido);
+			t_contexto_ejecucion* contexto_recibido_contexto_ejecucion = recv_contexto_ejecucion(cliente_socket);
+			t_pcb* pcb_contexto_ejecucion = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+			actualizar_contexto_pcb(pcb_contexto_ejecucion, contexto_recibido_contexto_ejecucion);
 			recv(cliente_socket, &cop, sizeof(op_code), 0);
 			switch(cop){
 			case MANEJAR_IO:
 				int tiempo = recv_tiempo_io(cliente_socket);
-				calcular_estimacion(pcb);
-				cambiar_estado(pcb, BLOCK);
+				calcular_estimacion(pcb_contexto_ejecucion);
+				cambiar_estado(pcb_contexto_ejecucion, BLOCK);
 				sem_post(&sem_exec);
-				manejar_io(pcb, tiempo);
+				manejar_io(pcb_contexto_ejecucion, tiempo);
 				break;
 			case MANEJAR_WAIT:
-				recurso = recv_recurso(cliente_socket);
-				manejar_wait(pcb, recurso);
+				char* recurso_wait = recv_recurso(cliente_socket);
+				manejar_wait(pcb_contexto_ejecucion, recurso_wait);
+				free(recurso_wait);
 				break;
 			case MANEJAR_SIGNAL:
-				recurso = recv_recurso(cliente_socket);
-				manejar_signal(pcb, recurso);
-				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				char* recurso_signal = recv_recurso(cliente_socket);
+				manejar_signal(pcb_contexto_ejecucion, recurso_signal);
+				free(recurso_signal);
+				safe_pcb_push(cola_exec, pcb_contexto_ejecucion, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb_contexto_ejecucion->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_CREATE_SEGMENT:
 //				recibir parametros del create_segment
@@ -279,8 +277,8 @@ static void procesar_conexion(void* void_args) {
 //					 - mandarle memoria aviso de create_segment.
 					break;
 				}
-				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				safe_pcb_push(cola_exec, pcb_contexto_ejecucion, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb_contexto_ejecucion->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_DELETE_SEGMENT:
 				// recibir parametros del delete_segment
@@ -292,10 +290,10 @@ static void procesar_conexion(void* void_args) {
 				if(recv_ts == TABLA_SEGMENTOS){
 					t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
 					// actualizar contexto de pcb con tabla de segmentos actualizada
-					pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
+					pcb_contexto_ejecucion->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
 				}
-				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				safe_pcb_push(cola_exec, pcb_contexto_ejecucion, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb_contexto_ejecucion->contexto_de_ejecucion,cliente_socket);
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -363,9 +361,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 
 // hay que acordarse de agregar frees aca si se cambia la estructura del t_pcb !!!
 void pcb_destroy(t_pcb* pcb){
-	list_destroy(pcb->contexto_de_ejecucion->instrucciones);
-	list_destroy(pcb->contexto_de_ejecucion->tabla_de_segmentos);
-	free(pcb->contexto_de_ejecucion);
+	contexto_destroyer(pcb->contexto_de_ejecucion);
 	free(pcb);
 }
 
@@ -413,12 +409,14 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 }
 
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
+	pcb->contexto_de_ejecucion->pid = contexto->pid;
 	pcb->contexto_de_ejecucion->program_counter = contexto->program_counter;
+	pcb->contexto_de_ejecucion->instrucciones = contexto->instrucciones;
 	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
 	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
 	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
 	actualizar_registros(pcb, contexto);
-	//contexto_destroy(contexto);
+//	contexto_destroyer(contexto);
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){

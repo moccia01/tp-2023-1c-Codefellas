@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
 
 	t_list* lista_de_instrucciones = leer_instrucciones(argv[2], logger);
 	send_instrucciones(fd_kernel, lista_de_instrucciones);
+	list_destroy_and_destroy_elements(lista_de_instrucciones, (void*)instruccion_destroyer); // TODO: ver si funca
 
 	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
 	pthread_t conexion_kernel;
