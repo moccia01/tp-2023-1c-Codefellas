@@ -180,15 +180,17 @@ void empaquetar_tabla_segmentos(t_paquete* paquete, t_list* tabla_segmentos){
 	agregar_a_paquete(paquete, &(cantidad_segmentos), sizeof(int));
 	for(int i = 0; i < cantidad_segmentos; i++){
 		t_segmento* segmento = list_get(tabla_segmentos, i);
-		agregar_a_paquete(paquete, segmento, sizeof(t_segmento));
+		empaquetar_segmento(paquete, segmento);
 	}
 }
 
 t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 	t_list* tabla_segmentos = list_create();
 	int* cantidad_segmentos = list_get(paquete, comienzo);
-	for(int i = comienzo + 1; i < *cantidad_segmentos; i++){
-		t_segmento* segmento = list_get(paquete, i);
+	int i = comienzo + 1;
+	while (i - comienzo + 1 < *(cantidad_segmentos) * 4){
+		t_segmento* segmento = desempaquetar_segmento(paquete, i);
+		i += 4;
 		list_add(tabla_segmentos, segmento);
 	}
 	return tabla_segmentos;
@@ -259,10 +261,36 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->estado), sizeof(estado_proceso));
 	agregar_a_paquete(paquete, &(contexto->motivo_exit), sizeof(motivo_exit));
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
+	empaquetar_segmento(paquete, contexto->seg_fault);
 	agregar_a_paquete(paquete, contexto->seg_fault, sizeof(t_segmento));
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
 	empaquetar_registro_contexto(paquete, contexto->registros);
+}
+
+void empaquetar_segmento(t_paquete* paquete, t_segmento* segmento){
+	agregar_a_paquete(paquete, &(segmento->direccion_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(segmento->id), sizeof(int));
+	agregar_a_paquete(paquete, &(segmento->offset), sizeof(int));
+	agregar_a_paquete(paquete, &(segmento->tamanio_segmento), sizeof(int));
+}
+
+t_segmento* desempaquetar_segmento(t_list* paquete, int comienzo){
+	t_segmento* segmento = malloc(sizeof(t_segmento));
+
+	int* direccion_fisica = list_get(paquete, comienzo);
+	segmento->direccion_fisica = *direccion_fisica;
+
+	int* id = list_get(paquete, comienzo + 1);
+	segmento->id = *id;
+
+	int* offset = list_get(paquete, comienzo + 2);
+	segmento->offset = *offset;
+
+	int* tamanio_segmento = list_get(paquete, comienzo + 3);
+	segmento->tamanio_segmento = *tamanio_segmento;
+
+	return segmento;
 }
 
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
@@ -282,14 +310,14 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	motivo_block* motivo_block = list_get(paquete, 4);
 	contexto->motivo_block = *motivo_block;
 
-	t_segmento* seg_fault = list_get(paquete, 5);
+	t_segmento* seg_fault = desempaquetar_segmento(paquete, 5);
 	contexto->seg_fault = seg_fault;
 
-	t_list* instrucciones = desempaquetar_instrucciones(paquete, 6);
+	t_list* instrucciones = desempaquetar_instrucciones(paquete, 9);
 	contexto->instrucciones = instrucciones;
 	int cantidad_instrucciones = list_size(instrucciones);
 
-	int comienzo_segmentos = 6 + (cantidad_instrucciones * 4) + 1;
+	int comienzo_segmentos = 9 + (cantidad_instrucciones * 4) + 1;
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, comienzo_segmentos);
 	contexto->tabla_de_segmentos = tabla_segmentos;
 	int cantidad_tabla_segmentos = list_size(tabla_segmentos);
