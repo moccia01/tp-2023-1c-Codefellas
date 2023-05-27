@@ -170,6 +170,7 @@ void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* instrucciones = desempaquetar_instrucciones(paquete, 0);
+	eliminar_paquete(paquete);
 	log_info(logger, "Se recibió una lista de instrucciones.");
 	return instrucciones;
 }
@@ -304,6 +305,7 @@ void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_contexto_ejecucion* contexto_recibido = desempaquetar_contexto_ejecucion(paquete);
+	eliminar_paquete(paquete);
 	return contexto_recibido;
 }
 
@@ -311,6 +313,7 @@ void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CAMBIAR_ESTADO);
 	empaquetar_contexto_ejecucion(paquete, contexto);
 	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
 }
 
 t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){

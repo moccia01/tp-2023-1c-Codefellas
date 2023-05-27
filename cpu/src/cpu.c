@@ -330,7 +330,7 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 	int num_segmento;
 	int desplazamiento_segmento;
 	int dir_fisica = traducir_direccion(dir_logica, contexto, &num_segmento, &desplazamiento_segmento);
-	if(dir_fisica > TAM_MAX_SEGMENTO){
+	if(dir_fisica > TAM_MAX_SEGMENTO){ //TODO: la condicion para seg_fault es offset + tamanio_leer/escribir > tamanio_segmento
 		contexto->motivo_exit = SEG_FAULT;
 		contexto->estado = FINISH_EXIT;
 		send_cambiar_estado(contexto, socket_cliente);

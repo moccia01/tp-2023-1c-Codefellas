@@ -14,11 +14,6 @@ typedef enum{
 	FIFO,
 	HRRN,
 } t_algoritmo;
-//Memoria Robado tp Nahu
-typedef struct{
-	int indice_tabla_de_pagina;
-	int numero_pagina;
-} t_pagina;
 
 typedef struct{
 	char* recurso;
