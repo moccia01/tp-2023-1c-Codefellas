@@ -262,7 +262,6 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->motivo_exit), sizeof(motivo_exit));
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
 	empaquetar_segmento(paquete, contexto->seg_fault);
-	agregar_a_paquete(paquete, contexto->seg_fault, sizeof(t_segmento));
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
 	empaquetar_registro_contexto(paquete, contexto->registros);

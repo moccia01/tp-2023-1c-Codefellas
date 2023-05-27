@@ -176,6 +176,15 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rdx = "";
 }
 
+t_segmento* inicializar_segmento(){
+	t_segmento* segmento = malloc(sizeof(t_segmento));
+	segmento->direccion_fisica = -1;
+	segmento->id = -1;
+	segmento->offset = -1;
+	segmento->tamanio_segmento = -1;
+
+	return segmento;
+}
 
 void liberar_variables(){
 	log_destroy(logger);
@@ -334,7 +343,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
-	pcb->contexto_de_ejecucion->seg_fault = NULL;
+	pcb->contexto_de_ejecucion->seg_fault = inicializar_segmento();
 	inicializar_registro(contexto);
 
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
