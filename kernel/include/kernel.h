@@ -26,7 +26,6 @@ typedef struct{
 typedef struct{
 	int fd_consola;
 	t_contexto_ejecucion* contexto_de_ejecucion;
-	t_segmento* seg_fault;						//Agregado para la MMU, probablemente vaya en el contexto
 	uint16_t estimado_proxima_rafaga;
 	time_t tiempo_ingreso_ready;
 	time_t tiempo_ingreso_exec;

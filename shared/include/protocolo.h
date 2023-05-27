@@ -87,6 +87,8 @@ void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
 void send_delete_segment(int id_segmento, int fd_modulo);
 void send_leer_valor(int dir_fisica, int fd_modulo);
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
+void send_consultar_segmento(int dir_fisica, int fd_modulo);
+void send_respuesta_segmento(int dir_fisica, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -99,6 +101,8 @@ t_list* recv_create_segment(int fd_modulo);
 t_segment_response recv_segment_response(int fd_modulo);
 int recv_delete_segment(int fd_modulo);
 t_list* recv_tabla_segmentos(int fd_modulo);
+int recv_consultar_segmento(int dir_fisica, int fd_modulo);
+t_list* recv_respuesta_segmento(int fd_modulo);
 
 #endif /* PROTOCOLO_H_ */
 

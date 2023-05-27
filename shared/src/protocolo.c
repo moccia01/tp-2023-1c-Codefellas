@@ -170,7 +170,7 @@ void send_instrucciones(int fd_modulo,t_list* lista_de_instrucciones){
 t_list* recv_instrucciones(t_log* logger, int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* instrucciones = desempaquetar_instrucciones(paquete, 0);
-	eliminar_paquete(paquete);
+	list_destroy(paquete);
 	log_info(logger, "Se recibió una lista de instrucciones.");
 	return instrucciones;
 }
@@ -259,6 +259,7 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->estado), sizeof(estado_proceso));
 	agregar_a_paquete(paquete, &(contexto->motivo_exit), sizeof(motivo_exit));
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
+	agregar_a_paquete(paquete, contexto->seg_fault, sizeof(t_segmento));
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
 	empaquetar_registro_contexto(paquete, contexto->registros);
@@ -281,11 +282,14 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	motivo_block* motivo_block = list_get(paquete, 4);
 	contexto->motivo_block = *motivo_block;
 
-	t_list* instrucciones = desempaquetar_instrucciones(paquete, 5);
+	t_segmento* seg_fault = list_get(paquete, 5);
+	contexto->seg_fault = seg_fault;
+
+	t_list* instrucciones = desempaquetar_instrucciones(paquete, 6);
 	contexto->instrucciones = instrucciones;
 	int cantidad_instrucciones = list_size(instrucciones);
 
-	int comienzo_segmentos = 5 + (cantidad_instrucciones * 4) + 1;
+	int comienzo_segmentos = 6 + (cantidad_instrucciones * 4) + 1;
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, comienzo_segmentos);
 	contexto->tabla_de_segmentos = tabla_segmentos;
 	int cantidad_tabla_segmentos = list_size(tabla_segmentos);
@@ -305,7 +309,7 @@ void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_contexto_ejecucion* contexto_recibido = desempaquetar_contexto_ejecucion(paquete);
-	eliminar_paquete(paquete);
+	list_destroy(paquete);
 	return contexto_recibido;
 }
 
@@ -451,4 +455,16 @@ void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
 	agregar_a_paquete(paquete, &(valor), strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_consultar_segmento(int dir_fisica, int fd_modulo){
+
+}
+
+void send_respuesta_segmento(int dir_fisica, int fd_modulo){
+
+}
+
+t_list* recv_respuesta_segmento(int fd_modulo){
+	return NULL;
 }

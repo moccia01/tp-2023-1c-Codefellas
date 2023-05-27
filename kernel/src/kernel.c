@@ -327,7 +327,6 @@ int server_escuchar(int server_socket) {
 t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 	pcb->fd_consola = cliente_socket;
-	pcb->seg_fault = NULL;
 	pcb->estimado_proxima_rafaga = ESTIMACION_INICIAL;
 
 	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
@@ -335,6 +334,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
+	pcb->contexto_de_ejecucion->seg_fault = NULL;
 	inicializar_registro(contexto);
 
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
@@ -343,7 +343,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	t_segmento* segmento = malloc(sizeof(t_segmento));
 	segmento->direccion_fisica = 0;
 	segmento->id = 0;
-	segmento->tamanio_segmentos = 0;
+	segmento->tamanio_segmento = 0;
 	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
 	list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento);
 

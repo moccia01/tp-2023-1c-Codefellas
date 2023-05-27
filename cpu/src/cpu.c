@@ -231,7 +231,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto, int *num_segmento, int *desplazamiento_segmento){
 	*num_segmento = floor(dir_logica/TAM_MAX_SEGMENTO);
 	*desplazamiento_segmento = dir_logica % TAM_MAX_SEGMENTO;
-	int direccion_fisica = *desplazamiento_segmento + *num_segmento;
+	int direccion_fisica = *desplazamiento_segmento + *num_segmento;	//TODO Chequear como se obtiene la direccion fisica, posiblemente hay que chequear toda la mmu
 
 	return direccion_fisica;
 }
@@ -312,11 +312,17 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 	int num_segmento;
 	int desplazamiento_segmento;
 	int dir_fisica = traducir_direccion(dir_logica, contexto, &num_segmento, &desplazamiento_segmento);
-	if(dir_fisica > TAM_MAX_SEGMENTO){
+	send_consultar_segmento(dir_fisica, fd_memoria);
+	t_list* consulta_segmento = recv_respuesta_segmento(fd_memoria);	//TODO Hacer esta funcion
+	int tamanio_segmento = list_get(consulta_segmento, 0);
+	int id_segmento = list_get(consulta_segmento ,1);
+	if(tamanio_segmento + desplazamiento_segmento > tamanio_segmento){
 		contexto->motivo_exit = SEG_FAULT;
 		contexto->estado = FINISH_EXIT;
+		contexto->seg_fault = malloc(sizeof(t_segmento));
+		contexto->seg_fault->tamanio_segmento = tamanio_segmento;
 		send_cambiar_estado(contexto, socket_cliente);
-		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, TAM_MAX_SEGMENTO);	//TODO Chequear si es TAM_MAX_SEGMENTO
+		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, tamanio_segmento);
 		flag_execute = false;
 	}else{
 		send_leer_valor(dir_fisica, socket_cliente);
@@ -330,11 +336,17 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 	int num_segmento;
 	int desplazamiento_segmento;
 	int dir_fisica = traducir_direccion(dir_logica, contexto, &num_segmento, &desplazamiento_segmento);
-	if(dir_fisica > TAM_MAX_SEGMENTO){ //TODO: la condicion para seg_fault es offset + tamanio_leer/escribir > tamanio_segmento
+	send_consultar_segmento(dir_fisica, fd_memoria);
+	t_list* consulta_segmento = recv_respuesta_segmento(fd_memoria);	//TODO Hacer esta funcion
+	int tamanio_segmento = list_get(consulta_segmento, 0);
+	int id_segmento = list_get(consulta_segmento ,1);
+	if(tamanio_segmento + desplazamiento_segmento > tamanio_segmento){ //TODO: la condicion para seg_fault es offset + tamanio_leer/escribir > tamanio_segmento
 		contexto->motivo_exit = SEG_FAULT;
 		contexto->estado = FINISH_EXIT;
+		contexto->seg_fault = malloc(sizeof(t_segmento));
+		contexto->seg_fault->tamanio_segmento = tamanio_segmento;
 		send_cambiar_estado(contexto, socket_cliente);
-		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, TAM_MAX_SEGMENTO);	//TODO Chequear si es TAM_MAX_SEGMENTO
+		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, tamanio_segmento);	//TODO Chequear si es TAM_MAX_SEGMENTO
 		flag_execute = false;
 	}else{
 		char* valor_escrito_en_memoria = leer_valor_registro(registro);

@@ -97,6 +97,7 @@ typedef struct{
     motivo_exit motivo_exit;
     motivo_block motivo_block;
     t_registros* registros;
+    t_segmento* seg_fault;
 }t_contexto_ejecucion;
 
 void terminar_programa(t_log* logger, t_config* config);
