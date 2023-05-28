@@ -70,7 +70,7 @@ void recibir_mensaje(t_log* logger, int socket_cliente){
 t_list* recibir_paquete(int socket_cliente){
 	int size;
 	int desplazamiento = 0;
-	void * buffer;
+	void* buffer;
 	t_list* valores = list_create();
 	int tamanio;
 

@@ -358,62 +358,74 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_tiempo_io(tiempo_io, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_open(nombre_archivo, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_close(nombre_archivo, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_seek(nombre_archivo, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_read(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_write(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_nombre_f_truncate(nombre_archivo, tamanio, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 	log_info(logger,"Se esta ejecutando un WAIT al recurso %s", recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_wait(recurso, socket_cliente);
+	//contexto_destroyer(contexto);
 }
 
 void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_signal(recurso, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_create_segment(int id_segmento, int tamanio, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_create_segment(id_segmento, tamanio, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_delete_segment(id_segmento, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){
 	contexto->estado = READY;
 	send_cambiar_estado(contexto, socket_cliente);
+	contexto_destroyer(contexto);
 }
 
 void ejecutar_exit(t_contexto_ejecucion* contexto){
