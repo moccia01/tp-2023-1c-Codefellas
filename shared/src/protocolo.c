@@ -249,10 +249,7 @@ void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros){
 t_registros* desempaquetar_registros(t_list* paquete, int comienzo){
 	t_registros* registro_contexto = malloc(sizeof(t_registros));
 
-	char* ax = list_get(paquete, comienzo);
-	registro_contexto->ax = malloc(strlen(ax));
-	strcpy(registro_contexto->ax, ax);
-
+	registro_contexto->ax = list_get(paquete,comienzo);
 	registro_contexto->bx = list_get(paquete,comienzo + 1);
 	registro_contexto->cx = list_get(paquete,comienzo + 2);
 	registro_contexto->dx = list_get(paquete,comienzo + 3);
@@ -502,7 +499,7 @@ int recv_delete_segment(int fd_modulo){
 }
 
 void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo){
-	t_paquete* paquete = crear_paquete(TABLA_SEGMENTOS);
+	t_paquete* paquete = crear_paquete(CONSULTAR_TABLA_SEGMENTOS);
 	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
 	enviar_paquete(paquete, fd_modulo);
 }
@@ -519,7 +516,7 @@ void send_leer_valor(int dir_fisica, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-char* recv_valor(int fd_modulo){						//TODO Chequear esta funcion para mov_in y mov_out
+char* recv_valor(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	char* valor_en_memoria = list_get(paquete, 0);
 
@@ -534,7 +531,9 @@ void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
 }
 
 void send_consultar_segmento(int dir_fisica, int fd_modulo){
-
+	t_paquete* paquete = crear_paquete(CONSULTAR_SEGMENTO);
+	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
 }
 
 void send_respuesta_segmento(int dir_fisica, int fd_modulo){
@@ -542,5 +541,7 @@ void send_respuesta_segmento(int dir_fisica, int fd_modulo){
 }
 
 t_list* recv_respuesta_segmento(int fd_modulo){
-	return NULL;
+	t_list* paquete = recibir_paquete(fd_modulo);
+
+	return paquete;
 }
