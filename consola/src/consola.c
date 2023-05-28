@@ -18,7 +18,8 @@ int main(int argc, char **argv) {
 
 	t_list* lista_de_instrucciones = leer_instrucciones(argv[2], logger);
 	send_instrucciones(fd_kernel, lista_de_instrucciones);
-	list_destroy_and_destroy_elements(lista_de_instrucciones, (void*)instruccion_destroyer); // TODO: ver si funca
+	destruir_lista_instrucciones(lista_de_instrucciones);
+	//list_destroy_and_destroy_elements(lista_de_instrucciones, (void*)instruccion_destroyer); // TODO: ver si funca
 
 	// La consola quedará a la espera del mensaje del Kernel que indique la finalización del proceso.
 	pthread_t conexion_kernel;
@@ -28,6 +29,14 @@ int main(int argc, char **argv) {
 	terminar_programa(logger, config);
 	liberar_conexion(fd_kernel);
 	return 0;
+}
+
+void destruir_lista_instrucciones(t_list* lista){
+	while(!list_is_empty(lista)){
+		t_instruccion* instrucion = list_remove(lista, 0);
+		instruccion_destroyer(instrucion);
+	}
+	list_destroy(lista);
 }
 
 void leer_config(){
@@ -88,6 +97,8 @@ t_list* leer_instrucciones(char *path, t_log *logger) {
             	strcpy(instruccion->parametro3, "");
             }
             list_add(lista_de_instrucciones, instruccion);
+        }else{
+        	instruccion_destroyer(instruccion);
         }
 	}
 

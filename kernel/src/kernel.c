@@ -243,6 +243,7 @@ static void procesar_conexion(void* void_args) {
 				manejar_io(pcb_contexto_ejecucion, tiempo);
 				break;
 			case MANEJAR_WAIT:
+				log_info(logger, "el valor del ax es: %s", pcb_contexto_ejecucion->contexto_de_ejecucion->registros->ax);
 				char* recurso_wait = recv_recurso(cliente_socket);
 				manejar_wait(pcb_contexto_ejecucion, recurso_wait);
 				free(recurso_wait);
@@ -409,14 +410,11 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 }
 
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
-	pcb->contexto_de_ejecucion->pid = contexto->pid;
-	pcb->contexto_de_ejecucion->program_counter = contexto->program_counter;
-	pcb->contexto_de_ejecucion->instrucciones = contexto->instrucciones;
-	*(pcb->contexto_de_ejecucion->tabla_de_segmentos) = *(contexto->tabla_de_segmentos);
-	pcb->contexto_de_ejecucion->motivo_exit = contexto->motivo_exit;
-	pcb->contexto_de_ejecucion->motivo_block = contexto->motivo_block;
-	actualizar_registros(pcb, contexto);
-//	contexto_destroyer(contexto);
+	t_contexto_ejecucion* auxiliar = pcb->contexto_de_ejecucion;
+	pcb->contexto_de_ejecucion = contexto;
+	log_info(logger, "el contexto trae el valor de ax: %s", contexto->registros->ax);
+	pcb->contexto_de_ejecucion->registros->ax = contexto->registros->ax;
+	contexto_destroyer(auxiliar);
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){

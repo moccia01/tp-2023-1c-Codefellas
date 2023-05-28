@@ -192,6 +192,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			break;
 		case WAIT:
 			flag_execute = false;
+			log_info(logger, "el contexto tiene el valor de ax: %s", contexto->registros->ax);
 			ejecutar_wait(proxima_instruccion->parametro1, contexto);
 			break;
 		case SIGNAL:
@@ -241,6 +242,7 @@ void set_valor_registro(char* registro, char* valor){
 
 	if(strcmp(registro, "AX") == 0){
 		registros->ax = valor;
+		log_info(logger, "el valor de ax es: %s", registros->ax);
 	}else if(strcmp(registro, "BX") == 0){
 		registros->bx = valor;
 	}else if(strcmp(registro, "CX") == 0){
@@ -443,6 +445,7 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
 
 void actualizar_registros_contexto(t_registros* registros_contexto){
 	registros_contexto->ax = registros->ax;
+	log_info(logger, "ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
 	registros_contexto->bx = registros->bx;
 	registros_contexto->cx = registros->cx;
 	registros_contexto->dx = registros->dx;
