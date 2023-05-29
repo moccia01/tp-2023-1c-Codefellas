@@ -30,8 +30,12 @@ int main(int argc, char **argv) {
 //	pthread_join(conexion_kernel, NULL);
 
 	terminar_programa(logger, config);
+	//TODO liberar variables globales
+	registros_destroy(registros);
 	return 0;
 }
+
+// ------------------ INIT ------------------
 
 void leer_config(){
 	IP = config_get_string_value(config, "IP_ESCUCHA");
@@ -41,6 +45,7 @@ void leer_config(){
 	RETARDO_INSTRUCCION = config_get_int_value(config, "RETARDO_INSTRUCCION");
 	TAM_MAX_SEGMENTO = config_get_int_value(config, "TAM_MAX_SEGMENTO");
 }
+
 
 // --------------- COMUNICACION ---------------
 
@@ -241,33 +246,38 @@ void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
-		registros->ax = valor;
+		actualizar_valor_registro(registros->ax, valor);
 		log_info(logger, "el valor de ax es: %s", registros->ax);
 	}else if(strcmp(registro, "BX") == 0){
-		registros->bx = valor;
+		actualizar_valor_registro(registros->bx, valor);
 	}else if(strcmp(registro, "CX") == 0){
-		registros->cx = valor;
+		actualizar_valor_registro(registros->cx, valor);
 	}else if(strcmp(registro, "DX") == 0){
-		registros->dx = valor;
+		actualizar_valor_registro(registros->dx, valor);
 	}else if(strcmp(registro, "EAX") == 0){
-		registros->eax = valor;
+		actualizar_valor_registro(registros->eax, valor);
 	}else if(strcmp(registro, "EBX") == 0){
-		registros->ebx = valor;
+		actualizar_valor_registro(registros->ebx, valor);
 	}else if(strcmp(registro, "ECX") == 0){
-		registros->ecx = valor;
+		actualizar_valor_registro(registros->ecx, valor);
 	}else if(strcmp(registro, "EDX") == 0){
-		registros->edx = valor;
+		actualizar_valor_registro(registros->edx, valor);
 	}else if(strcmp(registro, "RAX") == 0){
-		registros->rax = valor;
+		actualizar_valor_registro(registros->rax, valor);
 	}else if(strcmp(registro, "RBX") == 0){
-		registros->rbx = valor;
+		actualizar_valor_registro(registros->rbx, valor);
 	}else if(strcmp(registro, "RCX") == 0){
-		registros->rcx = valor;
+		actualizar_valor_registro(registros->rcx, valor);
 	}else if(strcmp(registro, "RDX") == 0){
-		registros->rdx = valor;
+		actualizar_valor_registro(registros->rdx, valor);
 	}
-
 	log_info(logger, "Se seteo el valor %s en registro %s", valor, registro);
+}
+
+void actualizar_valor_registro(char* registro, char* valor){
+	char* auxiliar = registro;
+	registro = valor;
+	free(auxiliar); //TODO ver esto
 }
 
 char* leer_valor_registro(char* registro){
@@ -305,6 +315,7 @@ char* leer_valor_registro(char* registro){
 void ejecutar_set(char* registro, char* valor, t_registros* registros_contexto){
 	set_valor_registro(registro, valor);
 	actualizar_registros_contexto(registros_contexto);
+	//TODO podriamos liberar registros de la cpu aca
 	log_info(logger, "a mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
 }

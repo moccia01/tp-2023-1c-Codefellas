@@ -29,7 +29,9 @@ char* PUERTO_MEMORIA;
 int RETARDO_INSTRUCCION;
 int TAM_MAX_SEGMENTO;
 
+// INIT
 void leer_config();
+void liberar_variables();
 
 // Comunicacion
 static void procesar_conexion();
@@ -58,6 +60,7 @@ void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto);
 void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
 void set_valor_registro(char* registro, char* valor);
+void actualizar_valor_registro(char* registro, char* valor);
 char* leer_valor_registro(char* registro);
 int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto, int *num_segmento, int *desplazamiento_segmento);
 void actualizar_registros_contexto(t_registros* registros_contexto);
