@@ -461,6 +461,7 @@ void exit_pcb(void) {
 		log_info(logger_obligatorio, "Finaliza el proceso %d - Motivo: %s", pcb->contexto_de_ejecucion->pid, motivo);
 		enviar_mensaje("Fin del proceso", pcb->fd_consola);
 		pcb_destroy(pcb);
+		sem_post(&sem_multiprog);
 	}
 }
 
@@ -554,7 +555,6 @@ void exec_pcb(){
 		sem_wait(&sem_ready);
 		sem_wait(&sem_exec);
 		t_pcb *pcb = elegir_pcb_segun_algoritmo();
-		sem_post(&sem_multiprog);
 		dispatch(pcb);
 	}
 }
@@ -625,9 +625,8 @@ void exec_io(void* void_arg){
 	t_pcb* pcb =  args->pcb;
 	int tiempo = args->tiempo;
 	log_info(logger, "ejecutando IO por tiempo: %d", tiempo);
-	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
 	usleep(tiempo * 1000000);
-	safe_pcb_pop(cola_block, &mutex_cola_block);
+//	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
 	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
 	sem_post(&sem_listos_ready);
 }
