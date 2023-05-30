@@ -221,21 +221,29 @@ static void procesar_conexion(void* void_args) {
 			t_list *instrucciones = recv_instrucciones(logger, cliente_socket);
 			armar_pcb(instrucciones, cliente_socket);
 			break;
-		case CAMBIAR_ESTADO:
-			log_info(logger, "recibi un aviso de cambio de estado");
-			t_contexto_ejecucion* contexto_recibido_cambiar_estado = recv_cambiar_estado(cliente_socket);
-			t_pcb* pcb_cambiar_estado = safe_pcb_pop(cola_exec, &mutex_cola_exec);
-			calcular_estimacion(pcb_cambiar_estado);
-			actualizar_contexto_pcb(pcb_cambiar_estado, contexto_recibido_cambiar_estado);
-			procesar_cambio_estado(pcb_cambiar_estado, contexto_recibido_cambiar_estado->estado);
-			sem_post(&sem_exec);
-			break;
+//		case CAMBIAR_ESTADO:
+//			log_info(logger, "recibi un aviso de cambio de estado");
+//			t_contexto_ejecucion* contexto_recibido_cambiar_estado = recv_cambiar_estado(cliente_socket);
+//			t_pcb* pcb_cambiar_estado = safe_pcb_pop(cola_exec, &mutex_cola_exec);
+//			calcular_estimacion(pcb_cambiar_estado);
+//			actualizar_contexto_pcb(pcb_cambiar_estado, contexto_recibido_cambiar_estado);
+//			procesar_cambio_estado(pcb_cambiar_estado, contexto_recibido_cambiar_estado->estado);
+//			sem_post(&sem_exec);
+//			break;
 		case CONTEXTO_EJECUCION:
 			t_contexto_ejecucion* contexto_recibido_contexto_ejecucion = recv_contexto_ejecucion(cliente_socket);
+			log_info(logger, "recibi un contexto de ejecucion");
 			t_pcb* pcb_contexto_ejecucion = safe_pcb_pop(cola_exec, &mutex_cola_exec);
 			actualizar_contexto_pcb(pcb_contexto_ejecucion, contexto_recibido_contexto_ejecucion);
 			recv(cliente_socket, &cop, sizeof(op_code), 0);
 			switch(cop){
+			case CAMBIAR_ESTADO:
+				log_info(logger, "recibi un aviso de cambio de estado");
+				estado_proceso nuevo_estado = recv_cambiar_estado(cliente_socket);
+				calcular_estimacion(pcb_contexto_ejecucion);
+				procesar_cambio_estado(pcb_contexto_ejecucion, nuevo_estado);
+				sem_post(&sem_exec);
+				break;
 			case MANEJAR_IO:
 				int tiempo = recv_tiempo_io(cliente_socket);
 				calcular_estimacion(pcb_contexto_ejecucion);
@@ -382,6 +390,7 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 		break;
 	case FINISH_EXIT:
 		cambiar_estado(pcb, estado_nuevo);
+		pcb->contexto_de_ejecucion->motivo_exit = SUCCESS;
 		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		break;
@@ -390,7 +399,9 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 		safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		break;
-	default: break;
+	default:
+		log_error(logger, "Cambio de estado no reconocido");
+		break;
 	}
 }
 
@@ -408,25 +419,22 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	t_contexto_ejecucion* auxiliar = pcb->contexto_de_ejecucion;
 	pcb->contexto_de_ejecucion = contexto;
-	log_info(logger, "el contexto trae el valor de ax: %s", contexto->registros->ax);
-	pcb->contexto_de_ejecucion->registros->ax = contexto->registros->ax;
 	contexto_destroyer(auxiliar);		//TODO free invalid pointer() después de descomentar a registros_destroy
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){
-	pcb->contexto_de_ejecucion->registros->ax = contexto->registros->ax;
-	pcb->contexto_de_ejecucion->registros->bx = contexto->registros->bx;
-	pcb->contexto_de_ejecucion->registros->cx = contexto->registros->cx;
-	pcb->contexto_de_ejecucion->registros->dx = contexto->registros->dx;
-	pcb->contexto_de_ejecucion->registros->eax = contexto->registros->eax;
-	pcb->contexto_de_ejecucion->registros->ebx = contexto->registros->ebx;
-	pcb->contexto_de_ejecucion->registros->ecx = contexto->registros->ecx;
-	pcb->contexto_de_ejecucion->registros->edx = contexto->registros->edx;
-	pcb->contexto_de_ejecucion->registros->rax = contexto->registros->rax;
-	pcb->contexto_de_ejecucion->registros->rbx = contexto->registros->rbx;
-	pcb->contexto_de_ejecucion->registros->rcx = contexto->registros->rcx;
-	pcb->contexto_de_ejecucion->registros->rdx = contexto->registros->rdx;
-
+	strcpy(pcb->contexto_de_ejecucion->registros->ax, contexto->registros->ax);
+	strcpy(pcb->contexto_de_ejecucion->registros->bx, contexto->registros->bx);
+	strcpy(pcb->contexto_de_ejecucion->registros->cx, contexto->registros->cx);
+	strcpy(pcb->contexto_de_ejecucion->registros->dx, contexto->registros->dx);
+	strcpy(pcb->contexto_de_ejecucion->registros->eax, contexto->registros->eax);
+	strcpy(pcb->contexto_de_ejecucion->registros->ebx, contexto->registros->ebx);
+	strcpy(pcb->contexto_de_ejecucion->registros->ecx, contexto->registros->ecx);
+	strcpy(pcb->contexto_de_ejecucion->registros->edx, contexto->registros->edx);
+	strcpy(pcb->contexto_de_ejecucion->registros->rax, contexto->registros->rax);
+	strcpy(pcb->contexto_de_ejecucion->registros->rbx, contexto->registros->rbx);
+	strcpy(pcb->contexto_de_ejecucion->registros->rcx, contexto->registros->rcx);
+	strcpy(pcb->contexto_de_ejecucion->registros->rdx, contexto->registros->rdx);
 }
 
 // ------------------ PLANIFICACION ------------------

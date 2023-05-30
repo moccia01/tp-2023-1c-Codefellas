@@ -347,13 +347,13 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 	int* id_segmento = list_get(consulta_segmento ,1);
 	if(tamanio_segmento + desplazamiento_segmento > tamanio_segmento){
 		contexto->motivo_exit = SEG_FAULT;
-		contexto->estado = FINISH_EXIT;
 		contexto->seg_fault = malloc(sizeof(t_segmento));
 		contexto->seg_fault->id = *id_segmento;
 		contexto->seg_fault->offset = desplazamiento_segmento;
 		contexto->seg_fault->tamanio_segmento = *tamanio_segmento;
 		contexto->seg_fault->direccion_fisica = dir_fisica;
-		send_cambiar_estado(contexto, socket_cliente);
+		send_contexto_ejecucion(contexto, socket_cliente);
+		send_cambiar_estado(FINISH_ERROR, socket_cliente);
 		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, *tamanio_segmento);
 		flag_execute = false;
 	}else{
@@ -374,13 +374,13 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 	int* id_segmento = list_get(consulta_segmento ,1);
 	if(tamanio_segmento + desplazamiento_segmento > tamanio_segmento){ //TODO: la condicion para seg_fault es offset + tamanio_leer/escribir > tamanio_segmento
 		contexto->motivo_exit = SEG_FAULT;
-		contexto->estado = FINISH_EXIT;
 		contexto->seg_fault = malloc(sizeof(t_segmento));
 		contexto->seg_fault->id = *id_segmento;
 		contexto->seg_fault->offset = desplazamiento_segmento;
 		contexto->seg_fault->tamanio_segmento = *tamanio_segmento;
 		contexto->seg_fault->direccion_fisica = dir_fisica;
-		send_cambiar_estado(contexto, socket_cliente);
+		send_contexto_ejecucion(contexto, socket_cliente);
+		send_cambiar_estado(FINISH_ERROR, socket_cliente);
 		log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, num_segmento, desplazamiento_segmento, *tamanio_segmento);
 		flag_execute = false;
 	}else{
@@ -458,15 +458,14 @@ void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto){
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){
-	contexto->estado = READY;
-	send_cambiar_estado(contexto, socket_cliente);
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_cambiar_estado(READY, socket_cliente);
 	contexto_destroyer(contexto);
 }
 
 void ejecutar_exit(t_contexto_ejecucion* contexto){
-	contexto->estado = FINISH_EXIT;
-	contexto->motivo_exit = SUCCESS;
-	send_cambiar_estado(contexto, socket_cliente);
+	send_contexto_ejecucion(contexto, socket_cliente);
+	send_cambiar_estado(FINISH_EXIT, socket_cliente);
 	contexto_destroyer(contexto);
 }
 

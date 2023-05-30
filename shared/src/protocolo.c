@@ -419,16 +419,17 @@ void registros_destroy(t_registros* registros){
 	//registros = NULL;
 }
 
-void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){
+void send_cambiar_estado(estado_proceso estado, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CAMBIAR_ESTADO);
-	empaquetar_contexto_ejecucion(paquete, contexto);
+	agregar_a_paquete(paquete, &estado, sizeof(estado_proceso));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
-t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo){
-	t_contexto_ejecucion* contexto_recibido = recv_contexto_ejecucion(fd_modulo);
-	return contexto_recibido;
+estado_proceso recv_cambiar_estado(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	estado_proceso* estado = list_get(paquete, 0);
+	return *estado;
 }
 
 void send_tiempo_io(int tiempo_io, int fd_modulo){

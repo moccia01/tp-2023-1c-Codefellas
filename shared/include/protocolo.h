@@ -76,7 +76,7 @@ t_segmento* desempaquetar_segmento(t_list* paquete, int comienzo);
 //Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
 void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo);
-void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo);
+void send_cambiar_estado(estado_proceso estado, int fd_modulo);
 void send_tiempo_io(int tiempo_io, int fd_modulo);
 void send_recurso_wait(char* recurso, int fd_modulo);
 void send_recurso_signal(char* recurso, int fd_modulo);
@@ -97,7 +97,7 @@ void send_respuesta_segmento(int dir_fisica, int fd_modulo);
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
 t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
-t_contexto_ejecucion* recv_cambiar_estado(int fd_modulo);
+estado_proceso recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
