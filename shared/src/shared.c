@@ -143,6 +143,7 @@ char* motivo_exit_to_string(motivo_exit motivo){
 	case SUCCESS: return "SUCCESS";
 	case SEG_FAULT: return "SEG_FAULT";
 	case OUT_OF_MEMORY: return "OUT_OF_MEMORY";
-	default: return NULL;
+	case RECURSO_INEXISTENTE: return "RECURSO_INEXISTENTE";
+	default: return "INDETERMINADO";
 	}
 }

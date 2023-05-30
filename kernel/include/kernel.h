@@ -82,6 +82,7 @@ sem_t sem_listos_ready;
 sem_t sem_ready;
 sem_t sem_exec;
 sem_t sem_exit;
+sem_t sem_block_return;
 
 // INIT
 void leer_config();
@@ -113,8 +114,11 @@ void planificar();
 void planificar_largo_plazo();
 void exit_pcb();
 void ready_pcb();
+void block_return_pcb();
 t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
 void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex);
+t_pcb* safe_pcb_remove(t_list* list, pthread_mutex_t* mutex);
+void safe_pcb_add(t_list* list, t_pcb* pcb, pthread_mutex_t* mutex);
 void set_pcb_ready(t_pcb* pcb);
 void log_cola_ready();
 t_list *pcb_to_pid_list(t_list *list);

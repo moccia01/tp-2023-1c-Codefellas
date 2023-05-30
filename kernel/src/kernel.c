@@ -125,6 +125,7 @@ void inicializar_variables() {
 	sem_init(&sem_ready, 0, 0);
 	sem_init(&sem_exec, 0, 1);
 	sem_init(&sem_exit, 0, 0);
+	sem_init(&sem_block_return, 0, 0);
 
 }
 
@@ -252,8 +253,6 @@ static void procesar_conexion(void* void_args) {
 				char* recurso_signal = recv_recurso(cliente_socket);
 				manejar_signal(pcb_contexto_ejecucion, recurso_signal);
 				free(recurso_signal);
-				safe_pcb_push(cola_exec, pcb_contexto_ejecucion, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb_contexto_ejecucion->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_CREATE_SEGMENT:
 //				recibir parametros del create_segment
@@ -348,10 +347,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
 	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla
 	// despues un recv tabla y ahi se asigna
-	t_segmento* segmento = malloc(sizeof(t_segmento));
-	segmento->direccion_fisica = 0;
-	segmento->id = 0;
-	segmento->tamanio_segmento = 0;
+	t_segmento* segmento = inicializar_segmento();
 	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
 	list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento);
 
@@ -381,8 +377,8 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo){
 
 	switch(estado_nuevo){
 	case READY:
-		safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_ready);
-		sem_post(&sem_listos_ready);
+		set_pcb_ready(pcb);
+		sem_post(&sem_ready);
 		break;
 	case FINISH_EXIT:
 		cambiar_estado(pcb, estado_nuevo);
@@ -446,10 +442,13 @@ void planificar() {
 void planificar_largo_plazo() {
 	pthread_t hilo_ready;
 	pthread_t hilo_exit;
+	pthread_t hilo_block;
 	pthread_create(&hilo_exit, NULL, (void*) exit_pcb, NULL);
 	pthread_create(&hilo_ready, NULL, (void*) ready_pcb, NULL);
+	pthread_create(&hilo_block, NULL, (void*)block_return_pcb, NULL);
 	pthread_detach(hilo_exit);
 	pthread_detach(hilo_ready);
+	pthread_detach(hilo_block);
 }
 
 void exit_pcb(void) {
@@ -470,6 +469,15 @@ void ready_pcb(void) {
 		sem_wait(&sem_listos_ready);
 		t_pcb *pcb = safe_pcb_pop(cola_listos_para_ready, &mutex_cola_listos_para_ready);
 		sem_wait(&sem_multiprog);
+		set_pcb_ready(pcb);
+		sem_post(&sem_ready);
+	}
+}
+
+void block_return_pcb(){
+	while(1){
+		sem_wait(&sem_block_return);
+		t_pcb* pcb = safe_pcb_pop(cola_block, &mutex_cola_block);
 		set_pcb_ready(pcb);
 		sem_post(&sem_ready);
 	}
@@ -509,7 +517,7 @@ void set_pcb_ready(t_pcb *pcb) {
 	pthread_mutex_lock(&mutex_cola_ready);
 	cambiar_estado(pcb, READY);
 	pcb->tiempo_ingreso_ready = time(NULL);
-	// no safe_pcb_push
+	// no safe_pcb_add
 	list_add(lista_ready, pcb);
 	log_cola_ready();
 	pthread_mutex_unlock(&mutex_cola_ready);
@@ -626,15 +634,15 @@ void exec_io(void* void_arg){
 	int tiempo = args->tiempo;
 	log_info(logger, "ejecutando IO por tiempo: %d", tiempo);
 	usleep(tiempo * 1000000);
-//	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
-	safe_pcb_push(cola_listos_para_ready, pcb, &mutex_cola_listos_para_ready);
-	sem_post(&sem_listos_ready);
+	safe_pcb_push(cola_block, pcb, &mutex_cola_block);
+	sem_post(&sem_block_return);
 }
 
 void manejar_wait(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado= buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
 		log_error(logger, "No existe el recurso solicitado: %s", recurso);
+		pcb->contexto_de_ejecucion->motivo_exit = RECURSO_INEXISTENTE;
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
 		sem_post(&sem_exec);
@@ -658,16 +666,20 @@ void manejar_signal(t_pcb* pcb, char* recurso){
 	t_recurso* recursobuscado = buscar_recurso(recurso);
 	if(recursobuscado->id == -1){
 		log_error(logger, "No existe el recurso solicitado: %s",recurso);
+		pcb->contexto_de_ejecucion->motivo_exit = RECURSO_INEXISTENTE;
 		safe_pcb_push(cola_exit,pcb, &mutex_cola_exit);
 		sem_post(&sem_exit);
+		sem_post(&sem_exec);
 	}else{
 		recursobuscado->instancias++;
 		log_info(logger_obligatorio,"PID: %d - Signal: %s - Instancias: %d", pcb->contexto_de_ejecucion->pid,recurso,recursobuscado->instancias);
 		if(recursobuscado->instancias <= 0){
 			t_pcb* pcb = safe_pcb_pop(recursobuscado->cola_block_asignada, &recursobuscado->mutex_asignado);
-			safe_pcb_push(cola_listos_para_ready, pcb,&mutex_cola_listos_para_ready);
-			sem_post(&sem_listos_ready);
+			safe_pcb_push(cola_block, pcb,&mutex_cola_block);
+			sem_post(&sem_block_return);
 		}
+		safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
+		send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
 	}
 }
 

@@ -71,7 +71,8 @@ typedef enum{
 typedef enum{
 	SUCCESS,
 	SEG_FAULT,
-	OUT_OF_MEMORY
+	OUT_OF_MEMORY,
+	RECURSO_INEXISTENTE,
 }motivo_exit;
 
 typedef struct{
