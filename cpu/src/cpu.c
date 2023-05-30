@@ -256,32 +256,54 @@ void set_valor_registro(char* registro, char* valor){
 		log_info(logger, "el valor de ax es: %s", registros->ax);
 	}else if(strcmp(registro, "BX") == 0){
 		//actualizar_valor_registro(registros->bx, valor);
+		registros->bx = malloc(sizeof(5));
+		registros->bx = valor;
 	}else if(strcmp(registro, "CX") == 0){
-		actualizar_valor_registro(registros->cx, valor);
+		//actualizar_valor_registro(registros->cx, valor);
+		registros->cx = malloc(sizeof(5));
+		registros->cx = valor;
 	}else if(strcmp(registro, "DX") == 0){
-		actualizar_valor_registro(registros->dx, valor);
+		//actualizar_valor_registro(registros->dx, valor);
+		registros->dx = malloc(sizeof(5));
+		registros->dx = valor;
 	}else if(strcmp(registro, "EAX") == 0){
-		actualizar_valor_registro(registros->eax, valor);
+		//actualizar_valor_registro(registros->eax, valor);
+		registros->eax = malloc(sizeof(5));
+		registros->eax = valor;
 	}else if(strcmp(registro, "EBX") == 0){
-		actualizar_valor_registro(registros->ebx, valor);
+		//actualizar_valor_registro(registros->ebx, valor);
+		registros->ebx = malloc(sizeof(5));
+		registros->ebx = valor;
 	}else if(strcmp(registro, "ECX") == 0){
-		actualizar_valor_registro(registros->ecx, valor);
+		//actualizar_valor_registro(registros->ecx, valor);
+		registros->ecx = malloc(sizeof(5));
+		registros->ecx = valor;
 	}else if(strcmp(registro, "EDX") == 0){
-		actualizar_valor_registro(registros->edx, valor);
+		//actualizar_valor_registro(registros->edx, valor);
+		registros->edx = malloc(sizeof(5));
+		registros->edx = valor;
 	}else if(strcmp(registro, "RAX") == 0){
-		actualizar_valor_registro(registros->rax, valor);
+		//actualizar_valor_registro(registros->rax, valor);
+		registros->rax = malloc(sizeof(5));
+		registros->rax = valor;
 	}else if(strcmp(registro, "RBX") == 0){
-		actualizar_valor_registro(registros->rbx, valor);
+		//actualizar_valor_registro(registros->rbx, valor);
+		registros->rbx = malloc(sizeof(5));
+		registros->rbx = valor;
 	}else if(strcmp(registro, "RCX") == 0){
-		actualizar_valor_registro(registros->rcx, valor);
+		//actualizar_valor_registro(registros->rcx, valor);
+		registros->rcx = malloc(sizeof(5));
+		registros->rcx = valor;
 	}else if(strcmp(registro, "RDX") == 0){
-		actualizar_valor_registro(registros->rdx, valor);
+		//actualizar_valor_registro(registros->rdx, valor);
+		registros->rdx = malloc(sizeof(5));
+		registros->rdx = valor;
 	}
 	log_info(logger, "Se seteo el valor %s en registro %s", valor, registro);
 }
 
 void actualizar_valor_registro(char* registro, char* valor){
-	char* auxiliar = registro;
+	//char* auxiliar = registro;
 	registro = valor;
 	log_info(logger, "YO AX SOY: %s", registros->ax);
 	//free(auxiliar); //TODO ver esto
