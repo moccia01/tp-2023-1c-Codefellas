@@ -246,67 +246,54 @@ void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
-		log_info(logger, "YO SOY EL VALOR QUE NO SE PONE EN AX: %s", valor);
-		//registros->ax = NULL;
-		//free(registros->ax);
 		registros->ax = malloc(sizeof(5));
-		registros->ax = valor;
-		log_info(logger, "YO AX SOY: %s", registros->ax);
-
-		log_info(logger, "el valor de ax es: %s", registros->ax);
+		strcpy(registros->ax, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->ax, "AX");
 	}else if(strcmp(registro, "BX") == 0){
-		//actualizar_valor_registro(registros->bx, valor);
 		registros->bx = malloc(sizeof(5));
-		registros->bx = valor;
+		strcpy(registros->bx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->bx, "BX");
 	}else if(strcmp(registro, "CX") == 0){
-		//actualizar_valor_registro(registros->cx, valor);
 		registros->cx = malloc(sizeof(5));
-		registros->cx = valor;
+		strcpy(registros->cx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->cx, "CX");
 	}else if(strcmp(registro, "DX") == 0){
-		//actualizar_valor_registro(registros->dx, valor);
 		registros->dx = malloc(sizeof(5));
-		registros->dx = valor;
+		strcpy(registros->dx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->dx, "DX");
 	}else if(strcmp(registro, "EAX") == 0){
-		//actualizar_valor_registro(registros->eax, valor);
 		registros->eax = malloc(sizeof(5));
-		registros->eax = valor;
+		strcpy(registros->eax, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->eax, "EAX");
 	}else if(strcmp(registro, "EBX") == 0){
-		//actualizar_valor_registro(registros->ebx, valor);
 		registros->ebx = malloc(sizeof(5));
-		registros->ebx = valor;
+		strcpy(registros->ebx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->ebx, "EBX");
 	}else if(strcmp(registro, "ECX") == 0){
-		//actualizar_valor_registro(registros->ecx, valor);
 		registros->ecx = malloc(sizeof(5));
-		registros->ecx = valor;
+		strcpy(registros->ecx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->ecx, "ECX");
 	}else if(strcmp(registro, "EDX") == 0){
-		//actualizar_valor_registro(registros->edx, valor);
 		registros->edx = malloc(sizeof(5));
-		registros->edx = valor;
+		strcpy(registros->edx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->edx, "EDX");
 	}else if(strcmp(registro, "RAX") == 0){
-		//actualizar_valor_registro(registros->rax, valor);
 		registros->rax = malloc(sizeof(5));
-		registros->rax = valor;
+		strcpy(registros->rax, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->rax, "RAX");
 	}else if(strcmp(registro, "RBX") == 0){
-		//actualizar_valor_registro(registros->rbx, valor);
 		registros->rbx = malloc(sizeof(5));
-		registros->rbx = valor;
+		strcpy(registros->rbx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->rbx, "RBX");
 	}else if(strcmp(registro, "RCX") == 0){
-		//actualizar_valor_registro(registros->rcx, valor);
 		registros->rcx = malloc(sizeof(5));
-		registros->rcx = valor;
+		strcpy(registros->rcx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->rcx, "RCX");
 	}else if(strcmp(registro, "RDX") == 0){
-		//actualizar_valor_registro(registros->rdx, valor);
 		registros->rdx = malloc(sizeof(5));
-		registros->rdx = valor;
+		strcpy(registros->rdx, valor);
+		log_info(logger, "Se seteo el valor %s en registro %s", registros->rdx, "RDX");
 	}
-	log_info(logger, "Se seteo el valor %s en registro %s", valor, registro);
-}
-
-void actualizar_valor_registro(char* registro, char* valor){
-	//char* auxiliar = registro;
-	registro = valor;
-	log_info(logger, "YO AX SOY: %s", registros->ax);
-	//free(auxiliar); //TODO ver esto
 }
 
 char* leer_valor_registro(char* registro){
@@ -490,17 +477,29 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
 }
 
 void actualizar_registros_contexto(t_registros* registros_contexto){
-	registros_contexto->ax = registros->ax;
+	strcpy(registros_contexto->ax, registros->ax);
 	log_info(logger, "Ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
-	registros_contexto->bx = registros->bx;
-	registros_contexto->cx = registros->cx;
-	registros_contexto->dx = registros->dx;
-	registros_contexto->eax = registros->eax;
-	registros_contexto->ebx = registros->ebx;
-	registros_contexto->ecx = registros->ecx;
-	registros_contexto->edx = registros->edx;
-	registros_contexto->rax = registros->rax;
-	registros_contexto->rbx = registros->rbx;
-	registros_contexto->rcx = registros->rcx;
-	registros_contexto->rdx = registros->rdx;
+	strcpy(registros_contexto->bx, registros->bx);
+	log_info(logger, "Ahora el contexto tiene el valor de bx: %s", registros_contexto->bx);
+	strcpy(registros_contexto->cx, registros->cx);
+	log_info(logger, "Ahora el contexto tiene el valor de cx: %s", registros_contexto->cx);
+	strcpy(registros_contexto->dx, registros->dx);
+	log_info(logger, "Ahora el contexto tiene el valor de dx: %s", registros_contexto->dx);
+	strcpy(registros_contexto->eax, registros->eax);
+	log_info(logger, "Ahora el contexto tiene el valor de eax: %s", registros_contexto->eax);
+	strcpy(registros_contexto->ebx, registros->ebx);
+	log_info(logger, "Ahora el contexto tiene el valor de ebx: %s", registros_contexto->ebx);
+	strcpy(registros_contexto->ecx, registros->ecx);
+	log_info(logger, "Ahora el contexto tiene el valor de ecx: %s", registros_contexto->ecx);
+	strcpy(registros_contexto->edx, registros->edx);
+	log_info(logger, "Ahora el contexto tiene el valor de edx: %s", registros_contexto->edx);
+	strcpy(registros_contexto->rax, registros->rax);
+	log_info(logger, "Ahora el contexto tiene el valor de rax: %s", registros_contexto->rax);
+	strcpy(registros_contexto->rbx, registros->rbx);
+	log_info(logger, "Ahora el contexto tiene el valor de rbx: %s", registros_contexto->rbx);
+	strcpy(registros_contexto->rcx, registros->rcx);
+	log_info(logger, "Ahora el contexto tiene el valor de rcx: %s", registros_contexto->rcx);
+	strcpy(registros_contexto->rdx, registros->rdx);
+	log_info(logger, "Ahora el contexto tiene el valor de rdx: %s", registros_contexto->rdx);
+
 }

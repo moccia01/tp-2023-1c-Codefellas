@@ -249,18 +249,53 @@ void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros){
 t_registros* desempaquetar_registros(t_list* paquete, int comienzo){
 	t_registros* registro_contexto = malloc(sizeof(t_registros));
 
-	registro_contexto->ax = list_get(paquete,comienzo);
-	registro_contexto->bx = list_get(paquete,comienzo + 1);
-	registro_contexto->cx = list_get(paquete,comienzo + 2);
-	registro_contexto->dx = list_get(paquete,comienzo + 3);
-	registro_contexto->eax = list_get(paquete,comienzo + 4);
-	registro_contexto->ebx = list_get(paquete,comienzo + 5);
-	registro_contexto->ecx = list_get(paquete,comienzo + 6);
-	registro_contexto->edx = list_get(paquete,comienzo + 7);
-	registro_contexto->rax = list_get(paquete,comienzo + 8);
-	registro_contexto->rbx = list_get(paquete,comienzo + 9);
-	registro_contexto->rcx = list_get(paquete,comienzo + 10);
-	registro_contexto->rdx = list_get(paquete,comienzo + 11);
+	char* ax = list_get(paquete,comienzo);
+	registro_contexto->ax = malloc(sizeof(ax));
+	strcpy(registro_contexto->ax, ax);
+
+	char* bx = list_get(paquete,comienzo + 1);
+	registro_contexto->bx = malloc(sizeof(bx));
+	strcpy(registro_contexto->bx, bx);
+
+	char* cx = list_get(paquete,comienzo + 2);
+	registro_contexto->cx = malloc(sizeof(cx));
+	strcpy(registro_contexto->cx, cx);
+
+	char* dx = list_get(paquete,comienzo + 3);
+	registro_contexto->dx = malloc(sizeof(dx));
+	strcpy(registro_contexto->dx, dx);
+
+	char* eax = list_get(paquete,comienzo + 4);
+	registro_contexto->eax = malloc(sizeof(eax));
+	strcpy(registro_contexto->eax, eax);
+
+	char* ebx = list_get(paquete,comienzo + 5);
+	registro_contexto->ebx = malloc(sizeof(ebx));
+	strcpy(registro_contexto->ebx, ebx);
+
+	char* ecx = list_get(paquete,comienzo + 6);
+	registro_contexto->ecx = malloc(sizeof(ecx));
+	strcpy(registro_contexto->ecx, ecx);
+
+	char* edx = list_get(paquete,comienzo + 7);
+	registro_contexto->edx = malloc(sizeof(edx));
+	strcpy(registro_contexto->edx, edx);
+
+	char* rax = list_get(paquete,comienzo + 8);
+	registro_contexto->rax = malloc(sizeof(rax));
+	strcpy(registro_contexto->rax, rax);
+
+	char* rbx = list_get(paquete,comienzo + 9);
+	registro_contexto->rbx = malloc(sizeof(rbx));
+	strcpy(registro_contexto->rbx, rbx);
+
+	char* rcx = list_get(paquete,comienzo + 10);
+	registro_contexto->rcx = malloc(sizeof(rcx));
+	strcpy(registro_contexto->rcx, rcx);
+
+	char* rdx = list_get(paquete,comienzo + 11);
+	registro_contexto->rdx = malloc(sizeof(rdx));
+	strcpy(registro_contexto->rdx, rdx);
 
 	return registro_contexto;
 }
