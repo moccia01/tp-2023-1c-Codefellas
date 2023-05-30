@@ -368,20 +368,20 @@ void segmento_destroy(t_segmento* segmento){
 }
 
 void registros_destroy(t_registros* registros){
-//	free(registros->ax);
-//	free(registros->bx);
-//	free(registros->cx);
-//	free(registros->dx);
-//	free(registros->eax);
-//	free(registros->ebx);
-//	free(registros->ecx);
-//	free(registros->edx);
-//	free(registros->rax);
-//	free(registros->rbx);
-//	free(registros->rcx);
-//	free(registros->rdx);
+	free(registros->ax);
+	free(registros->bx);
+	free(registros->cx);
+	free(registros->dx);
+	free(registros->eax);
+	free(registros->ebx);
+	free(registros->ecx);
+	free(registros->edx);
+	free(registros->rax);
+	free(registros->rbx);
+	free(registros->rcx);
+	free(registros->rdx);
 	free(registros);
-	registros = NULL;
+	//registros = NULL;
 }
 
 void send_cambiar_estado(t_contexto_ejecucion* contexto, int fd_modulo){

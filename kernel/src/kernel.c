@@ -414,7 +414,7 @@ void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	pcb->contexto_de_ejecucion = contexto;
 	log_info(logger, "el contexto trae el valor de ax: %s", contexto->registros->ax);
 	pcb->contexto_de_ejecucion->registros->ax = contexto->registros->ax;
-	contexto_destroyer(auxiliar);
+	contexto_destroyer(auxiliar);		//TODO free invalid pointer() después de descomentar a resgistros_destroy
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){

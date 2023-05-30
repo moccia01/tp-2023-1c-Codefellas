@@ -246,10 +246,16 @@ void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
-		actualizar_valor_registro(registros->ax, valor);
+		log_info(logger, "YO SOY EL VALOR QUE NO SE PONE EN AX: %s", valor);
+		//registros->ax = NULL;
+		//free(registros->ax);
+		registros->ax = malloc(sizeof(5));
+		registros->ax = valor;
+		log_info(logger, "YO AX SOY: %s", registros->ax);
+
 		log_info(logger, "el valor de ax es: %s", registros->ax);
 	}else if(strcmp(registro, "BX") == 0){
-		actualizar_valor_registro(registros->bx, valor);
+		//actualizar_valor_registro(registros->bx, valor);
 	}else if(strcmp(registro, "CX") == 0){
 		actualizar_valor_registro(registros->cx, valor);
 	}else if(strcmp(registro, "DX") == 0){
@@ -277,7 +283,8 @@ void set_valor_registro(char* registro, char* valor){
 void actualizar_valor_registro(char* registro, char* valor){
 	char* auxiliar = registro;
 	registro = valor;
-	free(auxiliar); //TODO ver esto
+	log_info(logger, "YO AX SOY: %s", registros->ax);
+	//free(auxiliar); //TODO ver esto
 }
 
 char* leer_valor_registro(char* registro){
@@ -462,7 +469,7 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
 
 void actualizar_registros_contexto(t_registros* registros_contexto){
 	registros_contexto->ax = registros->ax;
-	log_info(logger, "ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
+	log_info(logger, "Ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
 	registros_contexto->bx = registros->bx;
 	registros_contexto->cx = registros->cx;
 	registros_contexto->dx = registros->dx;
