@@ -4,17 +4,17 @@ int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
 	}
-	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
-	// TODO: cambiar archivo de logs obligatorios
-	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
-	inicializar_variables();
 	if (config == NULL) {
 		log_error(logger, "No se encontró el archivo :(");
+		config_destroy(config);
 		exit(1);
 	}
 	leer_config();
-
+	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
+	// TODO: cambiar archivo de logs obligatorios
+	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
+	inicializar_variables();
 	// Conecto kernel con cpu, memoria y filesystem
 	fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
 	if (!generar_conexiones()) {
