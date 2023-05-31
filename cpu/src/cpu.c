@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
 	terminar_programa(logger, config);
 	//TODO liberar variables globales
-	registros_destroy(registros);
+	//registros_destroy(registros);
 	return 0;
 }
 

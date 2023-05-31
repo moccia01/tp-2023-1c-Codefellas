@@ -479,14 +479,14 @@ void send_recurso_wait(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_WAIT);
 	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
+	eliminar_paquete(paquete);
 }
 
 void send_recurso_signal(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_SIGNAL);
 	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
+	eliminar_paquete(paquete);
 }
 
 int recv_tiempo_io(int fd_modulo){

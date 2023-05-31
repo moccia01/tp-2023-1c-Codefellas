@@ -177,6 +177,39 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rdx = "";
 }
 
+t_registros* inicializar_registros(){
+	t_registros* registros = malloc(sizeof(t_registros));
+
+	registros->ax = malloc(sizeof(5));
+	registros->bx = malloc(sizeof(5));
+	registros->cx = malloc(sizeof(5));
+	registros->dx = malloc(sizeof(5));
+	registros->eax = malloc(sizeof(9));
+	registros->ebx = malloc(sizeof(9));
+	registros->ecx = malloc(sizeof(9));
+	registros->edx = malloc(sizeof(9));
+	registros->rax = malloc(sizeof(17));
+	registros->rbx = malloc(sizeof(17));
+	registros->rcx = malloc(sizeof(17));
+	registros->rdx = malloc(sizeof(17));
+
+	registros->ax = "";
+	registros->bx = "";
+	registros->cx = "";
+	registros->dx = "";
+	registros->eax = "";
+	registros->ebx = "";
+	registros->ecx = "";
+	registros->edx = "";
+	registros->rax = "";
+	registros->rbx = "";
+	registros->rcx = "";
+	registros->rdx = "";
+
+	return registros;
+}
+
+
 t_segmento* inicializar_segmento(){
 	t_segmento* segmento = malloc(sizeof(t_segmento));
 	segmento->direccion_fisica = -1;
@@ -350,7 +383,8 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	pcb->contexto_de_ejecucion->seg_fault = inicializar_segmento();
-	inicializar_registro(contexto);
+	//inicializar_registro(contexto);
+	pcb->contexto_de_ejecucion->registros = inicializar_registros();
 
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
 	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla
