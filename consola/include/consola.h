@@ -24,7 +24,6 @@ int fd_kernel;
 
 void leer_config();
 t_list* leer_instrucciones(char* path, t_log* logger);
-void destruir_lista_instrucciones(t_list* lista);
 static void procesar_conexion();
 
 #endif /* CONSOLA_H_ */

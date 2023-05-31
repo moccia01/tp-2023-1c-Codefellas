@@ -113,6 +113,7 @@ void contexto_destroyer(t_contexto_ejecucion* contexto);
 void registros_destroy(t_registros* registros);
 void instruccion_destroyer(t_instruccion* instruccion);
 void segmento_destroy(t_segmento* segmento);
+void lista_instrucciones_destroy(t_list* lista);
 
 #endif /* PROTOCOLO_H_ */
 

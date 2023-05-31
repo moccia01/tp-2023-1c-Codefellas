@@ -109,4 +109,5 @@ void loggear_instrucciones_test(t_log* logger, t_list* instrucciones);
 char* instruccion_to_string(t_log* logger, cod_instruccion cod);
 char* motivo_exit_to_string(motivo_exit motivo);
 
+
 #endif /* SHARED_H_ */

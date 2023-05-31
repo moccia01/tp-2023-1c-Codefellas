@@ -139,25 +139,30 @@ t_list* desempaquetar_instrucciones(t_list* paquete, int comienzo){
 		t_instruccion* instruccion = malloc(sizeof(t_instruccion));
 		cod_instruccion* cod = list_get(paquete, i);
 		instruccion->instruccion = *cod;
+		free(cod);
 		i++;
 
 		char* param1 = list_get(paquete, i);
 		instruccion->parametro1 = malloc(strlen(param1));
 		strcpy(instruccion->parametro1, param1);
+		free(param1);
 		i++;
 
 		char* param2 = list_get(paquete, i);
 		instruccion->parametro2 = malloc(strlen(param2));
 		strcpy(instruccion->parametro2, param2);
+		free(param2);
 		i++;
 
 		char* param3 = list_get(paquete, i);
 		instruccion->parametro3 = malloc(strlen(param3));
 		strcpy(instruccion->parametro3, param3);
+		free(param3);
 		i++;
 
 		list_add(instrucciones, instruccion);
 	}
+	free(cantidad_instrucciones);
 	return instrucciones;
 }
 
@@ -202,6 +207,7 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 		i += 4;
 		list_add(tabla_segmentos, segmento);
 	}
+	free(cantidad_segmentos);
 	return tabla_segmentos;
 }
 
@@ -252,50 +258,62 @@ t_registros* desempaquetar_registros(t_list* paquete, int comienzo){
 	char* ax = list_get(paquete,comienzo);
 	registro_contexto->ax = malloc(sizeof(ax));
 	strcpy(registro_contexto->ax, ax);
+	free(ax);
 
 	char* bx = list_get(paquete,comienzo + 1);
 	registro_contexto->bx = malloc(sizeof(bx));
 	strcpy(registro_contexto->bx, bx);
+	free(bx);
 
 	char* cx = list_get(paquete,comienzo + 2);
 	registro_contexto->cx = malloc(sizeof(cx));
 	strcpy(registro_contexto->cx, cx);
+	free(cx);
 
 	char* dx = list_get(paquete,comienzo + 3);
 	registro_contexto->dx = malloc(sizeof(dx));
 	strcpy(registro_contexto->dx, dx);
+	free(dx);
 
 	char* eax = list_get(paquete,comienzo + 4);
 	registro_contexto->eax = malloc(sizeof(eax));
 	strcpy(registro_contexto->eax, eax);
+	free(eax);
 
 	char* ebx = list_get(paquete,comienzo + 5);
 	registro_contexto->ebx = malloc(sizeof(ebx));
 	strcpy(registro_contexto->ebx, ebx);
+	free(ebx);
 
 	char* ecx = list_get(paquete,comienzo + 6);
 	registro_contexto->ecx = malloc(sizeof(ecx));
 	strcpy(registro_contexto->ecx, ecx);
+	free(ecx);
 
 	char* edx = list_get(paquete,comienzo + 7);
 	registro_contexto->edx = malloc(sizeof(edx));
 	strcpy(registro_contexto->edx, edx);
+	free(edx);
 
 	char* rax = list_get(paquete,comienzo + 8);
 	registro_contexto->rax = malloc(sizeof(rax));
 	strcpy(registro_contexto->rax, rax);
+	free(rax);
 
 	char* rbx = list_get(paquete,comienzo + 9);
 	registro_contexto->rbx = malloc(sizeof(rbx));
 	strcpy(registro_contexto->rbx, rbx);
+	free(rbx);
 
 	char* rcx = list_get(paquete,comienzo + 10);
 	registro_contexto->rcx = malloc(sizeof(rcx));
 	strcpy(registro_contexto->rcx, rcx);
+	free(rcx);
 
 	char* rdx = list_get(paquete,comienzo + 11);
 	registro_contexto->rdx = malloc(sizeof(rdx));
 	strcpy(registro_contexto->rdx, rdx);
+	free(rdx);
 
 	return registro_contexto;
 }
@@ -324,35 +342,45 @@ t_segmento* desempaquetar_segmento(t_list* paquete, int comienzo){
 
 	int* direccion_fisica = list_get(paquete, comienzo);
 	segmento->direccion_fisica = *direccion_fisica;
+	free(direccion_fisica);
 
 	int* id = list_get(paquete, comienzo + 1);
 	segmento->id = *id;
+	free(id);
 
 	int* offset = list_get(paquete, comienzo + 2);
 	segmento->offset = *offset;
+	free(offset);
 
 	int* tamanio_segmento = list_get(paquete, comienzo + 3);
 	segmento->tamanio_segmento = *tamanio_segmento;
+	free(tamanio_segmento);
 
 	return segmento;
 }
 
 t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
+
 	int* pid = list_get(paquete, 0);
 	contexto->pid = *pid;
+	free(pid);
 
 	int* program_counter = list_get(paquete, 1);
 	contexto->program_counter = *program_counter;
+	free(program_counter);
 
 	estado_proceso* estado =  list_get(paquete, 2);
 	contexto->estado = *estado;
+	free(estado);
 
 	motivo_exit* motivo_exit = list_get(paquete, 3);
 	contexto->motivo_exit = *motivo_exit;
+	free(motivo_exit);
 
 	motivo_block* motivo_block = list_get(paquete, 4);
 	contexto->motivo_block = *motivo_block;
+	free(motivo_block);
 
 	t_segmento* seg_fault = desempaquetar_segmento(paquete, 5);
 	contexto->seg_fault = seg_fault;
@@ -377,6 +405,7 @@ void send_contexto_ejecucion(t_contexto_ejecucion* contexto, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CONTEXTO_EJECUCION);
 	empaquetar_contexto_ejecucion(paquete, contexto);
 	enviar_paquete(paquete, fd_modulo);
+	contexto_destroyer(contexto);
 	eliminar_paquete(paquete);
 }
 
@@ -388,11 +417,10 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 }
 
 void contexto_destroyer(t_contexto_ejecucion* contexto){
-	list_destroy_and_destroy_elements(contexto->instrucciones, (void*) instruccion_destroyer);
+	lista_instrucciones_destroy(contexto->instrucciones);
 	list_destroy_and_destroy_elements(contexto->tabla_de_segmentos, (void*) segmento_destroy);
 	segmento_destroy(contexto->seg_fault);
 	registros_destroy(contexto->registros);
-//	free(contexto->seg_fault); TODO: solucionar error, rompe aca cuando termina un proceso (pcb_destroy)
 	free(contexto);
 	contexto = NULL;
 }
@@ -419,6 +447,14 @@ void registros_destroy(t_registros* registros){
 	//registros = NULL;
 }
 
+void lista_instrucciones_destroy(t_list* lista){
+	while(!list_is_empty(lista)){
+		t_instruccion* instrucion = list_remove(lista, 0);
+		instruccion_destroyer(instrucion);
+	}
+	list_destroy(lista);
+}
+
 void send_cambiar_estado(estado_proceso estado, int fd_modulo){
 	t_paquete* paquete = crear_paquete(CAMBIAR_ESTADO);
 	agregar_a_paquete(paquete, &estado, sizeof(estado_proceso));
@@ -436,24 +472,29 @@ void send_tiempo_io(int tiempo_io, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_IO);
 	agregar_a_paquete(paquete, &(tiempo_io), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
 }
 
 void send_recurso_wait(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_WAIT);
 	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
+//	eliminar_paquete(paquete);
 }
 
 void send_recurso_signal(char* recurso, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_SIGNAL);
 	agregar_a_paquete(paquete, recurso, strlen(recurso) + 1);
 	enviar_paquete(paquete, fd_modulo);
+//	eliminar_paquete(paquete);
 }
 
 int recv_tiempo_io(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	int* tiempo = list_get(paquete, 0);
-	return *tiempo;
+	int ret = *tiempo;
+	free(tiempo);
+	return ret;
 }
 
 char* recv_recurso(int fd_modulo){

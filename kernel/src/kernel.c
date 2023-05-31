@@ -417,9 +417,7 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 }
 
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
-	t_contexto_ejecucion* auxiliar = pcb->contexto_de_ejecucion;
 	pcb->contexto_de_ejecucion = contexto;
-	contexto_destroyer(auxiliar);		//TODO free invalid pointer() después de descomentar a registros_destroy
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){

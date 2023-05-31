@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
 	terminar_programa(logger, config);
 	//TODO liberar variables globales
-	//registros_destroy(registros);
+	registros_destroy(registros);
 	return 0;
 }
 
@@ -246,51 +246,51 @@ void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
-		registros->ax = malloc(sizeof(5));
+		registros->ax = malloc(5);
 		strcpy(registros->ax, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ax, "AX");
 	}else if(strcmp(registro, "BX") == 0){
-		registros->bx = malloc(sizeof(5));
+		registros->bx = malloc(5);
 		strcpy(registros->bx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->bx, "BX");
 	}else if(strcmp(registro, "CX") == 0){
-		registros->cx = malloc(sizeof(5));
+		registros->cx = malloc(5);
 		strcpy(registros->cx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->cx, "CX");
 	}else if(strcmp(registro, "DX") == 0){
-		registros->dx = malloc(sizeof(5));
+		registros->dx = malloc(5);
 		strcpy(registros->dx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->dx, "DX");
 	}else if(strcmp(registro, "EAX") == 0){
-		registros->eax = malloc(sizeof(5));
+		registros->eax = malloc(9);
 		strcpy(registros->eax, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->eax, "EAX");
 	}else if(strcmp(registro, "EBX") == 0){
-		registros->ebx = malloc(sizeof(5));
+		registros->ebx = malloc(9);
 		strcpy(registros->ebx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ebx, "EBX");
 	}else if(strcmp(registro, "ECX") == 0){
-		registros->ecx = malloc(sizeof(5));
+		registros->ecx = malloc(9);
 		strcpy(registros->ecx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ecx, "ECX");
 	}else if(strcmp(registro, "EDX") == 0){
-		registros->edx = malloc(sizeof(5));
+		registros->edx = malloc(9);
 		strcpy(registros->edx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->edx, "EDX");
 	}else if(strcmp(registro, "RAX") == 0){
-		registros->rax = malloc(sizeof(5));
+		registros->rax = malloc(17);
 		strcpy(registros->rax, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rax, "RAX");
 	}else if(strcmp(registro, "RBX") == 0){
-		registros->rbx = malloc(sizeof(5));
+		registros->rbx = malloc(17);
 		strcpy(registros->rbx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rbx, "RBX");
 	}else if(strcmp(registro, "RCX") == 0){
-		registros->rcx = malloc(sizeof(5));
+		registros->rcx = malloc(17);
 		strcpy(registros->rcx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rcx, "RCX");
 	}else if(strcmp(registro, "RDX") == 0){
-		registros->rdx = malloc(sizeof(5));
+		registros->rdx = malloc(17);
 		strcpy(registros->rdx, valor);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rdx, "RDX");
 	}
@@ -393,7 +393,7 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_tiempo_io(tiempo_io, socket_cliente);
-	contexto_destroyer(contexto);
+//	contexto_destroyer(contexto);
 }
 
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
@@ -434,15 +434,19 @@ void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 	log_info(logger,"Se esta ejecutando un WAIT al recurso %s", recurso);
+	char* r = malloc(sizeof(recurso));
+	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_recurso_wait(recurso, socket_cliente);
-	//contexto_destroyer(contexto);
+	send_recurso_wait(r, socket_cliente);
+//	contexto_destroyer(contexto);
 }
 
 void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
+	char* r = malloc(sizeof(recurso));
+	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_recurso_signal(recurso, socket_cliente);
-	contexto_destroyer(contexto);
+	send_recurso_signal(r, socket_cliente);
+//	contexto_destroyer(contexto);
 }
 
 void ejecutar_create_segment(int id_segmento, int tamanio, t_contexto_ejecucion* contexto){
@@ -460,13 +464,13 @@ void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto){
 void ejecutar_yield(t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_cambiar_estado(READY, socket_cliente);
-	contexto_destroyer(contexto);
+//	contexto_destroyer(contexto);
 }
 
 void ejecutar_exit(t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_cambiar_estado(FINISH_EXIT, socket_cliente);
-	contexto_destroyer(contexto);
+//	contexto_destroyer(contexto);
 }
 
 void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){

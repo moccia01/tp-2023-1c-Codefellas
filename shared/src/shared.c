@@ -147,3 +147,5 @@ char* motivo_exit_to_string(motivo_exit motivo){
 	default: return "INDETERMINADO";
 	}
 }
+
+
