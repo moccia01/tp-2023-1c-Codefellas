@@ -31,7 +31,8 @@ int TAM_MAX_SEGMENTO;
 
 // INIT
 void leer_config();
-void liberar_variables();
+void terminar_programa();
+void inicializar_variables();
 
 // Comunicacion
 static void procesar_conexion();

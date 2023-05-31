@@ -37,6 +37,7 @@ char* server_name;
 void leer_config();
 void inicializar_variables();
 void levantar_archivos();
+void terminar_programa();
 
 // COMUNICACION
 static void procesar_conexion();

@@ -94,7 +94,7 @@ t_list* inicializar_recursos();
 void inicializar_registro(t_contexto_ejecucion* contexto);
 t_registros* inicializar_registros();
 t_segmento* inicializar_segmento();
-void liberar_variables();
+void terminar_programa();
 
 // COMUNICACION
 static void procesar_conexion(void* args);

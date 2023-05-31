@@ -101,7 +101,6 @@ typedef struct{
     t_segmento* seg_fault;
 }t_contexto_ejecucion;
 
-void terminar_programa(t_log* logger, t_config* config);
 char *estado_to_string(estado_proceso estado);
 char *list_to_string(t_list *list);
 cod_instruccion instruccion_to_enum(char* instruccion);

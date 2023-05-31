@@ -22,6 +22,7 @@ char *PUERTO_KERNEL;
 
 int fd_kernel;
 
+void terminar_programa();
 void leer_config();
 t_list* leer_instrucciones(char* path, t_log* logger);
 static void procesar_conexion();

@@ -7,15 +7,13 @@ int main(int argc, char **argv) {
 	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
 	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
+	inicializar_variables();
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
+		terminar_programa();
 		exit(1);
 	}
 	leer_config();
-
-	//Inicializar variables (CUANDO ESCALE PASARLO A UNA FUNCION)
-	registros = inicializar_registro();
-	flag_execute = true;
 
 	// Conecto CPU con memoria
 //	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -24,14 +22,8 @@ int main(int argc, char **argv) {
 	// Inicio de servidor
 	fd_cpu = iniciar_servidor(logger, IP, PUERTO);
 	server_escuchar();
-	// Conexion Kernel
-//	pthread_t conexion_kernel;
-//	pthread_create(&conexion_kernel, NULL, (void*) server_escuchar, NULL);
-//	pthread_join(conexion_kernel, NULL);
 
-	terminar_programa(logger, config);
-	//TODO liberar variables globales
-	//registros_destroy(registros);
+	terminar_programa();
 	return 0;
 }
 
@@ -46,7 +38,17 @@ void leer_config(){
 	TAM_MAX_SEGMENTO = config_get_int_value(config, "TAM_MAX_SEGMENTO");
 }
 
+void terminar_programa(){
+	log_destroy(logger);
+	config_destroy(config);
+	//TODO liberar variables globales
+	//registros_destroy(registros);
+}
 
+void inicializar_variables(){
+	registros = inicializar_registro();
+	flag_execute = true;
+}
 // --------------- COMUNICACION ---------------
 
 static void procesar_conexion() {

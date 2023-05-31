@@ -50,6 +50,11 @@ void asignar_algoritmo_memoria(char *algoritmo_memoria) {
 	}
 }
 
+void terminar_programa(){
+	log_destroy(logger);
+	config_destroy(config);
+}
+
 // --------------------- COMUNICACION ---------------------
 
 static void procesar_conexion(void *void_args) {

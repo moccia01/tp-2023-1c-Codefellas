@@ -36,6 +36,7 @@ char* server_name;
 // --------------------- INIT ---------------------
 void leer_config();
 void asignar_algoritmo_memoria(char *algoritmo_memoria);
+void terminar_programa();
 
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);

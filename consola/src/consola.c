@@ -30,6 +30,11 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+void terminar_programa(){
+	log_destroy(logger);
+	config_destroy(config);
+}
+
 void leer_config(){
 	IP_KERNEL = config_get_string_value(config, "IP_KERNEL");
 	// El enunciado dice q el puerto es numerico, pero la funcion getaddrinfo recibe char* y no puedo castear de int a char* :(
