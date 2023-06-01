@@ -1,6 +1,8 @@
 #ifndef FILESYSTEM_H_
 #define FILESYSTEM_H_
 
+#include <fcntl.h> //Esta libreria es para la funcion open
+#include <string.h>
 #include <commons/log.h>
 #include <commons/config.h>
 #include <sockets.h>
@@ -13,8 +15,8 @@
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
-FILE *superbloque;
-FILE *bitmap;
+t_config* superbloque;
+t_config* bitmap;
 FILE *bloques;
 
 // Variables del config
@@ -34,29 +36,36 @@ int socket_cliente;
 int fd_memoria;
 char* server_name;
 
+//Variables del superbloque
+int BLOCK_SIZE;
+int BLOCK_COUNT;
+
+//Variable del bitmap
+//int ARRAY_BITMAP[BLOCK_COUNT]; //TODO: Arreglar estooo
+
+//Variable de archivo de bloques
+//int TAMANIO;
+//int ARRAY_BLOQUES[TAMANIO]; //TODO: Arreglar esto!!
+
 void leer_config();
-void inicializar_variables();
 void levantar_archivos();
 void terminar_programa();
+
+// ARCHIVOS
+void leer_superbloque();
+void crear_bitmap();
+void crear_archivo_de_bloques();
 
 // COMUNICACION
 static void procesar_conexion();
 void server_escuchar();
 
 // Estructuras
-/*
-typedef struct{
-	int block_size;
-	int block_count;
-}superbloque;
-
-*/
-
 typedef struct{
 	char* nombre_archivo;
 	int tamanio_archivo;
-	char* puntero_directo;
-	char* puntero_indirecto;	//Chequear tipos de datos
+	int puntero_directo;
+	int puntero_indirecto;
 }fcb;
 
 #endif /* FILESYSTEM_H_ */

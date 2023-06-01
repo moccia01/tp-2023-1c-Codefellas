@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	//levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
+	levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -40,29 +40,43 @@ void leer_config(){
 	PATH_BLOQUES = config_get_string_value(config, "PATH_BLOQUES");
 }
 
-void inicializar_variables(){
+// ------------------ INIT --------------------------
+
+void leer_superbloque(){
+
+	superbloque = config_create(PATH_SUPERBLOQUE);
+
+	if(superbloque == NULL){
+		log_error(logger, "No se encontró el archivo superbloque :(");
+		exit(1);
+	}
+
+	BLOCK_SIZE = config_get_int_value(superbloque, "BLOCK_SIZE");
+	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
+
+}
+/*
+void crear_bitmap(){
+
+	caddr_t mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset);
+
+	for(int i = 0; i < BLOCK_COUNT; i++){
+		ARRAY_BITMAP[i] = 0;
+	}
 
 }
 
+void crear_archivo_de_bloques(){
+
+	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
+
+}
+*/
+
 void levantar_archivos(){
-	superbloque = fopen(PATH_SUPERBLOQUE, "r");
-	bitmap = fopen(PATH_BITMAP, "r+w");
-	bloques = fopen(PATH_BLOQUES, "r+w");
-
-	if (superbloque == NULL) {
-			log_error(logger, "No se pudo abrir el archivo de superbloque.\n");
-			exit(1);
-		}
-
-	if (bitmap == NULL) {
-			log_error(logger, "No se pudo abrir el archivo de bitmap.\n");
-			exit(1);
-		}
-
-	if (bloques == NULL) {
-			log_error(logger, "No se pudo abrir el archivo de bloques.\n");
-			exit(1);
-		}
+	leer_superbloque();
+	//crear_bitmap();
+	//crear_archivo_de_bloques();
 }
 
 void terminar_programa(){
