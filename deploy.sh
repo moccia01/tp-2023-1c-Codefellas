@@ -16,31 +16,22 @@ sudo cp libshared.so ../../../../../usr/local/lib/
 cd ../../consola/Debug
 make clean
 make all
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
-ldd consola
 
 cd ../../kernel/Debug
 make clean
 make all
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
-ldd kernel
 
 cd ../../cpu/Debug
 make clean
 make all
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
-ldd cpu
 
 cd ../../memoria/Debug
 make clean
 make all
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
-ldd memoria
 
 cd ../../fileSystem/Debug
 make clean
 make all
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
-ldd fileSystem
 
 cd ../../
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2023-1c-Codefellas/shared/Debug/
