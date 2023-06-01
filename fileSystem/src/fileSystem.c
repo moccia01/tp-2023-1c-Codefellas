@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
+	//levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -53,6 +53,24 @@ void leer_superbloque(){
 
 	BLOCK_SIZE = config_get_int_value(superbloque, "BLOCK_SIZE");
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
+
+	int fd = open(PATH_SUPERBLOQUE, O_CREAT | O_RDWR, 0664);
+
+	if(fd == -1){
+		close(fd);
+		log_error(logger, "Error abriendo el superbloque.DAT");
+		exit(1);
+	}
+
+//	void* super_b = mmap(NULL, sizeof(int)*2, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+//
+//	if(super_b == MAP_FAILED){
+//		log_error(logger, "Error ejecutando el mmap(...)");
+//		close(fd);
+//		exit(1);
+//	}
+
+
 
 }
 /*

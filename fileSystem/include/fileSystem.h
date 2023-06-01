@@ -47,6 +47,13 @@ int BLOCK_COUNT;
 //int TAMANIO;
 //int ARRAY_BLOQUES[TAMANIO]; //TODO: Arreglar esto!!
 
+typedef enum{
+	PROT_READ,
+	PROT_WRITE,
+	MAP_SHARED,
+	MAP_FAILED,
+}t_modos_mmap;
+
 void leer_config();
 void levantar_archivos();
 void terminar_programa();
