@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	inicializar_variables();
 	// Conecto kernel con cpu, memoria y filesystem
-	fd_cpu = 0, fd_memoria = 0, fd_filesystem = 0;
+	fd_cpu = -1, fd_memoria = -1, fd_filesystem = -1;
 	if (!generar_conexiones()) {
 		log_error(logger, "Alguna conexion falló :(");
 		terminar_programa();
@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
 
 	// Intercambio de mensajes...
 
-//	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
-//	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
+	enviar_mensaje("Hola, Soy Kernel!", fd_filesystem);
+	enviar_mensaje("Hola, Soy Kernel!", fd_memoria);
 	enviar_mensaje("Hola, Soy Kernel!", fd_cpu);
 
 	planificar();
@@ -82,24 +82,23 @@ void asignar_algoritmo(char *algoritmo) {
 }
 
 bool generar_conexiones() {
-//	pthread_t conexion_filesystem;
+	pthread_t conexion_filesystem;
 	pthread_t conexion_cpu;
-//	pthread_t conexion_memoria;
-//
-//	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
-//	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
-//	pthread_detach(conexion_filesystem);
+	pthread_t conexion_memoria;
+
+	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
+	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
+	pthread_detach(conexion_filesystem);
 
 	fd_cpu = crear_conexion(IP_CPU, PUERTO_CPU);
 	pthread_create(&conexion_cpu, NULL, (void*) procesar_conexion, (void*) &fd_cpu);
 	pthread_detach(conexion_cpu);
-//
-//	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-//	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
-//	pthread_detach(conexion_memoria);
 
-//	return fd_filesystem != 0 && fd_cpu != 0 && fd_memoria != 0;
-	return fd_cpu != 0;
+	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
+	pthread_detach(conexion_memoria);
+
+	return fd_filesystem != -1 && fd_cpu != -1 && fd_memoria != -1;
 }
 
 void inicializar_variables() {
@@ -176,39 +175,6 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rcx = "";
 	contexto->registros->rdx = "";
 }
-
-t_registros* inicializar_registros(){
-	t_registros* registros = malloc(sizeof(t_registros));
-
-	registros->ax = malloc(sizeof(5));
-	registros->bx = malloc(sizeof(5));
-	registros->cx = malloc(sizeof(5));
-	registros->dx = malloc(sizeof(5));
-	registros->eax = malloc(sizeof(9));
-	registros->ebx = malloc(sizeof(9));
-	registros->ecx = malloc(sizeof(9));
-	registros->edx = malloc(sizeof(9));
-	registros->rax = malloc(sizeof(17));
-	registros->rbx = malloc(sizeof(17));
-	registros->rcx = malloc(sizeof(17));
-	registros->rdx = malloc(sizeof(17));
-
-	registros->ax = "";
-	registros->bx = "";
-	registros->cx = "";
-	registros->dx = "";
-	registros->eax = "";
-	registros->ebx = "";
-	registros->ecx = "";
-	registros->edx = "";
-	registros->rax = "";
-	registros->rbx = "";
-	registros->rcx = "";
-	registros->rdx = "";
-
-	return registros;
-}
-
 
 t_segmento* inicializar_segmento(){
 	t_segmento* segmento = malloc(sizeof(t_segmento));
@@ -374,8 +340,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	pcb->contexto_de_ejecucion->seg_fault = inicializar_segmento();
-	//inicializar_registro(contexto);
-	pcb->contexto_de_ejecucion->registros = inicializar_registros();
+	inicializar_registro(contexto);
 
 	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
 	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla

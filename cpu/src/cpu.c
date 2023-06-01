@@ -5,19 +5,19 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	config = config_create(argv[1]);
+	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		terminar_programa();
 		exit(1);
 	}
 	leer_config();
-	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
-	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	inicializar_variables();
 
 	// Conecto CPU con memoria
-//	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-//	enviar_mensaje("Hola, soy CPU!", fd_memoria);
+	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
+	enviar_mensaje("Hola, soy CPU!", fd_memoria);
 
 	// Inicio de servidor
 	fd_cpu = iniciar_servidor(logger, IP, PUERTO);
@@ -41,7 +41,6 @@ void leer_config(){
 void terminar_programa(){
 	log_destroy(logger);
 	config_destroy(config);
-	//TODO liberar variables globales
 	//registros_destroy(registros);
 }
 
@@ -62,7 +61,7 @@ static void procesar_conexion() {
 		case MENSAJE:
 			recibir_mensaje(logger, socket_cliente);
 			break;
-		case CONTEXTO_EJECUCION: // TODO: cada vez que se devuelve un contexto al kernel y no se vuelva a usar destruir con contexto_destroyer().
+		case CONTEXTO_EJECUCION:
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
 			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
 			flag_execute = true;
@@ -333,7 +332,6 @@ char* leer_valor_registro(char* registro){
 void ejecutar_set(char* registro, char* valor, t_registros* registros_contexto){
 	set_valor_registro(registro, valor);
 	actualizar_registros_contexto(registros_contexto);
-	//TODO podriamos liberar registros de la cpu aca
 	log_info(logger, "a mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
 }
@@ -440,6 +438,7 @@ void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_wait(r, socket_cliente);
+	free(r);
 //	contexto_destroyer(contexto);
 }
 
@@ -448,6 +447,7 @@ void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
 	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_signal(r, socket_cliente);
+	free(r);
 //	contexto_destroyer(contexto);
 }
 

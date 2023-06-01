@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	levantar_archivos();
+	//levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);

@@ -396,8 +396,6 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, comienzo_segmentos);
 	contexto->tabla_de_segmentos = tabla_segmentos;
 
-
-
 	return contexto;
 }
 
@@ -444,7 +442,7 @@ void registros_destroy(t_registros* registros){
 //	free(registros->rcx);
 //	free(registros->rdx);
 	free(registros);
-	//registros = NULL;
+//	registros = NULL;
 }
 
 void lista_instrucciones_destroy(t_list* lista){
@@ -465,6 +463,7 @@ void send_cambiar_estado(estado_proceso estado, int fd_modulo){
 estado_proceso recv_cambiar_estado(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	estado_proceso* estado = list_get(paquete, 0);
+	list_destroy(paquete);
 	return *estado;
 }
 
@@ -494,6 +493,7 @@ int recv_tiempo_io(int fd_modulo){
 	int* tiempo = list_get(paquete, 0);
 	int ret = *tiempo;
 	free(tiempo);
+	list_destroy(paquete);
 	return ret;
 }
 
