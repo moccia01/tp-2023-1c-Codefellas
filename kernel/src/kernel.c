@@ -264,6 +264,7 @@ static void procesar_conexion(void* void_args) {
 //		        	 - usar semaforo para verificar si se esta ejecutando
 //				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op); (?)
 //					 - recibir de memoria las tablas de segmentos actualizadas post compact
+//					 - recibir lista de listas de segmento (lista cada tablas de segmento de cada pcb)
 //					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 //					 - mandarle memoria aviso de create_segment.
 					break;
@@ -277,12 +278,10 @@ static void procesar_conexion(void* void_args) {
 				// mandarle a memoria aviso de delete_segment
 				send_delete_segment(id, fd_memoria);
 				// recibir de memoria tabla de segmentos actualizada
-				op_code recv_ts = recibir_operacion(fd_memoria);
-				if(recv_ts == TABLA_SEGMENTOS){
-					t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
-					// actualizar contexto de pcb con tabla de segmentos actualizada
-					pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
-				}
+				t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
+				// actualizar contexto de pcb con tabla de segmentos actualizada
+				memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, tabla_segmentos_actualizada, sizeof(t_segmento) * list_size(tabla_segmentos_actualizada));
+				list_destroy(tabla_segmentos_actualizada); // podria ir list_destroy_and_destroy_elements
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
