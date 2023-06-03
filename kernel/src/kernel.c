@@ -250,14 +250,21 @@ static void procesar_conexion(void* void_args) {
 //				mandarle a memoria aviso de create_segment
 				send_create_segment(*id_segmento, *tamanio, fd_memoria);
 				list_destroy(create_sgm_params);
-				free(id_segmento);
-				free(tamanio);
 //				recibir de memoria respuesta del create_segment
 				t_segment_response respuesta = recv_segment_response(fd_memoria);
 				switch(respuesta){
 				case SEGMENT_CREATED:
+					int base_nuevo_segmento = recv_base_segmento(fd_memoria);
+					// que pija hago con esto? lo agrego a la tabla para q no tire warning
+					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
+					segmento_nuevo->direccion_fisica = base_nuevo_segmento;
+					list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
 					break;
 				case OUT_OF_MEM:
+					pcb->contexto_de_ejecucion->motivo_exit = OUT_OF_MEMORY;
+					safe_pcb_push(cola_exit, pcb, &mutex_cola_exit);
+					sem_post(&sem_exit);
+					sem_post(&sem_exec);
 					break;
 				case COMPACT:
 //				en caso de compactacion:
@@ -273,13 +280,9 @@ static void procesar_conexion(void* void_args) {
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_DELETE_SEGMENT:
-				// recibir parametros del delete_segment
 				int id = recv_delete_segment(cliente_socket);
-				// mandarle a memoria aviso de delete_segment
 				send_delete_segment(id, fd_memoria);
-				// recibir de memoria tabla de segmentos actualizada
 				t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
-				// actualizar contexto de pcb con tabla de segmentos actualizada
 				memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, tabla_segmentos_actualizada, sizeof(t_segmento) * list_size(tabla_segmentos_actualizada));
 				list_destroy(tabla_segmentos_actualizada); // podria ir list_destroy_and_destroy_elements
 				safe_pcb_push(cola_exec, pcb, &mutex_cola_exec);

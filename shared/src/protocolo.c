@@ -668,3 +668,19 @@ int recv_terminar_proceso(int fd_modulo){
 	list_destroy(paquete);
 	return *pid;
 }
+
+void send_base_segmento(int base, int fd_modulo){
+	t_paquete* paquete = crear_paquete(BASE_SEGMENTO);
+	agregar_a_paquete(paquete, &base, sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+int recv_base_segmento(int fd_modulo){
+	op_code cop;
+	recv(fd_modulo, &cop, sizeof(op_code), 0);
+	t_list* paquete = recibir_paquete(fd_modulo);
+	int* base = list_get(paquete, 0);
+	list_destroy(paquete);
+	return *base;
+}

@@ -77,7 +77,7 @@ typedef enum{
 
 typedef struct{
 	int id;
-	int offset;
+	int offset; // para q es esto??
 	int direccion_fisica;
 	int tamanio_segmento;
 }t_segmento;
