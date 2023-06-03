@@ -582,6 +582,8 @@ void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo){
 }
 
 t_list* recv_tabla_segmentos(int fd_modulo){
+	op_code cop;
+	recv(fd_modulo, &cop, sizeof(op_code), 0);
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
 	return tabla_segmentos;
@@ -621,4 +623,48 @@ t_list* recv_respuesta_segmento(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 
 	return paquete;
+}
+
+void send_inicializar_proceso(int pid, int fd_modulo){
+	t_paquete* paquete = crear_paquete(INICIALIZAR_PROCESO);
+	agregar_a_paquete(paquete, &pid, sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+int recv_inicializar_proceso(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	int* pid = list_get(paquete, 0);
+	list_destroy(paquete);
+	return *pid;
+}
+
+void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo){
+	t_paquete* paquete = crear_paquete(INICIALIZAR_PROCESO);
+	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+t_list* recv_proceso_inicializado(int fd_modulo){
+	op_code cop;
+	recv(fd_modulo, &cop, sizeof(op_code), 0);
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
+	list_destroy(paquete);
+	return tabla_segmentos;
+}
+
+void send_terminar_proceso(int pid, int fd_modulo){
+	t_paquete* paquete = crear_paquete(FINALIZAR_PROCESO);
+	agregar_a_paquete(paquete, &pid, sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+int recv_terminar_proceso(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	int* pid = list_get(paquete, 0);
+	list_destroy(paquete);
+	return *pid;
 }

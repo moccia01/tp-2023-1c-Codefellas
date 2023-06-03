@@ -77,6 +77,12 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger, "Recibí un paquete con los siguientes valores: ");
 			list_iterate(paquete_recibido, (void*) iterator);
 			break;
+		case INICIALIZAR_PROCESO:
+			// ...
+			break;
+		case FINALIZAR_PROCESO:
+			// ...
+			break;
 		case MANEJAR_CREATE_SEGMENT:
 			t_list* create_sgm_params = recv_create_segment(fd_kernel);
 //			int* id = list_get(create_sgm_params, 0);
@@ -91,14 +97,14 @@ static void procesar_conexion(void *void_args) {
 				break;
 			}
 			break;
-			case MANEJAR_DELETE_SEGMENT:
+		case MANEJAR_DELETE_SEGMENT:
 				// ...
-			default:
-				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
-				return;
-			}
-
+		default:
+			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
+			return;
 		}
+
+	}
 	log_warning(logger, "El cliente se desconecto de %s server", server_name);
 	return;
 }

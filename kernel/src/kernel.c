@@ -176,16 +176,6 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rdx = "";
 }
 
-t_segmento* inicializar_segmento(){
-	t_segmento* segmento = malloc(sizeof(t_segmento));
-	segmento->direccion_fisica = -1;
-	segmento->id = -1;
-	segmento->offset = -1;
-	segmento->tamanio_segmento = -1;
-
-	return segmento;
-}
-
 void terminar_programa(){
 	log_destroy(logger);
 	log_destroy(logger_obligatorio);
@@ -259,6 +249,9 @@ static void procesar_conexion(void* void_args) {
 				int* tamanio = list_get(create_sgm_params, 1);
 //				mandarle a memoria aviso de create_segment
 				send_create_segment(*id_segmento, *tamanio, fd_memoria);
+				list_destroy(create_sgm_params);
+				free(id_segmento);
+				free(tamanio);
 //				recibir de memoria respuesta del create_segment
 				t_segment_response respuesta = recv_segment_response(fd_memoria);
 				switch(respuesta){
@@ -339,16 +332,12 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->pid = pid;
 	pcb->contexto_de_ejecucion->program_counter = 0;
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
-	pcb->contexto_de_ejecucion->seg_fault = inicializar_segmento();
 	inicializar_registro(contexto);
 
-	// Hago esto aca para que no rompa el protocolo, despues se tiene que hacer en memoria
-	// en vez de list_create() deberiamos tener un send a memoria para que inicialice la tabla
-	// despues un recv tabla y ahi se asigna
-	t_segmento* segmento = inicializar_segmento();
-	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
-	list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento);
-
+	send_inicializar_proceso(pid, fd_memoria);
+	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
+	memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, tabla_segmentos, list_size(tabla_segmentos) * sizeof(t_segmento));
+	list_destroy(tabla_segmentos); // creo q aca puede ir list_destroy_and_destroy_elements
 	pcb->contexto_de_ejecucion->estado = NEW;
 
 	return pcb;
@@ -455,6 +444,7 @@ void exit_pcb(void) {
 		char* motivo = motivo_exit_to_string(pcb->contexto_de_ejecucion->motivo_exit);
 		log_info(logger_obligatorio, "Finaliza el proceso %d - Motivo: %s", pcb->contexto_de_ejecucion->pid, motivo);
 		enviar_mensaje("Fin del proceso", pcb->fd_consola);
+		send_terminar_proceso(pcb->contexto_de_ejecucion->pid, fd_memoria);
 		pcb_destroy(pcb);
 		sem_post(&sem_multiprog);
 	}

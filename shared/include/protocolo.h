@@ -33,6 +33,8 @@ typedef enum{
 	TABLA_SEGMENTOS,
 	CONSULTAR_TABLA_SEGMENTOS,
 	CONSULTAR_SEGMENTO,
+	INICIALIZAR_PROCESO,
+	FINALIZAR_PROCESO,
 }op_code;
 
 typedef struct{
@@ -93,6 +95,9 @@ void send_leer_valor(int dir_fisica, int fd_modulo);
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
 void send_consultar_segmento(int dir_fisica, int fd_modulo);
 void send_respuesta_segmento(int dir_fisica, int fd_modulo);
+void send_inicializar_proceso(int pid, int fd_modulo);
+void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo);
+void send_terminar_proceso(int pid, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -107,6 +112,9 @@ int recv_delete_segment(int fd_modulo);
 t_list* recv_tabla_segmentos(int fd_modulo);
 int recv_consultar_segmento(int dir_fisica, int fd_modulo);
 t_list* recv_respuesta_segmento(int fd_modulo);
+int recv_inicializar_proceso(int fd_modulo);
+t_list* recv_proceso_inicializado(int fd_modulo);
+int recv_terminar_proceso(int fd_modulo);
 
 // Destroyers
 void contexto_destroyer(t_contexto_ejecucion* contexto);
