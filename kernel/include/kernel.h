@@ -19,7 +19,7 @@ typedef struct{
 	char* recurso;
 	int id;
 	int instancias;
-	t_queue* cola_block_asignada;
+	t_list* cola_block_asignada;
 	pthread_mutex_t mutex_asignado;
 }t_recurso;
 
@@ -65,10 +65,11 @@ t_list* lista_recursos;
 // Variables PCBs
 int generador_pid;
 t_list* lista_ready;
-t_queue* cola_exit;
-t_queue* cola_listos_para_ready;
-t_queue* cola_exec;
-t_queue* cola_block;
+t_list* cola_exit;
+t_list* cola_listos_para_ready;
+t_list* cola_exec;
+t_list* cola_block;
+t_list* cola_block_io;
 
 // Semaforos y pthread
 pthread_mutex_t mutex_generador_pid;
@@ -77,6 +78,7 @@ pthread_mutex_t mutex_cola_listos_para_ready;
 pthread_mutex_t mutex_cola_exit;
 pthread_mutex_t mutex_cola_exec;
 pthread_mutex_t mutex_cola_block;
+pthread_mutex_t mutex_cola_block_io;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;
@@ -107,6 +109,9 @@ void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo);
 void armar_pcb(t_list *instrucciones, int cliente_socket);
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto);
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto);
+void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers);
+void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb, pthread_mutex_t* mutex_cola);
+t_list* get_ts_from_pid(int pid, t_list* lista_ts_wrappers);
 
 // PLANIFICACION
 void planificar();
@@ -114,8 +119,6 @@ void planificar_largo_plazo();
 void exit_pcb();
 void ready_pcb();
 void block_return_pcb();
-t_pcb *safe_pcb_pop(t_queue *queue, pthread_mutex_t *mutex);
-void safe_pcb_push(t_queue *queue, t_pcb *pcb, pthread_mutex_t *mutex);
 t_pcb* safe_pcb_remove(t_list* list, pthread_mutex_t* mutex);
 void safe_pcb_add(t_list* list, t_pcb* pcb, pthread_mutex_t* mutex);
 void set_pcb_ready(t_pcb* pcb);

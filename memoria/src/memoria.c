@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	leer_config();
-
+	inicializar_variables();
 	// Inicio servidor
 	fd_memoria = iniciar_servidor(logger, IP, PUERTO);
 
@@ -55,6 +55,10 @@ void asignar_algoritmo_memoria(char *algoritmo_memoria) {
 void terminar_programa(){
 	log_destroy(logger);
 	config_destroy(config);
+}
+
+void inicializar_variables(){
+	lista_ts_wrappers = list_create();
 }
 
 // --------------------- COMUNICACION ---------------------

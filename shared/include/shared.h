@@ -88,6 +88,11 @@ typedef enum{
 	COMPACT,
 }t_segment_response;
 
+typedef struct{
+	int pid;
+	t_list* tabla_de_segmentos;
+}ts_wrapper;
+
 //CONTEXTO DE EJECUCION
 typedef struct{
     int pid;

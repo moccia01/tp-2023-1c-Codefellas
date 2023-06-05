@@ -50,25 +50,30 @@ t_algoritmo_memoria ALGORITMO_ASIGNACION;
 t_log* logger;
 t_config* config;
 t_list *lista_t_segmento;
-t_list *lista;
+t_list *lista; //TODO: poner un nombre mas declarativo, sino desp no sabemos para q es
 pthread_mutex_t memoria_usuario_mutex;
 pthread_mutex_t lista_de_tablas_de_segmentos_mutex;
 int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
 char* server_name;
+
+void *espacio_memoria;
+void *segmentos_memoria;
+void *segmento_0;
+
+// esto lo hice yo (tomy) para la actualizacion de tablas de segmentos post compactacion
+t_list* lista_ts_wrappers;
 
 
 // --------------------- INIT ---------------------
 void leer_config();
 void asignar_algoritmo_memoria(char *algoritmo_memoria);
 void terminar_programa();
-void *espacio_memoria;
-void *segmentos_memoria;
-void *segmento_0;
+void inicializar_variables();
+
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
 int server_escuchar(int server_socket);
-
 
 t_segment_response verificar_espacio_memoria(int tamanio);
 void inicializar_tabla_segmento(int id_proceso);
