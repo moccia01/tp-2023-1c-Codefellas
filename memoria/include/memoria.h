@@ -76,9 +76,9 @@ void iterator(char *value);
 int server_escuchar(int server_socket);
 
 t_segment_response verificar_espacio_memoria(int tamanio);
-void inicializar_tabla_segmento(int id_proceso);
+t_list* inicializar_tabla_segmento(int id_proceso);
 void inicializar_memoria();
-
+void terminar_proceso(int pid);
 
 #endif /* MEMORIA_H_ */
 // aparece y segmento_0

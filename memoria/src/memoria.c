@@ -70,8 +70,7 @@ static void procesar_conexion(void *void_args) {
 	op_code cop;
 	while (cliente_socket != -1) {
 		if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
-			log_info(logger, "El cliente se desconecto de %s server",
-					server_name);
+			log_info(logger, "El cliente se desconecto de %s server", server_name);
 			return;
 		}
 		switch (cop) {
@@ -99,6 +98,18 @@ static void procesar_conexion(void *void_args) {
 			break;
 			case MANEJAR_DELETE_SEGMENT:
 				// ...
+				break;
+			case INICIALIZAR_PROCESO:
+				int pid_init = recv_inicializar_proceso(cliente_socket);
+				log_info(logger, "se inicializa proceso");
+				t_list* tabla_segmentos_inicial = list_create();
+				send_proceso_inicializado(tabla_segmentos_inicial, cliente_socket);
+				break;
+			case FINALIZAR_PROCESO:
+				int pid_fin = recv_terminar_proceso(cliente_socket);
+				// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
+				terminar_proceso(pid_fin);
+				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 				return;
@@ -151,7 +162,7 @@ void inicializar_memoria(){
 
 }
 
-void inicializar_tabla_segmento(int id_proceso){
+t_list* inicializar_tabla_segmento(int id_proceso){
 	t_segmentoss* segmento_0 = malloc(sizeof(t_segmentoss));					//TODO cambien el nombre de t_segmentoss, puse eso como provisorio
 	segmento_0->base=0;								//No entiendo por qué es tipo void*, chequeen si eso es correcto
 	segmento_0->tamano= atoi(TAM_SEGMENTO_0);		//TODO Estaban poniendo un char* en int, atoi les corrige eso
@@ -160,8 +171,14 @@ void inicializar_tabla_segmento(int id_proceso){
 	tabla->id=id_proceso;
 	t_list* lista_t_segmento = list_create();
 	list_add(tabla->lista_segmentos,segmento_0);	//TODO Pasar bien los parámetros porque no le gusta así
-    list_add(lista_t_segmento, tabla);				//TODO Inicialicé con punteros segmento_0 y tabla, chequeen los tipos de datos que reciben las funciones
+    list_add(lista_t_segmento, tabla);
+    //TODO Inicialicé con punteros segmento_0 y tabla, chequeen los tipos de datos que reciben las funciones
+    return lista_t_segmento;
 }
 
 // creamos lista por proceso que a su vez tiene segmentos
 // cada proceso agregarle segmento_0
+
+void terminar_proceso(int pid){
+
+}

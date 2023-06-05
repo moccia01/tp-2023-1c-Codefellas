@@ -204,7 +204,7 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 	int i = comienzo + 1;
 	while (i - comienzo + 1 < *(cantidad_segmentos) * 4){
 		t_segmento* segmento = desempaquetar_segmento(paquete, i);
-		i += 4;
+		i += 3;
 		list_add(tabla_segmentos, segmento);
 	}
 	free(cantidad_segmentos);
@@ -331,30 +331,25 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 }
 
 void empaquetar_segmento(t_paquete* paquete, t_segmento* segmento){
-	agregar_a_paquete(paquete, &(segmento->direccion_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(segmento->base), sizeof(int));
 	agregar_a_paquete(paquete, &(segmento->id), sizeof(int));
-	agregar_a_paquete(paquete, &(segmento->offset), sizeof(int));
-	agregar_a_paquete(paquete, &(segmento->tamanio_segmento), sizeof(int));
+	agregar_a_paquete(paquete, &(segmento->tamanio), sizeof(int));
 }
 
 t_segmento* desempaquetar_segmento(t_list* paquete, int comienzo){
 	t_segmento* segmento = malloc(sizeof(t_segmento));
 
-	int* direccion_fisica = list_get(paquete, comienzo);
-	segmento->direccion_fisica = *direccion_fisica;
-	free(direccion_fisica);
+	int* base = list_get(paquete, comienzo);
+	segmento->base = *base;
+	free(base);
 
 	int* id = list_get(paquete, comienzo + 1);
 	segmento->id = *id;
 	free(id);
 
-	int* offset = list_get(paquete, comienzo + 2);
-	segmento->offset = *offset;
-	free(offset);
-
-	int* tamanio_segmento = list_get(paquete, comienzo + 3);
-	segmento->tamanio_segmento = *tamanio_segmento;
-	free(tamanio_segmento);
+	int* tamanio = list_get(paquete, comienzo + 2);
+	segmento->tamanio = *tamanio;
+	free(tamanio);
 
 	return segmento;
 }
@@ -384,15 +379,18 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 
 	t_segmento* seg_fault = desempaquetar_segmento(paquete, 5);
 	contexto->seg_fault = seg_fault;
+	int comienzo_seg_fault = 5;
 
-	t_registros* registro_contexto = desempaquetar_registros(paquete, 9);
+	int comienzo_registros = comienzo_seg_fault + 3;
+	t_registros* registro_contexto = desempaquetar_registros(paquete, comienzo_registros);
 	contexto->registros = registro_contexto;
 
-	t_list* instrucciones = desempaquetar_instrucciones(paquete, 21);
+	int comienzo_instrucciones = comienzo_registros + 12;
+	t_list* instrucciones = desempaquetar_instrucciones(paquete, comienzo_instrucciones);
 	contexto->instrucciones = instrucciones;
 	int cantidad_instrucciones = list_size(instrucciones);
 
-	int comienzo_segmentos = 21 + (cantidad_instrucciones * 4) + 1;
+	int comienzo_segmentos = comienzo_instrucciones + (cantidad_instrucciones * 4) + 1;
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, comienzo_segmentos);
 	contexto->tabla_de_segmentos = tabla_segmentos;
 
@@ -647,8 +645,6 @@ void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo){
 }
 
 t_list* recv_proceso_inicializado(int fd_modulo){
-	op_code cop;
-	recv(fd_modulo, &cop, sizeof(op_code), 0);
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
 	list_destroy(paquete);

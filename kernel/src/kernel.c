@@ -194,9 +194,9 @@ static void procesar_conexion(void* void_args) {
 
 	op_code cop;
 	while (cliente_socket != -1) {
-		if (recv(cliente_socket, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
-			log_info(logger, "El cliente se desconecto de %s server",
-					server_name);
+		cop = recibir_operacion(cliente_socket);
+		if (cop == -1) {
+			log_info(logger, "El cliente se desconecto de %s server", server_name);
 			return;
 		}
 		switch (cop) {
@@ -259,7 +259,7 @@ static void procesar_conexion(void* void_args) {
 					int base_nuevo_segmento = recv_base_segmento(fd_memoria);
 					// que pija hago con esto? lo agrego a la tabla para q no tire warning
 					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
-					segmento_nuevo->direccion_fisica = base_nuevo_segmento;
+					segmento_nuevo->base = base_nuevo_segmento;
 					list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
 					break;
 				case OUT_OF_MEM:
@@ -298,8 +298,12 @@ static void procesar_conexion(void* void_args) {
 				return;
 			}
 			break;
+		case INICIALIZAR_PROCESO:
+			log_info(logger, "se recibe de memoria la tabla de segmentos inicial del proceso");
+			return;
 		default:
 			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
+			log_info(logger, "el numero del cop es: %d", cop);
 			return;
 		}
 	}
@@ -341,10 +345,18 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	inicializar_registro(contexto);
 
-	send_inicializar_proceso(pid, fd_memoria);
-	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
-	memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, tabla_segmentos, list_size(tabla_segmentos) * sizeof(t_segmento));
-	list_destroy(tabla_segmentos); // creo q aca puede ir list_destroy_and_destroy_elements
+	t_segmento* seg_fault = malloc(sizeof(t_segmento));
+	seg_fault->base = -1;
+	seg_fault->id = -1;
+	seg_fault->tamanio = -1;
+	pcb->contexto_de_ejecucion->seg_fault = seg_fault;
+
+//	log_info(logger, "se manda a memoria solicitud incializacion proceso");
+//	send_inicializar_proceso(pid, fd_memoria);
+//	log_info(logger, "hice el send");
+//	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
+//	log_info(logger, "recibo tabla segmentos inicial de tamaño: %d", list_size(tabla_segmentos));
+	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
 	pcb->contexto_de_ejecucion->estado = NEW;
 
 	return pcb;
