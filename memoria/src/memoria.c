@@ -142,20 +142,21 @@ void inicializar_memoria(){
 
 	pthread_mutex_init(&memoria_usuario_mutex, NULL);
 
-log_info(logger, "Creando espacio de memoria...");
-	espacio_memoria = malloc(TAM_MEMORIA);
+	log_info(logger, "Creando espacio de memoria...");
+	espacio_memoria = malloc(atoi(TAM_MEMORIA));	//Le estaban pasando un char*, con atoi obtienen lo que desean
 
 }
 
-void inicializar_tabla_segmento(id_proceso){
-	t_segmento segmento_0;
-	segmento_0.base=0;
-	segmento_0.tamano=TAM_SEGMENTO_0;
-	t_tabla_segmento tabla;
-	tabla.numSegmentos=1;
-	tabla.id=id_proceso;
-	list_add(tabla.lista_segmentos,segmento_0);
-    list_add(lista_t_segmento, tabla);
+void inicializar_tabla_segmento(int id_proceso){
+	t_segmentoss* segmento_0 = malloc(sizeof(t_segmentoss));					//TODO cambien el nombre de t_segmentoss, puse eso como provisorio
+	segmento_0->base=0;								//No entiendo por qué es tipo void*, chequeen si eso es correcto
+	segmento_0->tamano= atoi(TAM_SEGMENTO_0);		//TODO Estaban poniendo un char* en int, atoi les corrige eso
+	t_tabla_segmento* tabla = malloc(sizeof(t_tabla_segmento));
+	tabla->numSegmentos=1;
+	tabla->id=id_proceso;
+	t_list* lista_t_segmento = list_create();
+	list_add(tabla->lista_segmentos,segmento_0);	//TODO Pasar bien los parámetros porque no le gusta así
+    list_add(lista_t_segmento, tabla);				//TODO Inicialicé con punteros segmento_0 y tabla, chequeen los tipos de datos que reciben las funciones
 }
 
 // creamos lista por proceso que a su vez tiene segmentos

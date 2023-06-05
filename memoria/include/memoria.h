@@ -20,14 +20,14 @@ typedef struct {
     void* base;     // Dirección base del segmento
     int tamano;     // Tamaño del segmento en bytes
     //int permisos;   // Permisos de acceso (ejemplo: lectura, escritura)
-} t_segmento;
+} t_segmentoss;		//TODO: Ponerle otro nombre ya que t_segmento está usado en las shared
 
 
 typedef struct {
     int capacidad;      // Capacidad de la tabla
-    int numSegmentos=0;	// Número actual de segmentos en la tabla
+    int numSegmentos;	// Número actual de segmentos en la tabla = 0 NO SE PUEDE INICIALIZAR ACA
     int id;
-    t_list lista_segmentos;
+    t_list* lista_segmentos;
 } t_tabla_segmento;
 
 typedef struct {
@@ -71,6 +71,8 @@ int server_escuchar(int server_socket);
 
 
 t_segment_response verificar_espacio_memoria(int tamanio);
+void inicializar_tabla_segmento(int id_proceso);
+void inicializar_memoria();
 
 
 #endif /* MEMORIA_H_ */
