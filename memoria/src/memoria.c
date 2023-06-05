@@ -1,5 +1,7 @@
 #include "../include/memoria.h"
 
+
+
 int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
@@ -123,9 +125,19 @@ int server_escuchar(int server_socket) {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
+
 	return SEGMENT_CREATED;
 }
-
+/*
+int algoritmo_first(int tamano){
+	int base=-1;
+	while(lista){
+		if(tamano < (lista->tamanio))
+			return base;
+	}
+	return base;
+}
+*/
 void inicializar_memoria(){
 
 	pthread_mutex_init(&memoria_usuario_mutex, NULL);
@@ -133,23 +145,18 @@ void inicializar_memoria(){
 log_info(logger, "Creando espacio de memoria...");
 	espacio_memoria = malloc(TAM_MEMORIA);
 
-		lista_huecos_libres = list_create();
-		lista_de_tablas_de_segmentos = list_create();
-
 }
 
-void crear_tabla_segmento(){
-	int tabla_segmento[2][CANT_SEGMENTOS];
-	inicializar_Segmento_0(tabla_segmento);
-
-
-
+void inicializar_tabla_segmento(id_proceso){
+	t_segmento segmento_0;
+	segmento_0.base=0;
+	segmento_0.tamano=TAM_SEGMENTO_0;
+	t_tabla_segmento tabla;
+	tabla.numSegmentos=1;
+	tabla.id=id_proceso;
+	list_add(tabla.lista_segmentos,segmento_0);
+    list_add(lista_t_segmento, tabla);
 }
 
-void inicializar_segmento_0(tabla_segmento[2][CANT_SEGMENTOS]){
-	segmento_0 = TAM_SEGMENTO_0;
-	tabla_segmento[0][0] = 0;
-	tabla_segmento[1][0] = segmento_0;
-}
 // creamos lista por proceso que a su vez tiene segmentos
 // cada proceso agregarle segmento_0

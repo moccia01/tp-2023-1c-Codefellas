@@ -15,17 +15,25 @@ typedef enum {
 	WORST_FIT
 } t_algoritmo_memoria;
 
+
 typedef struct {
     void* base;     // Dirección base del segmento
     int tamano;     // Tamaño del segmento en bytes
-    int permisos;   // Permisos de acceso (ejemplo: lectura, escritura)
-} Segmento;
+    //int permisos;   // Permisos de acceso (ejemplo: lectura, escritura)
+} t_segmento;
+
 
 typedef struct {
-    Segmento* tabla;    // Tabla de segmentos
     int capacidad;      // Capacidad de la tabla
-    int numSegmentos;   // Número actual de segmentos en la tabla
-} TablaSegmentos;
+    int numSegmentos=0;	// Número actual de segmentos en la tabla
+    int id;
+    t_list lista_segmentos;
+} t_tabla_segmento;
+
+typedef struct {
+	int base;
+	int tamanio;
+}t_hueco_libre;
 
 //Config
 char* IP;
@@ -41,8 +49,8 @@ t_algoritmo_memoria ALGORITMO_ASIGNACION;
 // Variables globales
 t_log* logger;
 t_config* config;
-t_list *lista_de_tablas_de_segmentos;
-t_list *lista_huecos_libres;
+t_list *lista_t_segmento;
+t_list *lista;
 pthread_mutex_t memoria_usuario_mutex;
 pthread_mutex_t lista_de_tablas_de_segmentos_mutex;
 int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
