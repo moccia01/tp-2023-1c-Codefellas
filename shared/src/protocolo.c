@@ -324,7 +324,6 @@ void empaquetar_contexto_ejecucion(t_paquete* paquete, t_contexto_ejecucion* con
 	agregar_a_paquete(paquete, &(contexto->estado), sizeof(estado_proceso));
 	agregar_a_paquete(paquete, &(contexto->motivo_exit), sizeof(motivo_exit));
 	agregar_a_paquete(paquete, &(contexto->motivo_block), sizeof(motivo_block));
-	empaquetar_segmento(paquete, contexto->seg_fault);
 	empaquetar_registro_contexto(paquete, contexto->registros);
 	empaquetar_instrucciones(paquete, contexto->instrucciones);
 	empaquetar_tabla_segmentos(paquete, contexto->tabla_de_segmentos);
@@ -377,11 +376,7 @@ t_contexto_ejecucion* desempaquetar_contexto_ejecucion(t_list* paquete){
 	contexto->motivo_block = *motivo_block;
 	free(motivo_block);
 
-	t_segmento* seg_fault = desempaquetar_segmento(paquete, 5);
-	contexto->seg_fault = seg_fault;
-	int comienzo_seg_fault = 5;
-
-	int comienzo_registros = comienzo_seg_fault + 3;
+	int comienzo_registros = 5;
 	t_registros* registro_contexto = desempaquetar_registros(paquete, comienzo_registros);
 	contexto->registros = registro_contexto;
 
@@ -415,7 +410,6 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo){
 void contexto_destroyer(t_contexto_ejecucion* contexto){
 	lista_instrucciones_destroy(contexto->instrucciones);
 	list_destroy_and_destroy_elements(contexto->tabla_de_segmentos, (void*) segmento_destroy);
-	segmento_destroy(contexto->seg_fault);
 	registros_destroy(contexto->registros);
 	free(contexto);
 	contexto = NULL;

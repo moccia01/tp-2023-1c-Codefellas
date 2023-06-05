@@ -377,12 +377,6 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	inicializar_registro(contexto);
 
-	t_segmento* seg_fault = malloc(sizeof(t_segmento));
-	seg_fault->base = -1;
-	seg_fault->id = -1;
-	seg_fault->tamanio = -1;
-	pcb->contexto_de_ejecucion->seg_fault = seg_fault;
-
 	log_info(logger, "se manda a memoria solicitud incializacion proceso");
 	send_inicializar_proceso(pid, fd_memoria);
 	log_info(logger, "hice el send");
