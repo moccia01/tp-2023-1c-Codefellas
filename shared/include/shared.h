@@ -102,7 +102,7 @@ typedef struct{
     motivo_exit motivo_exit;
     motivo_block motivo_block;
     t_registros* registros;
-    t_segmento* seg_fault;
+    t_segmento* seg_fault;		//TODO Borrar seg_fault y modificar empaquetacion/desempaquetación
 }t_contexto_ejecucion;
 
 char *estado_to_string(estado_proceso estado);

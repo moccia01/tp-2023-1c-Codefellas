@@ -607,22 +607,6 @@ void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_consultar_segmento(int dir_fisica, int fd_modulo){
-	t_paquete* paquete = crear_paquete(CONSULTAR_SEGMENTO);
-	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
-	enviar_paquete(paquete, fd_modulo);
-}
-
-void send_respuesta_segmento(int dir_fisica, int fd_modulo){
-
-}
-
-t_list* recv_respuesta_segmento(int fd_modulo){
-	t_list* paquete = recibir_paquete(fd_modulo);
-
-	return paquete;
-}
-
 void send_inicializar_proceso(int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(INICIALIZAR_PROCESO);
 	agregar_a_paquete(paquete, &pid, sizeof(int));

@@ -29,6 +29,14 @@ char* PUERTO_MEMORIA;
 int RETARDO_INSTRUCCION;
 int TAM_MAX_SEGMENTO;
 
+//Structs
+typedef struct{
+	int num_segmento;
+	int desplazamiento_segmento;
+	int dir_fisica;
+	int tamanio;
+}t_traduccion_mmu;
+
 // INIT
 void leer_config();
 void terminar_programa();
@@ -62,9 +70,10 @@ void ejecutar_yield(t_contexto_ejecucion* contexto);
 void ejecutar_exit(t_contexto_ejecucion* contexto);
 void set_valor_registro(char* registro, char* valor);
 char* leer_valor_registro(char* registro);
-int traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto, int *num_segmento, int *desplazamiento_segmento);
+t_traduccion_mmu* traducir_direccion(int dir_logica, t_contexto_ejecucion* contexto);
 void actualizar_registros_contexto(t_registros* registros_contexto);
+t_segmento* obtener_segmento_de_tabla(t_list* tabla_de_segmentos, int num_segmento);
+int obtener_tamanio_registro(char* registro);
+void manejar_seg_fault(t_contexto_ejecucion* contexto, t_traduccion_mmu* mmu, int tamanio);
 
-//Traducción
-//int traducir_direccion(int dir_logica);
 #endif /* CPU_H_ */
