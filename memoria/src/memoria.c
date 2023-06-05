@@ -96,21 +96,21 @@ static void procesar_conexion(void *void_args) {
 				break;
 			}
 			break;
-			case MANEJAR_DELETE_SEGMENT:
-				// ...
-				break;
-			case INICIALIZAR_PROCESO:
-				int pid_init = recv_inicializar_proceso(cliente_socket);
-				log_info(logger, "se inicializa proceso");
-				t_list* tabla_segmentos_inicial = list_create();
-				send_proceso_inicializado(tabla_segmentos_inicial, cliente_socket);
-				break;
-			case FINALIZAR_PROCESO:
-				int pid_fin = recv_terminar_proceso(cliente_socket);
-				// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
-				terminar_proceso(pid_fin);
-				break;
-			default:
+		case MANEJAR_DELETE_SEGMENT:
+			// ...
+			break;
+		case INICIALIZAR_PROCESO:
+			int pid_init = recv_inicializar_proceso(cliente_socket);
+			log_info(logger, "se inicializa proceso");
+			t_list* tabla_segmentos_inicial = list_create();
+			send_proceso_inicializado(tabla_segmentos_inicial, cliente_socket);
+			break;
+		case FINALIZAR_PROCESO:
+			int pid_fin = recv_terminar_proceso(cliente_socket);
+			// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
+			terminar_proceso(pid_fin);
+			break;
+		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 				return;
 			}

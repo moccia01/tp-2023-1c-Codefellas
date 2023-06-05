@@ -82,21 +82,21 @@ void asignar_algoritmo(char *algoritmo) {
 }
 
 bool generar_conexiones() {
-	pthread_t conexion_filesystem;
+//	pthread_t conexion_filesystem;
 	pthread_t conexion_cpu;
-	pthread_t conexion_memoria;
+//	pthread_t conexion_memoria;
 
 	fd_filesystem = crear_conexion(IP_FILESYSTEM, PUERTO_FILESYSTEM);
-	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
-	pthread_detach(conexion_filesystem);
+//	pthread_create(&conexion_filesystem, NULL, (void*) procesar_conexion, (void*) &fd_filesystem);
+//	pthread_detach(conexion_filesystem);
 
 	fd_cpu = crear_conexion(IP_CPU, PUERTO_CPU);
 	pthread_create(&conexion_cpu, NULL, (void*) procesar_conexion, (void*) &fd_cpu);
 	pthread_detach(conexion_cpu);
 
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
-	pthread_detach(conexion_memoria);
+//	pthread_create(&conexion_memoria, NULL, (void*) procesar_conexion, (void*) &fd_memoria);
+//	pthread_detach(conexion_memoria);
 
 	return fd_filesystem != -1 && fd_cpu != -1 && fd_memoria != -1;
 }
@@ -188,11 +188,12 @@ void terminar_programa(){
 
 // ------------------ COMUNICACION ------------------
 
-static void procesar_conexion(void* void_args) {
+void procesar_conexion(void* void_args) {
 	int *args = (int*) void_args;
 	int cliente_socket = *args;
 
 	op_code cop;
+
 	while (cliente_socket != -1) {
 		cop = recibir_operacion(cliente_socket);
 		if (cop == -1) {
@@ -298,9 +299,9 @@ static void procesar_conexion(void* void_args) {
 				return;
 			}
 			break;
-		case INICIALIZAR_PROCESO:
-			log_info(logger, "se recibe de memoria la tabla de segmentos inicial del proceso");
-			return;
+//		case INICIALIZAR_PROCESO:
+//			log_info(logger, "se recibe de memoria la tabla de segmentos inicial del proceso");
+//			return;
 		default:
 			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 			log_info(logger, "el numero del cop es: %d", cop);
@@ -351,11 +352,11 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	seg_fault->tamanio = -1;
 	pcb->contexto_de_ejecucion->seg_fault = seg_fault;
 
-//	log_info(logger, "se manda a memoria solicitud incializacion proceso");
-//	send_inicializar_proceso(pid, fd_memoria);
-//	log_info(logger, "hice el send");
-//	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
-//	log_info(logger, "recibo tabla segmentos inicial de tamaño: %d", list_size(tabla_segmentos));
+	log_info(logger, "se manda a memoria solicitud incializacion proceso");
+	send_inicializar_proceso(pid, fd_memoria);
+	log_info(logger, "hice el send");
+	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
+	log_info(logger, "recibo tabla segmentos inicial de tamaño: %d", list_size(tabla_segmentos));
 	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
 	pcb->contexto_de_ejecucion->estado = NEW;
 

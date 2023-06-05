@@ -97,7 +97,7 @@ void inicializar_registro(t_contexto_ejecucion* contexto);
 void terminar_programa();
 
 // COMUNICACION
-static void procesar_conexion(void* args);
+void procesar_conexion(void* args);
 void iterator(char* value);
 int server_escuchar(int server_socket);
 
