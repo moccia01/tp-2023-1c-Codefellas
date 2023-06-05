@@ -111,6 +111,7 @@ void inicializar_variables() {
 	cola_block = list_create();
 	cola_block_io = list_create();
 	lista_recursos = inicializar_recursos();
+	fs_mem_op_count = 0;
 
 
 	//Semaforos
@@ -127,6 +128,7 @@ void inicializar_variables() {
 	sem_init(&sem_exec, 0, 1);
 	sem_init(&sem_exit, 0, 0);
 	sem_init(&sem_block_return, 0, 0);
+	sem_init(&ongoing_fs_mem_op, 0, 0);
 
 }
 
@@ -273,6 +275,7 @@ void procesar_conexion(void* void_args) {
 //				en caso de compactacion:
 //		        	 - usar semaforo para verificar si se esta ejecutando
 //				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op); (?)
+					sem_wait(&ongoing_fs_mem_op);
 //					 - avisar a memoria que compacte.
 //					 - recibir de memoria las tablas de segmentos actualizadas post compact
 //					 - recibir lista de listas de segmento (lista cada tablas de segmento de cada pcb)
@@ -293,6 +296,34 @@ void procesar_conexion(void* void_args) {
 				list_destroy(tabla_segmentos_actualizada); // podria ir list_destroy_and_destroy_elements
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				break;
+			case MANEJAR_F_READ:
+				if(fs_mem_op_count == 0){
+					sem_wait(&ongoing_fs_mem_op);
+				}
+				fs_mem_op_count++;
+				// manejo f_read;
+				break;
+			case FIN_F_READ:
+				fs_mem_op_count--;
+				if(fs_mem_op_count == 0){
+					sem_post(&ongoing_fs_mem_op);
+				}
+				// manejo fin f_read...
+				break;
+			case MANEJAR_F_WRITE:
+				if(fs_mem_op_count == 0){
+					sem_wait(&ongoing_fs_mem_op);
+				}
+				fs_mem_op_count++;
+				// manejo f_write;
+				break;
+			case FIN_F_WRITE:
+				fs_mem_op_count--;
+				if(fs_mem_op_count == 0){
+					sem_post(&ongoing_fs_mem_op);
+				}
+				// manejo fin f_write...
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);

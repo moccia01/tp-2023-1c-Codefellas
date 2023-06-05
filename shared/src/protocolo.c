@@ -646,6 +646,9 @@ void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo){
 
 t_list* recv_proceso_inicializado(int fd_modulo){
 	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != INICIALIZAR_PROCESO){
+		return NULL;
+	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
 	list_destroy(paquete);

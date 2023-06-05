@@ -70,6 +70,7 @@ t_list* cola_listos_para_ready;
 t_list* cola_exec;
 t_list* cola_block;
 t_list* cola_block_io;
+int fs_mem_op_count;
 
 // Semaforos y pthread
 pthread_mutex_t mutex_generador_pid;
@@ -85,6 +86,7 @@ sem_t sem_ready;
 sem_t sem_exec;
 sem_t sem_exit;
 sem_t sem_block_return;
+sem_t ongoing_fs_mem_op;
 
 // INIT
 void leer_config();
