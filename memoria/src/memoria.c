@@ -77,12 +77,6 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger, "Recibí un paquete con los siguientes valores: ");
 			list_iterate(paquete_recibido, (void*) iterator);
 			break;
-		case INICIALIZAR_PROCESO:
-			// ...
-			break;
-		case FINALIZAR_PROCESO:
-			// ...
-			break;
 		case MANEJAR_CREATE_SEGMENT:
 			t_list* create_sgm_params = recv_create_segment(fd_kernel);
 //			int* id = list_get(create_sgm_params, 0);
@@ -97,14 +91,14 @@ static void procesar_conexion(void *void_args) {
 				break;
 			}
 			break;
-		case MANEJAR_DELETE_SEGMENT:
+			case MANEJAR_DELETE_SEGMENT:
 				// ...
-		default:
-			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
-			return;
-		}
+			default:
+				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
+				return;
+			}
 
-	}
+		}
 	log_warning(logger, "El cliente se desconecto de %s server", server_name);
 	return;
 }
@@ -131,3 +125,31 @@ int server_escuchar(int server_socket) {
 t_segment_response verificar_espacio_memoria(int tamanio){
 	return SEGMENT_CREATED;
 }
+
+void inicializar_memoria(){
+
+	pthread_mutex_init(&memoria_usuario_mutex, NULL);
+
+log_info(logger, "Creando espacio de memoria...");
+	espacio_memoria = malloc(TAM_MEMORIA);
+
+		lista_huecos_libres = list_create();
+		lista_de_tablas_de_segmentos = list_create();
+
+}
+
+void crear_tabla_segmento(){
+	int tabla_segmento[2][CANT_SEGMENTOS];
+	inicializar_Segmento_0(tabla_segmento);
+
+
+
+}
+
+void inicializar_segmento_0(tabla_segmento[2][CANT_SEGMENTOS]){
+	segmento_0 = TAM_SEGMENTO_0;
+	tabla_segmento[0][0] = 0;
+	tabla_segmento[1][0] = segmento_0;
+}
+// creamos lista por proceso que a su vez tiene segmentos
+// cada proceso agregarle segmento_0

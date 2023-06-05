@@ -1,3 +1,4 @@
+
 #ifndef MEMORIA_H_
 #define MEMORIA_H_
 
@@ -14,6 +15,18 @@ typedef enum {
 	WORST_FIT
 } t_algoritmo_memoria;
 
+typedef struct {
+    void* base;     // Dirección base del segmento
+    int tamano;     // Tamaño del segmento en bytes
+    int permisos;   // Permisos de acceso (ejemplo: lectura, escritura)
+} Segmento;
+
+typedef struct {
+    Segmento* tabla;    // Tabla de segmentos
+    int capacidad;      // Capacidad de la tabla
+    int numSegmentos;   // Número actual de segmentos en la tabla
+} TablaSegmentos;
+
 //Config
 char* IP;
 char* PUERTO;
@@ -28,7 +41,10 @@ t_algoritmo_memoria ALGORITMO_ASIGNACION;
 // Variables globales
 t_log* logger;
 t_config* config;
-
+t_list *lista_de_tablas_de_segmentos;
+t_list *lista_huecos_libres;
+pthread_mutex_t memoria_usuario_mutex;
+pthread_mutex_t lista_de_tablas_de_segmentos_mutex;
 int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
 char* server_name;
 
@@ -37,7 +53,9 @@ char* server_name;
 void leer_config();
 void asignar_algoritmo_memoria(char *algoritmo_memoria);
 void terminar_programa();
-
+void *espacio_memoria;
+void *segmentos_memoria;
+void *segmento_0;
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
@@ -48,3 +66,5 @@ t_segment_response verificar_espacio_memoria(int tamanio);
 
 
 #endif /* MEMORIA_H_ */
+// aparece y segmento_0
+// cada segmento va a tener base y tamaño
