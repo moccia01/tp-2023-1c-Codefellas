@@ -455,8 +455,10 @@ void send_cambiar_estado(estado_proceso estado, int fd_modulo){
 estado_proceso recv_cambiar_estado(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	estado_proceso* estado = list_get(paquete, 0);
+	estado_proceso ret = *estado;
+	free(estado);
 	list_destroy(paquete);
-	return *estado;
+	return ret;
 }
 
 void send_tiempo_io(int tiempo_io, int fd_modulo){

@@ -58,7 +58,7 @@ void leer_config() {
 	char** instancias = string_array_new();
 	instancias = config_get_array_value(config, "INSTANCIAS_RECURSOS");
 	INSTANCIAS_RECURSOS = string_to_int_array(instancias);
-	string_array_destroy(instancias);
+	string_array_destroy(instancias);		//Sigue sin funcar el free a instancias
 }
 
 int* string_to_int_array(char** array_de_strings){
@@ -354,9 +354,7 @@ int server_escuchar(int server_socket) {
 
 	if (cliente_socket != -1) {
 		pthread_t hilo;
-		int *args = malloc(sizeof(int));
-		args = &cliente_socket;
-		pthread_create(&hilo, NULL, (void*) procesar_conexion, (void*) args);
+		pthread_create(&hilo, NULL, (void*) procesar_conexion, (void*) &cliente_socket);
 		pthread_detach(hilo);
 		return 1;
 	}
@@ -441,6 +439,7 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 }
 
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
+	//TODO Revisar con valgrind si hay que hacer un contexto_destroyer
 	pcb->contexto_de_ejecucion = contexto;
 }
 
