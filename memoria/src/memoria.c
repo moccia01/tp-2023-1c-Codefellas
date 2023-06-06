@@ -30,11 +30,11 @@ int main(int argc, char **argv) {
 void leer_config(){
 	IP = config_get_string_value(config, "IP_ESCUCHA");
 	PUERTO = config_get_string_value(config, "PUERTO_ESCUCHA");
-	TAM_MEMORIA = config_get_string_value(config, "TAM_MEMORIA");
-	TAM_SEGMENTO_0 = config_get_string_value(config, "TAM_SEGMENTO_0");
-	CANT_SEGMENTOS = config_get_string_value(config, "CANT_SEGMENTOS");
-	RETARDO_MEMORIA = config_get_string_value(config, "RETARDO_MEMORIA");
-	RETARDO_COMPACTACION = config_get_string_value(config, "RETARDO_COMPACTACION");
+	TAM_MEMORIA = config_get_int_value(config, "TAM_MEMORIA");
+	TAM_SEGMENTO_0 = config_get_int_value(config, "TAM_SEGMENTO_0");
+	CANT_SEGMENTOS = config_get_int_value(config, "CANT_SEGMENTOS");
+	RETARDO_MEMORIA = config_get_int_value(config, "RETARDO_MEMORIA");
+	RETARDO_COMPACTACION = config_get_int_value(config, "RETARDO_COMPACTACION");
 	char *algoritmo_memoria = config_get_string_value(config, "ALGORITMO_ASIGNACION");
 	asignar_algoritmo_memoria(algoritmo_memoria);
 }
@@ -59,6 +59,10 @@ void terminar_programa(){
 
 void inicializar_variables(){
 	lista_ts_wrappers = list_create();
+	segmento_0 = malloc(sizeof(t_segmento));
+	segmento_0->base = 0;
+	segmento_0->id = 0;
+	segmento_0->tamanio = TAM_SEGMENTO_0;
 }
 
 // --------------------- COMUNICACION ---------------------
@@ -143,6 +147,7 @@ t_segment_response verificar_espacio_memoria(int tamanio){
 
 	return SEGMENT_CREATED;
 }
+
 /*
 int algoritmo_first(int tamano){
 	int base=-1;
@@ -154,31 +159,21 @@ int algoritmo_first(int tamano){
 }
 */
 void inicializar_memoria(){
-
-	pthread_mutex_init(&memoria_usuario_mutex, NULL);
-
 	log_info(logger, "Creando espacio de memoria...");
 	espacio_memoria = malloc(atoi(TAM_MEMORIA));	//Le estaban pasando un char*, con atoi obtienen lo que desean
 
 }
 
-//t_list* inicializar_tabla_segmento(int id_proceso){
-//	t_segmentoss* segmento_0 = malloc(sizeof(t_segmentoss));					//TODO cambien el nombre de t_segmentoss, puse eso como provisorio
-//	segmento_0->base=0;								//No entiendo por qué es tipo void*, chequeen si eso es correcto
-//	segmento_0->tamano= atoi(TAM_SEGMENTO_0);		//TODO Estaban poniendo un char* en int, atoi les corrige eso
-//	t_tabla_segmento* tabla = malloc(sizeof(t_tabla_segmento));
-//	tabla->numSegmentos=1;
-//	tabla->id=id_proceso;
-//	t_list* lista_t_segmento = list_create();
-//	list_add(tabla->lista_segmentos,segmento_0);	//TODO Pasar bien los parámetros porque no le gusta así
-//    list_add(lista_t_segmento, tabla);
-//    //TODO Inicialicé con punteros segmento_0 y tabla, chequeen los tipos de datos que reciben las funciones
-//    return lista_t_segmento;
-//}
-
 t_list* inicializar_tabla_segmento(int pid){
 	t_list* tabla_segmentos_inicial = list_create();
+	list_add(tabla_segmentos_inicial, segmento_0);
+
 	// añadir el pid y su tabla a la lista global de pids y tablas
+	ts_wrapper wrapper = malloc(sizeof(ts_wrapper));
+	wrapper->pid = pid;
+	wrapper->tabla_de_segmentos = tabla_segmentos_inicial;
+	list_add(lista_ts_wrappers, wrapper);
+
 	return tabla_segmentos_inicial;
 }
 

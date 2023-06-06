@@ -15,21 +15,6 @@ typedef enum {
 	WORST_FIT
 } t_algoritmo_memoria;
 
-
-typedef struct {
-    void* base;     // Dirección base del segmento
-    int tamano;     // Tamaño del segmento en bytes
-    //int permisos;   // Permisos de acceso (ejemplo: lectura, escritura)
-} t_segmentoss;		//TODO: Ponerle otro nombre ya que t_segmento está usado en las shared
-
-
-typedef struct {
-    int capacidad;      // Capacidad de la tabla
-    int numSegmentos;	// Número actual de segmentos en la tabla = 0 NO SE PUEDE INICIALIZAR ACA
-    int id;
-    t_list* lista_segmentos;
-} t_tabla_segmento;
-
 typedef struct {
 	int base;
 	int tamanio;
@@ -39,30 +24,24 @@ typedef struct {
 char* IP;
 char* PUERTO;
 char* PUERTO_ESCUCHA;
-char* TAM_MEMORIA;
-char* TAM_SEGMENTO_0;
-char* CANT_SEGMENTOS;
-char* RETARDO_MEMORIA;
-char* RETARDO_COMPACTACION;
+int TAM_MEMORIA;
+int TAM_SEGMENTO_0;
+int CANT_SEGMENTOS;
+int RETARDO_MEMORIA;
+int RETARDO_COMPACTACION;
 t_algoritmo_memoria ALGORITMO_ASIGNACION;
 
 // Variables globales
 t_log* logger;
 t_config* config;
-t_list *lista_t_segmento;
-t_list *lista; //TODO: poner un nombre mas declarativo, sino desp no sabemos para q es
-pthread_mutex_t memoria_usuario_mutex;
-pthread_mutex_t lista_de_tablas_de_segmentos_mutex;
 int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
 char* server_name;
-
 void *espacio_memoria;
-void *segmentos_memoria;
-void *segmento_0;
+t_segmento* segmento_0;
 
 // esto lo hice yo (tomy) para la actualizacion de tablas de segmentos post compactacion
 t_list* lista_ts_wrappers;
-
+t_list* huecos_libres;
 
 // --------------------- INIT ---------------------
 void leer_config();
