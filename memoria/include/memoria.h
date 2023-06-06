@@ -18,7 +18,12 @@ typedef enum {
 typedef struct {
 	int base;
 	int tamanio;
-}t_hueco_libre;
+}t_hueco_memoria;
+
+typedef struct{
+	int pid;
+	t_list* escrituras;
+}t_escrituras;
 
 //Config
 char* IP;
@@ -34,20 +39,20 @@ t_algoritmo_memoria ALGORITMO_ASIGNACION;
 // Variables globales
 t_log* logger;
 t_config* config;
-int fd_memoria, fd_filesystem, fd_cpu, fd_kernel;
+int fd_memoria;
 char* server_name;
-void *espacio_memoria;
+void *espacio_usuario;
 t_segmento* segmento_0;
 
 // esto lo hice yo (tomy) para la actualizacion de tablas de segmentos post compactacion
 t_list* lista_ts_wrappers;
 t_list* huecos_libres;
+t_list* huecos_escritos;
 
 // --------------------- INIT ---------------------
 void leer_config();
 void asignar_algoritmo_memoria(char *algoritmo_memoria);
 void terminar_programa();
-void inicializar_variables();
 
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
@@ -55,9 +60,11 @@ void iterator(char *value);
 int server_escuchar(int server_socket);
 
 t_segment_response verificar_espacio_memoria(int tamanio);
-t_list* inicializar_tabla_segmento(int id_proceso);
+t_list* inicializar_proceso(int id_proceso);
 void inicializar_memoria();
 void terminar_proceso(int pid);
+void eliminar_escrituras_de_proceso(int pid);
+void eliminar_tabla_segmentos(int pid);
 
 #endif /* MEMORIA_H_ */
 // aparece y segmento_0

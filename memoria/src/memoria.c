@@ -1,7 +1,6 @@
 #include "../include/memoria.h"
 
 
-
 int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
@@ -13,7 +12,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	leer_config();
-	inicializar_variables();
+	inicializar_memoria();
 	// Inicio servidor
 	fd_memoria = iniciar_servidor(logger, IP, PUERTO);
 
@@ -57,13 +56,6 @@ void terminar_programa(){
 	config_destroy(config);
 }
 
-void inicializar_variables(){
-	lista_ts_wrappers = list_create();
-	segmento_0 = malloc(sizeof(t_segmento));
-	segmento_0->base = 0;
-	segmento_0->id = 0;
-	segmento_0->tamanio = TAM_SEGMENTO_0;
-}
 
 // --------------------- COMUNICACION ---------------------
 
@@ -87,7 +79,7 @@ static void procesar_conexion(void *void_args) {
 			list_iterate(paquete_recibido, (void*) iterator);
 			break;
 		case MANEJAR_CREATE_SEGMENT:
-			t_list* create_sgm_params = recv_create_segment(fd_kernel);
+			t_list* create_sgm_params = recv_create_segment(cliente_socket);
 //			int* id = list_get(create_sgm_params, 0);
 			int* tamanio = list_get(create_sgm_params, 1);
 			t_segment_response verificacion_espacio = verificar_espacio_memoria(*tamanio);
@@ -106,13 +98,35 @@ static void procesar_conexion(void *void_args) {
 		case INICIALIZAR_PROCESO:
 			int pid_init = recv_inicializar_proceso(cliente_socket);
 			log_info(logger, "se inicializa proceso");
-			t_list* tabla_segmentos_inicial = inicializar_tabla_segmento(pid_init);
+			t_list* tabla_segmentos_inicial = inicializar_proceso(pid_init);
 			send_proceso_inicializado(tabla_segmentos_inicial, cliente_socket);
 			break;
 		case FINALIZAR_PROCESO:
 			int pid_fin = recv_terminar_proceso(cliente_socket);
 			// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
 			terminar_proceso(pid_fin);
+			break;
+		case PEDIDO_LECTURA_CPU:
+//			t_list* parametros_lectura_cpu= recv_pedido_lectura(cliente_socket);
+//			void* valor_leido_cpu = espacio_usuario[posicion_cpu];
+//			send_valor_leido(valor_leido_cpu, cliente_socket);
+			break;
+		case PEDIDO_ESCRITURA_CPU:
+//			t_list* parametros_escritura_cpu = recv_pedido_escritura(cliente_socket);
+//			int* posicion_escritura_cpu = list_get(parametros_escritura, 0);
+//			void* valor_a_escribir_cpu = list_get(parametros_escritura, 1);
+//			espacio_usuario[*posicion_escritura_cpu] = valor_a_escribir_cpu;
+			break;
+		case PEDIDO_LECTURA_FS:
+//			t_list* parametros_lectura_fs = recv_pedido_lectura(cliente_socket);
+//			void* valor_leido_fs = espacio_usuario[posicion_fs];
+//			send_valor_leido(valor_leido_fs, cliente_socket);
+			break;
+		case PEDIDO_ESCRITURA_FS:
+//			t_list* parametros_escritura_fs = recv_pedido_escritura(cliente_socket);
+//			int* posicion_escritura_fs = list_get(parametros_escritura, 0);
+//			void* valor_a_escribir_fs = list_get(parametros_escritura, 1);
+//			espacio_usuario[*posicion_escritura_fs] = valor_a_escribir_fs;
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -160,20 +174,31 @@ int algoritmo_first(int tamano){
 */
 void inicializar_memoria(){
 	log_info(logger, "Creando espacio de memoria...");
-	espacio_memoria = malloc(atoi(TAM_MEMORIA));	//Le estaban pasando un char*, con atoi obtienen lo que desean
+//	espacio_usuario[TAM_MEMORIA];
+
+	lista_ts_wrappers = list_create();
+
+	segmento_0 = malloc(sizeof(t_segmento));
+	segmento_0->base = 0;
+	segmento_0->id = 0;
+	segmento_0->tamanio = TAM_SEGMENTO_0;
 
 }
 
-t_list* inicializar_tabla_segmento(int pid){
+t_list* inicializar_proceso(int pid){
 	t_list* tabla_segmentos_inicial = list_create();
 	list_add(tabla_segmentos_inicial, segmento_0);
 
 	// añadir el pid y su tabla a la lista global de pids y tablas
-	ts_wrapper wrapper = malloc(sizeof(ts_wrapper));
+	ts_wrapper* wrapper = malloc(sizeof(ts_wrapper));
 	wrapper->pid = pid;
 	wrapper->tabla_de_segmentos = tabla_segmentos_inicial;
 	list_add(lista_ts_wrappers, wrapper);
 
+	// añadir el pid y su lista de escrituras
+	t_escrituras* escrituras = malloc(sizeof(t_escrituras));
+	escrituras->pid = pid;
+	escrituras->escrituras = list_create();
 	return tabla_segmentos_inicial;
 }
 
@@ -181,5 +206,14 @@ t_list* inicializar_tabla_segmento(int pid){
 // cada proceso agregarle segmento_0
 
 void terminar_proceso(int pid){
+	eliminar_escrituras_de_proceso(pid);
+	eliminar_tabla_segmentos(pid);
+}
+
+void eliminar_escrituras_de_proceso(int pid){
+
+}
+
+void eliminar_tabla_segmentos(int pid){
 
 }
