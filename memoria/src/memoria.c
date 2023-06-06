@@ -165,13 +165,23 @@ int server_escuchar(int server_socket) {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
-//TODO: ya se puede implementar
-	return SEGMENT_CREATED;
+//TO-DO: ya se puede implementar
+	int tamanio_total=0;
+	for(int i = 0; i < list_size(huecos_libres); i++){
+		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
+		if(hueco_libre->tamanio >= tamanio){
+			return SEGMENT_CREATED;
+		}
+		tamanio_total+=hueco_libre->tamanio;
+	}
+	if(tamanio_total>=tamanio)
+		return COMPACT;
+	return OUT_OF_MEM;
 }
 
 void inicializar_memoria(){
 	log_info(logger, "Creando espacio de memoria...");
-//	espacio_usuario[TAM_MEMORIA];
+	espacio_usuario = malloc(TAM_MEMORIA);
 
 	lista_ts_wrappers = list_create();
 
@@ -212,7 +222,14 @@ void eliminar_escrituras_de_proceso(int pid){
 }
 
 void eliminar_tabla_segmentos(int pid){
-	//TODO: ya se puede implementar
+	//TO-DO: ya se puede implementar
+	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
+		ts_wrapper *tabla_segmento = list_get(lista_ts_wrappers, i);
+		if(tabla_segmento->pid==pid){
+			list_remove_element(lista_ts_wrappers, tabla_segmento);
+		}
+	}
+	return;
 }
 
 int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
@@ -233,7 +250,7 @@ int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 	actualizar_hueco_libre(nuevo_segmento, hueco);
 	return nuevo_segmento->base;
 }
-
+//TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -243,15 +260,43 @@ t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	}
 	return NULL;
 }
-
+//TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_best(int tamanio){
-	//TODO: ya se puede implementar
-	return NULL;
+	//TO-DO: ya se puede implementar
+	t_hueco_memoria *aux=NULL;
+	for(int i = 0; i < list_size(huecos_libres); i++){
+			t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
+			if(!aux){
+				if(hueco_libre->tamanio >= tamanio){
+					aux=hueco_libre;
+				}
+			}
+			else{
+				if(hueco_libre->tamanio >= tamanio && hueco_libre->tamanio<aux->tamanio){
+					aux=hueco_libre;
+				}
+			}
+		}
+	return aux;
 }
-
+//TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_worst(int tamanio){
-	//TODO: ya se puede implementar
-	return NULL;
+	//TO-DO: ya se puede implementar
+	t_hueco_memoria *aux=NULL;
+		for(int i = 0; i < list_size(huecos_libres); i++){
+				t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
+				if(!aux){
+					if(hueco_libre->tamanio >= tamanio){
+						aux=hueco_libre;
+					}
+				}
+				else{
+					if(hueco_libre->tamanio >= tamanio && hueco_libre->tamanio>aux->tamanio){
+						aux=hueco_libre;
+					}
+				}
+			}
+		return aux;
 }
 
 t_segmento* crear_segmento(int pid, int id, int base, int tamanio){
@@ -275,5 +320,18 @@ void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_v
 }
 
 void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento){
-	//TODO: ya se puede implementar
+	//TO-DO: ya se puede implementar
+	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
+		ts_wrapper *ts_proceso = list_get(lista_ts_wrappers, i);
+		if(ts_proceso->pid==pid){
+			list_add(ts_proceso->tabla_de_segmentos,segmento);
+			//enviar_tabla_a_kernel(pid,ts_proceso->tabla_de_segmentos);
+		}
+	}
+	return;
 }
+/*
+void enviar_tabla_a_kernel(int pid, t_list *tabla_de_segmentos){
+//TODO: Que hacemo'?
+}
+*/
