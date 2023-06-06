@@ -80,15 +80,22 @@ static void procesar_conexion(void *void_args) {
 			break;
 		case MANEJAR_CREATE_SEGMENT:
 			t_list* create_sgm_params = recv_create_segment(cliente_socket);
-//			int* id = list_get(create_sgm_params, 0);
+			int* id = list_get(create_sgm_params, 0);
 			int* tamanio = list_get(create_sgm_params, 1);
+			int* pid = list_get(create_sgm_params, 2);
 			t_segment_response verificacion_espacio = verificar_espacio_memoria(*tamanio);
 			switch(verificacion_espacio){
 			case SEGMENT_CREATED: //crear segmento
+				send_segment_response(verificacion_espacio, cliente_socket);
+				int direccion = crear_segmento_segun_algoritmo(*id, *tamanio, *pid);
+				send_base_segmento(direccion, cliente_socket);
 				break;
-			case OUT_OF_MEM: //avisar a kernel que out_of_mem
+			case OUT_OF_MEM:
+				send_segment_response(verificacion_espacio, cliente_socket);
 				break;
-			case COMPACT: //solicitar compactacion y cuando kernel de el ok, compactar.
+			case COMPACT:
+				send_segment_response(verificacion_espacio, cliente_socket);
+				// esperar a que kernel de el ok para compactar y recien ahi compactar
 				break;
 			}
 			break;
@@ -158,20 +165,10 @@ int server_escuchar(int server_socket) {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
-
+//TODO: ya se puede implementar
 	return SEGMENT_CREATED;
 }
 
-/*
-int algoritmo_first(int tamano){
-	int base=-1;
-	while(lista){
-		if(tamano < (lista->tamanio))
-			return base;
-	}
-	return base;
-}
-*/
 void inicializar_memoria(){
 	log_info(logger, "Creando espacio de memoria...");
 //	espacio_usuario[TAM_MEMORIA];
@@ -211,9 +208,72 @@ void terminar_proceso(int pid){
 }
 
 void eliminar_escrituras_de_proceso(int pid){
-
+	//TODO: ya se puede implementar
 }
 
 void eliminar_tabla_segmentos(int pid){
+	//TODO: ya se puede implementar
+}
 
+int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
+	t_hueco_memoria* hueco;
+	switch(ALGORITMO_ASIGNACION){
+	case FIRST_FIT:
+		hueco = encontrar_hueco_first(tamanio);
+		break;
+	case WORST_FIT:
+		hueco = encontrar_hueco_worst(tamanio);
+		break;
+	case BEST_FIT:
+		hueco = encontrar_hueco_best(tamanio);
+		break;
+	default: break;
+	}
+	t_segmento* nuevo_segmento = crear_segmento(pid, id, tamanio, hueco->base);
+	actualizar_hueco_libre(nuevo_segmento, hueco);
+	return nuevo_segmento->base;
+}
+
+t_hueco_memoria* encontrar_hueco_first(int tamanio){
+	for(int i = 0; i < list_size(huecos_libres); i++){
+		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
+		if(hueco_libre->tamanio >= tamanio){
+			return hueco_libre;
+		}
+	}
+	return NULL;
+}
+
+t_hueco_memoria* encontrar_hueco_best(int tamanio){
+	//TODO: ya se puede implementar
+	return NULL;
+}
+
+t_hueco_memoria* encontrar_hueco_worst(int tamanio){
+	//TODO: ya se puede implementar
+	return NULL;
+}
+
+t_segmento* crear_segmento(int pid, int id, int base, int tamanio){
+	t_segmento* segmento = malloc(sizeof(t_segmento));
+	segmento->id = id;
+	segmento->base = base;
+	segmento->tamanio = tamanio;
+
+	actualizar_tabla_segmentos_de_proceso(pid, segmento);
+//	list_add(segmentos_en_memoria, segmento);
+
+	return segmento;
+}
+
+void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_viejo){
+	hueco_viejo->base = segmento_nuevo->base + segmento_nuevo->tamanio;
+	hueco_viejo->tamanio = hueco_viejo->tamanio - segmento_nuevo->tamanio;
+	if(hueco_viejo->tamanio == 0){
+		list_remove_element(huecos_libres, hueco_viejo);
+	}
+}
+
+void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento){
+	//TODO: ya se puede implementar
 }

@@ -551,6 +551,13 @@ t_list* recv_create_segment(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
+void send_segment_response(t_segment_response resp, int fd_modulo){
+	t_paquete* paquete = crear_paquete(SEGMENT_RESPONSE);
+	agregar_a_paquete(paquete, &resp, sizeof(t_segment_response));
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
 t_segment_response recv_segment_response(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_segment_response* respuesta = list_get(paquete, 0);
@@ -657,8 +664,10 @@ void send_base_segmento(int base, int fd_modulo){
 }
 
 int recv_base_segmento(int fd_modulo){
-	op_code cop;
-	recv(fd_modulo, &cop, sizeof(op_code), 0);
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != BASE_SEGMENTO){
+		return -1;
+	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	int* base = list_get(paquete, 0);
 	list_destroy(paquete);

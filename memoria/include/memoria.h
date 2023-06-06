@@ -65,6 +65,13 @@ void inicializar_memoria();
 void terminar_proceso(int pid);
 void eliminar_escrituras_de_proceso(int pid);
 void eliminar_tabla_segmentos(int pid);
+int crear_segmento_segun_algoritmo(int id, int tamanio, int pid);
+t_hueco_memoria* encontrar_hueco_first(int tamanio);
+t_hueco_memoria* encontrar_hueco_best(int tamanio);
+t_hueco_memoria* encontrar_hueco_worst(int tamanio);
+t_segmento* crear_segmento(int pid, int id, int base, int tamanio);
+void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_viejo);
+void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento);
 
 #endif /* MEMORIA_H_ */
 // aparece y segmento_0

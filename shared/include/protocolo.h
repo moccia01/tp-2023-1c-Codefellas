@@ -39,6 +39,7 @@ typedef enum{
 	INICIALIZAR_PROCESO,
 	FINALIZAR_PROCESO,
 	BASE_SEGMENTO,
+	SEGMENT_RESPONSE,
 	PEDIDO_LECTURA_CPU,
 	PEDIDO_LECTURA_FS,
 	PEDIDO_ESCRITURA_CPU,
@@ -98,6 +99,7 @@ void send_nombre_f_write(char* nombre_archivo, int dir_logica, int cantidad_byte
 void send_nombre_f_wait(char* nombre_archivo, int fd_modulo);
 void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo);
 void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
+void send_segment_response(t_segment_response resp, int fd_modulo);
 void send_delete_segment(int id_segmento, int fd_modulo);
 void send_leer_valor(int dir_fisica, int fd_modulo);
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
