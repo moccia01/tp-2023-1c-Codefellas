@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 	leer_config();
 
 	//levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
+	//inicializar_variables();
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -42,27 +43,23 @@ void leer_config(){
 
 // ------------------ INIT --------------------------
 
+void inicializar_variables(){
+	ARRAY_BLOQUES[TAMANIO];
+	ARRAY_BITMAP[BLOCK_COUNT];
+}
+
 void leer_superbloque(){
 
 	superbloque = config_create(PATH_SUPERBLOQUE);
 
 	if(superbloque == NULL){
-		log_error(logger, "No se encontró el archivo superbloque :(");
+		log_error(logger, "No se encontró el archivo superbloque >:(");
 		exit(1);
 	}
 
 	BLOCK_SIZE = config_get_int_value(superbloque, "BLOCK_SIZE");
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
-
-	int fd = open(PATH_SUPERBLOQUE, O_CREAT | O_RDWR, 0664);
-
-	if(fd == -1){
-		close(fd);
-		log_error(logger, "Error abriendo el superbloque.DAT");
-		exit(1);
-	}
-
-
+}
 
 	/*
 
@@ -111,12 +108,14 @@ void leer_superbloque(){
 
 	*/
 
-
-}
-/*
 void crear_bitmap(){
 
-	caddr_t mmap(void *start, size_t length, int prot , int flags, int fd, off_t offset);
+	int tamanio_bitmap = BLOCK_COUNT / 8;
+
+	//mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+	//mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE,);
+	void* bitarray = malloc(tamanio_bitmap);
+	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
 
 	for(int i = 0; i < BLOCK_COUNT; i++){
 		ARRAY_BITMAP[i] = 0;
@@ -124,16 +123,17 @@ void crear_bitmap(){
 
 }
 
+
 void crear_archivo_de_bloques(){
 
 	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
 
 }
-*/
+
 
 void levantar_archivos(){
 	leer_superbloque();
-	//crear_bitmap();
+	crear_bitmap();
 	//crear_archivo_de_bloques();
 }
 
@@ -154,6 +154,16 @@ static void procesar_conexion() {
 		switch (cop) {
 		case MENSAJE:
 			recibir_mensaje(logger, socket_cliente);
+			break;
+		case MANEJAR_F_OPEN:
+			break;
+		case MANEJAR_F_CREATE:
+			break;
+		case MANEJAR_F_TRUNCATE:
+			break;
+		case MANEJAR_F_READ:
+			break;
+		case MANEJAR_F_WRITE:
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);

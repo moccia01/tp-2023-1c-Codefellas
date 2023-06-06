@@ -10,13 +10,14 @@
 #include <shared.h>
 #include <pthread.h>
 #include <commons/bitarray.h>
+#include <sys/mman.h>
 
 // Variables globales
 t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
 t_config* superbloque;
-t_config* bitmap;
+t_bitarray* bitmap;
 FILE *bloques;
 
 // Variables del config
@@ -41,22 +42,25 @@ int BLOCK_SIZE;
 int BLOCK_COUNT;
 
 //Variable del bitmap
-//int ARRAY_BITMAP[BLOCK_COUNT]; //TODO: Arreglar estooo
+int* ARRAY_BITMAP; //TODO: Arreglar estooo
 
 //Variable de archivo de bloques
-//int TAMANIO;
-//int ARRAY_BLOQUES[TAMANIO]; //TODO: Arreglar esto!!
-
+int TAMANIO;
+int* ARRAY_BLOQUES;
+/*
 typedef enum{
 	PROT_READ,
 	PROT_WRITE,
 	MAP_SHARED,
 	MAP_FAILED,
-}t_modos_mmap;
+} t_modos_mmap;
+*/
+
 
 void leer_config();
 void levantar_archivos();
 void terminar_programa();
+void inicializar_variables();
 
 // ARCHIVOS
 void leer_superbloque();
@@ -71,8 +75,12 @@ void server_escuchar();
 typedef struct{
 	char* nombre_archivo;
 	int tamanio_archivo;
-	int puntero_directo;
-	int puntero_indirecto;
+	uint32_t puntero_directo;
+	uint32_t puntero_indirecto;
 }fcb;
+
+typedef struct{
+
+}t_bloque;
 
 #endif /* FILESYSTEM_H_ */
