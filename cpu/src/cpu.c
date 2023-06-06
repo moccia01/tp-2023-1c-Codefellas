@@ -63,7 +63,7 @@ static void procesar_conexion() {
 			break;
 		case CONTEXTO_EJECUCION:
 			t_contexto_ejecucion* contexto_de_ejecucion = recv_contexto_ejecucion(socket_cliente);
-			log_info(logger, "recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
+			log_info(logger, "Recibí el contexto del proceso %d y se inicia el ciclo de instruccion", contexto_de_ejecucion->pid);
 			flag_execute = true;
 			ejecutar_ciclo_de_instrucciones(contexto_de_ejecucion);
 			break;
@@ -198,7 +198,7 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 			break;
 		case WAIT:
 			flag_execute = false;
-			log_info(logger, "el contexto tiene el valor de ax: %s", contexto->registros->ax);
+			log_info(logger, "El contexto tiene el valor de ax: %s", contexto->registros->ax);
 			ejecutar_wait(proxima_instruccion->parametro1, contexto);
 			break;
 		case SIGNAL:
@@ -371,7 +371,7 @@ void manejar_seg_fault(t_contexto_ejecucion* contexto, t_traduccion_mmu* mmu, in
 void ejecutar_set(char* registro, char* valor, t_registros* registros_contexto){
 	set_valor_registro(registro, valor);
 	actualizar_registros_contexto(registros_contexto);
-	log_info(logger, "a mimir");
+	log_info(logger, "A mimir");
 	usleep(RETARDO_INSTRUCCION * 1000);
 }
 
@@ -484,28 +484,28 @@ void ejecutar_ciclo_de_instrucciones(t_contexto_ejecucion* contexto){
 
 void actualizar_registros_contexto(t_registros* registros_contexto){
 	strcpy(registros_contexto->ax, registros->ax);
-	log_info(logger, "Ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
+//	log_info(logger, "Ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
 	strcpy(registros_contexto->bx, registros->bx);
-	log_info(logger, "Ahora el contexto tiene el valor de bx: %s", registros_contexto->bx);
+//	log_info(logger, "Ahora el contexto tiene el valor de bx: %s", registros_contexto->bx);
 	strcpy(registros_contexto->cx, registros->cx);
-	log_info(logger, "Ahora el contexto tiene el valor de cx: %s", registros_contexto->cx);
+//	log_info(logger, "Ahora el contexto tiene el valor de cx: %s", registros_contexto->cx);
 	strcpy(registros_contexto->dx, registros->dx);
-	log_info(logger, "Ahora el contexto tiene el valor de dx: %s", registros_contexto->dx);
+//	log_info(logger, "Ahora el contexto tiene el valor de dx: %s", registros_contexto->dx);
 	strcpy(registros_contexto->eax, registros->eax);
-	log_info(logger, "Ahora el contexto tiene el valor de eax: %s", registros_contexto->eax);
+//	log_info(logger, "Ahora el contexto tiene el valor de eax: %s", registros_contexto->eax);
 	strcpy(registros_contexto->ebx, registros->ebx);
-	log_info(logger, "Ahora el contexto tiene el valor de ebx: %s", registros_contexto->ebx);
+//	log_info(logger, "Ahora el contexto tiene el valor de ebx: %s", registros_contexto->ebx);
 	strcpy(registros_contexto->ecx, registros->ecx);
-	log_info(logger, "Ahora el contexto tiene el valor de ecx: %s", registros_contexto->ecx);
+//	log_info(logger, "Ahora el contexto tiene el valor de ecx: %s", registros_contexto->ecx);
 	strcpy(registros_contexto->edx, registros->edx);
-	log_info(logger, "Ahora el contexto tiene el valor de edx: %s", registros_contexto->edx);
+//	log_info(logger, "Ahora el contexto tiene el valor de edx: %s", registros_contexto->edx);
 	strcpy(registros_contexto->rax, registros->rax);
-	log_info(logger, "Ahora el contexto tiene el valor de rax: %s", registros_contexto->rax);
+//	log_info(logger, "Ahora el contexto tiene el valor de rax: %s", registros_contexto->rax);
 	strcpy(registros_contexto->rbx, registros->rbx);
-	log_info(logger, "Ahora el contexto tiene el valor de rbx: %s", registros_contexto->rbx);
+//	log_info(logger, "Ahora el contexto tiene el valor de rbx: %s", registros_contexto->rbx);
 	strcpy(registros_contexto->rcx, registros->rcx);
-	log_info(logger, "Ahora el contexto tiene el valor de rcx: %s", registros_contexto->rcx);
+//	log_info(logger, "Ahora el contexto tiene el valor de rcx: %s", registros_contexto->rcx);
 	strcpy(registros_contexto->rdx, registros->rdx);
-	log_info(logger, "Ahora el contexto tiene el valor de rdx: %s", registros_contexto->rdx);
+//	log_info(logger, "Ahora el contexto tiene el valor de rdx: %s", registros_contexto->rdx);
 
 }

@@ -42,11 +42,11 @@ int BLOCK_SIZE;
 int BLOCK_COUNT;
 
 //Variable del bitmap
-int* ARRAY_BITMAP; //TODO: Arreglar estooo
+int* ARRAY_BITMAP;
 
 //Variable de archivo de bloques
 int TAMANIO;
-int* ARRAY_BLOQUES;
+char* ARRAY_BLOQUES;
 /*
 typedef enum{
 	PROT_READ,

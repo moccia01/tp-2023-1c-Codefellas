@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	//levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
+	levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
 	//inicializar_variables();
 
 	// Conecto CPU con memoria
@@ -44,8 +44,8 @@ void leer_config(){
 // ------------------ INIT --------------------------
 
 void inicializar_variables(){
-	ARRAY_BLOQUES[TAMANIO];
-	ARRAY_BITMAP[BLOCK_COUNT];
+	//ARRAY_BLOQUES[TAMANIO];
+	//ARRAY_BITMAP[BLOCK_COUNT];
 }
 
 void leer_superbloque(){
@@ -113,21 +113,30 @@ void crear_bitmap(){
 	int tamanio_bitmap = BLOCK_COUNT / 8;
 
 	//mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
-	//mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE,);
-	void* bitarray = malloc(tamanio_bitmap);
+	void* bitarray = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_memoria, 0);
+	//void* bitarray = malloc(tamanio_bitmap);
 	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
-
+	msync(bitmap->bitarray, tamanio_bitmap, MS_SYNC);
+	log_info(logger, "Se guardó en msync");
+	//bitarray_set_bit(bitmap, off_t bit_index);
+/*
 	for(int i = 0; i < BLOCK_COUNT; i++){
 		ARRAY_BITMAP[i] = 0;
 	}
-
+*/
 }
 
 
 void crear_archivo_de_bloques(){
 
 	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
-
+	ARRAY_BLOQUES= malloc(TAMANIO);
+	/*
+	for(int i = 0; i < TAMANIO; i++){
+		//ARRAY_BLOQUES[i] = malloc();
+		strcpy(ARRAY_BLOQUES[i], "");
+	}
+	*/
 }
 
 
