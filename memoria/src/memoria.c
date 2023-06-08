@@ -100,8 +100,10 @@ static void procesar_conexion(void *void_args) {
 			}
 			break;
 		case MANEJAR_DELETE_SEGMENT:
-			// ...
+		//	deletear_segmento(*id, *base);
+			// send_segment_response(verificacion_espacio,cliente_socket);
 			break;
+
 		case INICIALIZAR_PROCESO:
 			int pid_init = recv_inicializar_proceso(cliente_socket);
 			log_info(logger, "se inicializa proceso");
@@ -335,3 +337,51 @@ void enviar_tabla_a_kernel(int pid, t_list *tabla_de_segmentos){
 //TODO: Que hacemo'?
 }
 */
+
+void deletear_segmento(int pid, int base){
+	int tamanio;
+	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
+		ts_wrapper *ts_proceso = list_get(lista_ts_wrappers, i);
+		if(ts_proceso->pid==pid){
+			for(int j = 0; j < list_size(ts_proceso->tabla_de_segmentos); j++){
+				t_segmento *segmento = list_get(ts_proceso->tabla_de_segmentos, j);
+				if(segmento->base == base){
+					tamanio = segmento -> tamanio;
+					list_remove_element(ts_proceso->tabla_de_segmentos, segmento);
+				}
+			}
+		}
+	}
+	agregar_hueco_libre(base, tamanio);
+	return;
+	//estas deleteado papaaa
+}
+
+void agregar_hueco_libre(int base, int tamanio){
+	t_segmento *aux = NULL;
+	int i;
+	for(i=0 ; i < list_size(huecos_libres); i++){
+		t_segmento *segmento = list_get(huecos_libres, i);
+		if(segmento->base < base){
+			aux = segmento;
+		}
+		else
+			break;
+	}
+	if(aux->base + aux->tamanio == base){
+		aux->tamanio += tamanio;
+	}
+	else{
+		t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
+		hueco_nuevo -> base = base;
+		hueco_nuevo -> tamanio = tamanio;
+		list_add_in_index(huecos_libres,i,hueco_nuevo);
+		aux = hueco_nuevo;
+	}
+	t_segmento siguiente_hueco = list_get(huecos_libres, i+1);
+
+	if(aux->base + aux->tamanio == siguiente_hueco->base){
+		aux->tamanio += siguiente_hueco->tamanio;
+		list_remove(huecos_libres, i+1);
+	}
+}

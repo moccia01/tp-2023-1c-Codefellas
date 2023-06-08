@@ -72,7 +72,8 @@ t_hueco_memoria* encontrar_hueco_worst(int tamanio);
 t_segmento* crear_segmento(int pid, int id, int base, int tamanio);
 void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_viejo);
 void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento);
-
+void deletear_segmento(int pid, int base);
+void agregar_hueco_libre(int base, int tamanio);
 #endif /* MEMORIA_H_ */
 // aparece y segmento_0
 // cada segmento va a tener base y tamaño
