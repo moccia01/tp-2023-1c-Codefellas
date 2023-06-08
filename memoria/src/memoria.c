@@ -378,7 +378,7 @@ void agregar_hueco_libre(int base, int tamanio){
 		list_add_in_index(huecos_libres,i,hueco_nuevo);
 		aux = hueco_nuevo;
 	}
-	t_segmento siguiente_hueco = list_get(huecos_libres, i+1);
+	t_segmento *siguiente_hueco = list_get(huecos_libres, i+1);
 
 	if(aux->base + aux->tamanio == siguiente_hueco->base){
 		aux->tamanio += siguiente_hueco->tamanio;
