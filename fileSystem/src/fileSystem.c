@@ -48,6 +48,7 @@ void inicializar_variables(){
 	//ARRAY_BITMAP[BLOCK_COUNT];
 }
 
+//ESTA DE ABAJO YA ESTA TERMINADA
 void leer_superbloque(){
 
 	superbloque = config_create(PATH_SUPERBLOQUE);
@@ -61,55 +62,30 @@ void leer_superbloque(){
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
 }
 
-	/*
-
-	-----ESTO ES PARA CREAR EL SUPERBLOQUE-----
-
-	void* super_b = mmap(NULL, sizeof(int)*2, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-	if(super_b == MAP_FAILED){
-		log_error(logger, "Error ejecutando el mmap(...)");
-		close(fd);
-		exit(1);
-	}
-
-	tamanioBitmap = BLOCK_COUNT/8;
-	ftruncate(fd, sizeof(int)*2 + tamanioBitmap); //Es para fijar el tamanio del archivo de superbloque
-	void* superbloque = mmap(NULL, sizeof(int)*2 + tamanioBitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-		//Investigar bien a fondo como funciona mmap
-
-	if(superBloque == MAP_FAILED){
-		log_error(logger, ...);
-		close(fd);
-		exit(1);
-	}
-
-	void* uints = malloc(4);
-	uints = realloc(units, sizeof(int));
-	memcpy(uints, BLOCK_SIZE, sizeof(int));
-	memcpy(superbloque, uints, sizeof(int));
-	memcpy(uints, BLOCK_COUNT, sizeof(int));
-	memcpy(superbloque+sizeof(int), uints, sizeof(int));
-	bitmap = bitarray_create_with_mode((char *) superbloque+sizeof(int)+sizeof(int), tamanioBitmap, MSB_FIRST);
-		//Ver bien la funcion bitarray_create_with_mode y ver si nos conviene mas MSB o LSB
-		//bitarray devuelve un struct t_bitarray* ver los campos
-	msync(bitmap->bitarray, tamanioBitmap, MS_SYNC); //ver que mierda es MS_SYNC
-	msync(superbloque, sizeof(int)*2 + tamanioBitmap, MS_SYNC);
-	close(fd);
-	free(uints);
-
-	------------------------------------------
-
-	-------------- Esto es para crear y manejar los bloques ----------
-
-	------------------------------------------
-
-
-
-	*/
-
 void crear_bitmap(){
 
+	//Primero deberia leer el archivo y en caso de que no este creado crearlo
+	//Datos utiles, r+ abre un archivo EXISTENTE en read write, w+ crea un archivo y lo abre en read write
+
+	FILE* fp;
+	fp = fopen(PATH_BITMAP, "r+");
+
+	if(fp == NULL){
+		fp = fopen(PATH_BITMAP, "w+");
+		if(fp == NULL){
+			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+			exit(1);
+		}
+	}
+
+	//Calculo el tamanio del bitarray del bitmap
+	int tamanio_bitmap = BLOCK_COUNT / 8; //esto es xq nosotros nos manejamos con bytes
+	void* bitarray = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_memoria, 0);
+	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
+
+
+
+/*
 	int tamanio_bitmap = BLOCK_COUNT / 8;
 
 	//mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
@@ -119,7 +95,7 @@ void crear_bitmap(){
 	msync(bitmap->bitarray, tamanio_bitmap, MS_SYNC);
 	log_info(logger, "Se guardó en msync");
 	//bitarray_set_bit(bitmap, off_t bit_index);
-/*
+
 	for(int i = 0; i < BLOCK_COUNT; i++){
 		ARRAY_BITMAP[i] = 0;
 	}
@@ -129,9 +105,26 @@ void crear_bitmap(){
 
 void crear_archivo_de_bloques(){
 
+	//Primero deberia leer el archivo y en caso de que no este creado crearlo
+	FILE* fp;
+	fp = fopen(PATH_BLOQUES, "r+");
+
+	if(fp == NULL){
+		fp = fopen(PATH_BLOQUES, "w+");
+		if(fp == NULL){
+			log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
+			exit(1);
+		}
+	}
+
+	//X AHORA QUEDA HASTA ACA CHECKPOINT 3
+
+	/*
+
+	//Ver que onda despues con esto
 	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
 	ARRAY_BLOQUES= malloc(TAMANIO);
-	/*
+
 	for(int i = 0; i < TAMANIO; i++){
 		//ARRAY_BLOQUES[i] = malloc();
 		strcpy(ARRAY_BLOQUES[i], "");
@@ -143,7 +136,7 @@ void crear_archivo_de_bloques(){
 void levantar_archivos(){
 	leer_superbloque();
 	crear_bitmap();
-	//crear_archivo_de_bloques();
+	crear_archivo_de_bloques();
 }
 
 void terminar_programa(){
