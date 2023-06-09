@@ -79,7 +79,7 @@ void crear_bitmap(){
 	}
 
 	//Calculo el tamanio del bitarray del bitmap
-	int tamanio_bitmap = BLOCK_COUNT / 8; //esto es xq nosotros nos manejamos con bytes
+	int tamanio_bitmap = ceil(BLOCK_COUNT / 8); //esto es xq nosotros nos manejamos con bytes
 	void* bitarray = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_memoria, 0);
 	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
 
