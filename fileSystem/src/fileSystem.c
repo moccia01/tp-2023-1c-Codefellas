@@ -67,24 +67,19 @@ void crear_bitmap(){
 	//Primero deberia leer el archivo y en caso de que no este creado crearlo
 	//Datos utiles, r+ abre un archivo EXISTENTE en read write, w+ crea un archivo y lo abre en read write
 
-	FILE* fp;
-	fp = fopen(PATH_BITMAP, "r+");
+	int fd = open(PATH_BITMAP, O_CREAT | O_RDWR);
 
-	if(fp == NULL){
-		fp = fopen(PATH_BITMAP, "w+");
-		if(fp == NULL){
-			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
-			exit(1);
-		}
+	if(fd == -1){
+		log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+		exit(1);
 	}
 
 	//Calculo el tamanio del bitarray del bitmap
 	int tamanio_bitmap = ceil(BLOCK_COUNT / 8); //esto es xq nosotros nos manejamos con bytes
 
-	void* bitarray = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_memoria, 0);
+	char* bitarray = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd_memoria, 0);
 
 	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
-
 
 
 /*
@@ -108,15 +103,11 @@ void crear_bitmap(){
 void crear_archivo_de_bloques(){
 
 	//Primero deberia leer el archivo y en caso de que no este creado crearlo
-	FILE* fp;
-	fp = fopen(PATH_BLOQUES, "r+");
+	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
 
-	if(fp == NULL){
-		fp = fopen(PATH_BLOQUES, "w+");
-		if(fp == NULL){
-			log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
-			exit(1);
-		}
+	if(fd == -1){
+		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
+		exit(1);
 	}
 
 	//X AHORA QUEDA HASTA ACA CHECKPOINT 3

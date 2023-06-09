@@ -1,7 +1,8 @@
 #ifndef FILESYSTEM_H_
 #define FILESYSTEM_H_
 
-//#include <fcntl.h> //Esta libreria es para la funcion open
+#include <fcntl.h> //Esta libreria es para la funcion open
+#include <sys/stat.h>
 #include <math.h>
 #include <string.h>
 #include <commons/log.h>
