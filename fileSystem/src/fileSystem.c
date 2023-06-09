@@ -74,7 +74,8 @@ void crear_bitmap(){
 		fd = open(PATH_BITMAP, O_CREAT);
 		log_info(logger, "fd: %d", fd);
 		//lleno de 0s el bitarray
-		int tamanio_bitmap = ceil(BLOCK_COUNT/8);
+//		int tamanio_bitmap = ceil(BLOCK_COUNT/8);
+		int tamanio_bitmap = 8;
 		char bitarray[tamanio_bitmap]; 				//TODO: asignar a tamanio bitmap un valor bajo para debbuguear y chequear si el resto funciona
 
 		for(int i = 0; i < tamanio_bitmap; i++){
