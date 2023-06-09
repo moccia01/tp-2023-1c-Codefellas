@@ -19,7 +19,7 @@ t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
 t_config* superbloque;
-t_bitarray* bitmap;
+t_bitarray* bitmap; //Esta nombrado asi xq basicamente el bitmap tiene el bitarray y nada mas
 FILE *bloques;
 
 // Variables del config
