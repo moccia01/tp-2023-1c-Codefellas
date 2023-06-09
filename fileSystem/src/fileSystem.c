@@ -70,46 +70,69 @@ void crear_bitmap(){
 		fd = open(PATH_BITMAP, O_RDWR);
 	}
 	else{
-		fd = -1;
-
-	}
-
-	if(fd == -1){
-		// El archivo no existe o no se pudo abrir, se puede crear durante la ejecución
+		// El archivo no existe entonces lo creo y lo cierro, puede que esto se borre y sea innecesario
 		fd = open(PATH_BITMAP, O_CREAT, S_IRUSR | S_IWUSR);
 
 		if(fd == -1){
 			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
 			exit(1);
 		}
+		close(fd);
 
-		log_info(logger, "fd: %d", fd);
-		//lleno de 0s el bitarray
-		int tamanio_bitmap = ceil(BLOCK_COUNT/8.0);
-		//int tamanio_bitmap = 8;
-		char bitarray[tamanio_bitmap]; 				//TODO: asignar a tamanio bitmap un valor bajo para debbuguear y chequear si el resto funciona
-
-		for(int i = 0; i < tamanio_bitmap; i++){
-			bitarray[i] = '0'; // Cambiado a asignación de caracteres
+		// Abro el archivo en modo escritura/lectura
+		fd = open(PATH_BITMAP, O_RDWR);
+		// Pruebo si este programa tiene problemas para abrir esto, eclipse, no el codigo
+		if(fd == -1){
+			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+			exit(1);
 		}
-
-		char* bitarray_p = malloc((strlen(bitarray) + 1) * sizeof(char));
-
-		strcpy(bitarray_p, bitarray);
-		write(fd, bitarray, sizeof(bitarray));
-		//write(fd, &bitarray_p, strlen(bitarray_p + 1));
-		bitmap = bitarray_create_with_mode(bitarray_p, tamanio_bitmap, LSB_FIRST);
-		void* mmap_funciono = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-		if(mmap_funciono == MAP_FAILED){
-			log_error(logger, "Error ejecutando mmap. ");
-			close(fd);
-			return;
-		}
-		//free(bitarray_p);
 	}
 
-	close(fd);
+	log_info(logger, "fd: %d", fd);
+
+	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
+	//int tamanio_bitmap = (BLOCK_COUNT + 7) / 8;
+	char bitarray[tamanio_bitmap]; 				//TODO: asignar a tamanio bitmap un valor bajo para debbuguear y chequear si el resto funciona
+	int tamanio_bitarray = sizeof(bitarray);
+	//lleno de 0s el bitarray
+	memset(bitarray, 0, tamanio_bitmap);
+	log_info(logger, "El bitarray en la pos %d tiene: %d", tamanio_bitarray - 1, bitarray[tamanio_bitmap]);	// Solo tiene un 0 la primer pos, el resto no, raro
+//	for(int i = 0; i < tamanio_bitmap; i++){
+//		bitarray[i] = '0'; // Cambiado a asignación de caracteres
+//	}
+
+//	char* bitarray_p = malloc((strlen(bitarray) + 1) * sizeof(char));
+//
+//	strcpy(bitarray_p, bitarray);
+//	write(fd, bitarray, sizeof(bitarray));
+	//write(fd, &bitarray_p, strlen(bitarray_p + 1));
+//	bitmap = bitarray_create_with_mode(bitarray_p, tamanio_bitmap, LSB_FIRST);
+	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
+
+	if (bitmap == NULL) {
+		log_error(logger, "Error al crear el bitarray.");
+        close(fd);
+        exit(1);
+    }
+
+	// Mapea el archivo en memoria
+	void* mmap_funciono = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if(mmap_funciono == MAP_FAILED){
+		log_error(logger, "Error ejecutando mmap.");
+		close(fd);
+		return;
+	}
+
+	// Esta parte puede que ni vaya por el momento
+    // Copia los bits del bitarray al mapeo en memoria
+    memcpy(mmap_funciono, bitmap->bitarray, tamanio_bitmap);
+	//free(bitarray_p);
+
+    // Liberar recursos
+    munmap(mmap_funciono, tamanio_bitmap);
+    bitarray_destroy(bitmap);
+    close(fd);
 
 }
 
