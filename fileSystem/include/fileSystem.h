@@ -39,25 +39,16 @@ int socket_cliente;
 int fd_memoria;
 char* server_name;
 
-//Variables del superbloque
+// Variables del superbloque
 int BLOCK_SIZE;
 int BLOCK_COUNT;
 
-//Variable del bitmap
+// Variable del bitmap
 int* ARRAY_BITMAP;
 
-//Variable de archivo de bloques
+// Variable de archivo de bloques
 int TAMANIO;
 char* ARRAY_BLOQUES;
-/*
-typedef enum{
-	PROT_READ,
-	PROT_WRITE,
-	MAP_SHARED,
-	MAP_FAILED,
-} t_modos_mmap;
-*/
-
 
 void leer_config();
 void levantar_archivos();
@@ -80,9 +71,9 @@ typedef struct{
 	uint32_t puntero_directo;
 	uint32_t puntero_indirecto;
 }fcb;
-
+/*
 typedef struct{
 
 }t_bloque;
-
+*/
 #endif /* FILESYSTEM_H_ */

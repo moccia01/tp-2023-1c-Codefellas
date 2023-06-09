@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	}
 	leer_config();
 
-	levantar_archivos();	//TODO Levantar los archivos de manera correcta, no basta con fopen https://linuxhint.com/using_mmap_function_linux/
+	levantar_archivos();
 	//inicializar_variables();
 
 	// Conecto CPU con memoria
@@ -48,7 +48,6 @@ void inicializar_variables(){
 	//ARRAY_BITMAP[BLOCK_COUNT];
 }
 
-//ESTA DE ABAJO YA ESTA TERMINADA
 void leer_superbloque(){
 
 	superbloque = config_create(PATH_SUPERBLOQUE);
@@ -71,30 +70,46 @@ void crear_bitmap(){
 		fd = open(PATH_BITMAP, O_RDWR);
 	}
 	else{
-		fd = open(PATH_BITMAP, O_CREAT);
+		fd = -1;
+
+	}
+
+	if(fd == -1){
+		// El archivo no existe o no se pudo abrir, se puede crear durante la ejecución
+		fd = open(PATH_BITMAP, O_CREAT, S_IRUSR | S_IWUSR);
+
+		if(fd == -1){
+			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+			exit(1);
+		}
+
 		log_info(logger, "fd: %d", fd);
 		//lleno de 0s el bitarray
-//		int tamanio_bitmap = ceil(BLOCK_COUNT/8);
-		int tamanio_bitmap = 8;
+		int tamanio_bitmap = ceil(BLOCK_COUNT/8.0);
+		//int tamanio_bitmap = 8;
 		char bitarray[tamanio_bitmap]; 				//TODO: asignar a tamanio bitmap un valor bajo para debbuguear y chequear si el resto funciona
 
 		for(int i = 0; i < tamanio_bitmap; i++){
-			strcpy(&bitarray[i], "0");
+			bitarray[i] = '0'; // Cambiado a asignación de caracteres
 		}
 
 		char* bitarray_p = malloc((strlen(bitarray) + 1) * sizeof(char));
 
 		strcpy(bitarray_p, bitarray);
-
+		write(fd, bitarray, sizeof(bitarray));
+		//write(fd, &bitarray_p, strlen(bitarray_p + 1));
 		bitmap = bitarray_create_with_mode(bitarray_p, tamanio_bitmap, LSB_FIRST);
+		void* mmap_funciono = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
+		if(mmap_funciono == MAP_FAILED){
+			log_error(logger, "Error ejecutando mmap. ");
+			close(fd);
+			return;
+		}
 		//free(bitarray_p);
 	}
 
-	if(fd == -1){
-		log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
-		exit(1);
-	}
+	close(fd);
 
 }
 
