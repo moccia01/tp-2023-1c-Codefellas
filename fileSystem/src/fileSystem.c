@@ -66,6 +66,12 @@ void crear_bitmap(){
 	//Primero deberia leer el archivo y en caso de que no este creado crearlo
 	int fd;
 
+//    fd = open(PATH_BITMAP, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+//    if (fd == -1) {
+//        log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+//        exit(1);
+//    }
+
 	if(access(PATH_BITMAP, F_OK) != -1){
 		fd = open(PATH_BITMAP, O_RDWR);
 	}
@@ -74,7 +80,7 @@ void crear_bitmap(){
 		fd = open(PATH_BITMAP, O_CREAT, S_IRUSR | S_IWUSR);
 
 		if(fd == -1){
-			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+			log_error(logger, "Hubo un problema creando el archivo de bitmap >:(");
 			exit(1);
 		}
 		close(fd);
@@ -83,16 +89,16 @@ void crear_bitmap(){
 		fd = open(PATH_BITMAP, O_RDWR);
 		// Pruebo si este programa tiene problemas para abrir esto, eclipse, no el codigo
 		if(fd == -1){
-			log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
+			log_error(logger, "Hubo un problema abriendo el archivo de bitmap >:(");
 			exit(1);
 		}
 	}
 
 	log_info(logger, "fd: %d", fd);
 
-	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
-	//int tamanio_bitmap = (BLOCK_COUNT + 7) / 8;
-	char bitarray[tamanio_bitmap]; 				//TODO: asignar a tamanio bitmap un valor bajo para debbuguear y chequear si el resto funciona
+	//int tamanio_bitmap = ceil(BLOCK_COUNT/8);
+	int tamanio_bitmap = (BLOCK_COUNT + 7) / 8;
+	char bitarray[tamanio_bitmap];
 	int tamanio_bitarray = sizeof(bitarray);
 	//lleno de 0s el bitarray
 	memset(bitarray, 0, tamanio_bitmap);
@@ -107,13 +113,6 @@ void crear_bitmap(){
 //	write(fd, bitarray, sizeof(bitarray));
 	//write(fd, &bitarray_p, strlen(bitarray_p + 1));
 //	bitmap = bitarray_create_with_mode(bitarray_p, tamanio_bitmap, LSB_FIRST);
-	bitmap = bitarray_create_with_mode(bitarray, tamanio_bitmap, LSB_FIRST);
-
-	if (bitmap == NULL) {
-		log_error(logger, "Error al crear el bitarray.");
-        close(fd);
-        exit(1);
-    }
 
 	// Mapea el archivo en memoria
 	void* mmap_funciono = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -122,6 +121,14 @@ void crear_bitmap(){
 		log_error(logger, "Error ejecutando mmap.");
 		close(fd);
 		return;
+	}
+
+	bitmap = bitarray_create_with_mode(mmap_funciono, tamanio_bitmap, LSB_FIRST);
+
+	if (bitmap == NULL) {
+		log_error(logger, "Error al crear el bitarray.");
+	    close(fd);
+	    exit(1);
 	}
 
 	// Esta parte puede que ni vaya por el momento
