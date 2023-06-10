@@ -673,3 +673,28 @@ int recv_base_segmento(int fd_modulo){
 	list_destroy(paquete);
 	return *base;
 }
+
+char* recv_nombre_archivo(int fd_modulo){
+	t_list* paquete = recibir_paquete(fd_modulo);
+	char* nombre_archivo = list_get(paquete, 0);
+	list_destroy(paquete);
+	return nombre_archivo;
+}
+
+void send_confirmacion_archivo_creado(int fd_modulo){
+	t_paquete* paquete = crear_paquete(ARCHIVO_CREADO);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+void send_confirmacion_archivo_abierto(int fd_modulo){
+	t_paquete* paquete = crear_paquete(ARCHIVO_ABIERTO);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+void send_aviso_archivo_inexistente(int fd_modulo){
+	t_paquete* paquete = crear_paquete(ARCHIVO_INEXISTENTE);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}

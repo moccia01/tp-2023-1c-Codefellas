@@ -63,82 +63,52 @@ void leer_superbloque(){
 
 void crear_bitmap(){
 
-	//Primero deberia leer el archivo y en caso de que no este creado crearlo
 	int fd;
-
-//    fd = open(PATH_BITMAP, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-//    if (fd == -1) {
-//        log_error(logger, "Hubo un problema creando o abriendo el archivo de bitmap >:(");
-//        exit(1);
-//    }
+	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
 
 	if(access(PATH_BITMAP, F_OK) != -1){
 		fd = open(PATH_BITMAP, O_RDWR);
+		void* buffer = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		bitmap = bitarray_create_with_mode(buffer, tamanio_bitmap, LSB_FIRST);
 	}
 	else{
 		// El archivo no existe entonces lo creo y lo cierro, puede que esto se borre y sea innecesario
-		fd = open(PATH_BITMAP, O_CREAT, S_IRUSR | S_IWUSR);
+		fd = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
 		if(fd == -1){
 			log_error(logger, "Hubo un problema creando el archivo de bitmap >:(");
 			exit(1);
 		}
-		close(fd);
 
-		// Abro el archivo en modo escritura/lectura
-		fd = open(PATH_BITMAP, O_RDWR);
-		// Pruebo si este programa tiene problemas para abrir esto, eclipse, no el codigo
-		if(fd == -1){
-			log_error(logger, "Hubo un problema abriendo el archivo de bitmap >:(");
-			exit(1);
+		log_info(logger, "fd: %d", fd);
+
+		char bitarray[tamanio_bitmap];
+		//lleno de 0s el bitarray
+		memset(bitarray, 0, tamanio_bitmap);
+
+		// Mapea el archivo en memoria
+		void* buffer = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+		if(buffer == MAP_FAILED){
+			log_error(logger, "Error ejecutando mmap.");
+			close(fd);
+			return;
 		}
+
+		bitmap = bitarray_create_with_mode(buffer, tamanio_bitmap, LSB_FIRST);
+
+		msync(bitmap->bitarray, tamanio_bitmap, MS_SYNC);
+
+		write(fd, bitmap->bitarray, sizeof(bitarray));
 	}
-
-	log_info(logger, "fd: %d", fd);
-
-	//int tamanio_bitmap = ceil(BLOCK_COUNT/8);
-	int tamanio_bitmap = (BLOCK_COUNT + 7) / 8;
-	char bitarray[tamanio_bitmap];
-	int tamanio_bitarray = sizeof(bitarray);
-	//lleno de 0s el bitarray
-	memset(bitarray, 0, tamanio_bitmap);
-	log_info(logger, "El bitarray en la pos %d tiene: %d", tamanio_bitarray - 1, bitarray[tamanio_bitmap]);	// Solo tiene un 0 la primer pos, el resto no, raro
-//	for(int i = 0; i < tamanio_bitmap; i++){
-//		bitarray[i] = '0'; // Cambiado a asignación de caracteres
-//	}
-
-//	char* bitarray_p = malloc((strlen(bitarray) + 1) * sizeof(char));
-//
-//	strcpy(bitarray_p, bitarray);
-//	write(fd, bitarray, sizeof(bitarray));
-	//write(fd, &bitarray_p, strlen(bitarray_p + 1));
-//	bitmap = bitarray_create_with_mode(bitarray_p, tamanio_bitmap, LSB_FIRST);
-
-	// Mapea el archivo en memoria
-	void* mmap_funciono = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-	if(mmap_funciono == MAP_FAILED){
-		log_error(logger, "Error ejecutando mmap.");
-		close(fd);
-		return;
-	}
-
-	bitmap = bitarray_create_with_mode(mmap_funciono, tamanio_bitmap, LSB_FIRST);
-
-	if (bitmap == NULL) {
-		log_error(logger, "Error al crear el bitarray.");
-	    close(fd);
-	    exit(1);
-	}
-
 	// Esta parte puede que ni vaya por el momento
     // Copia los bits del bitarray al mapeo en memoria
-    memcpy(mmap_funciono, bitmap->bitarray, tamanio_bitmap);
-	//free(bitarray_p);
-
-    // Liberar recursos
-    munmap(mmap_funciono, tamanio_bitmap);
-    bitarray_destroy(bitmap);
+//    memcpy(mmap_funciono, bitmap->bitarray, tamanio_bitmap);
+//	//free(bitarray_p);
+//
+//    // Liberar recursos
+//    munmap(mmap_funciono, tamanio_bitmap);
+//    bitarray_destroy(bitmap);
     close(fd);
 
 }
@@ -184,6 +154,8 @@ void terminar_programa(){
 
 static void procesar_conexion() {
 	op_code cop;
+	char* nombre_archivo;
+
 	while (socket_cliente != -1) {
         if (recv(socket_cliente, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
             log_info(logger, "El cliente se desconecto de %s server", server_name);
@@ -194,8 +166,14 @@ static void procesar_conexion() {
 			recibir_mensaje(logger, socket_cliente);
 			break;
 		case MANEJAR_F_OPEN:
+			nombre_archivo = recv_nombre_archivo(socket_cliente);
+			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
+			manejar_f_open(nombre_archivo);
 			break;
 		case MANEJAR_F_CREATE:
+			nombre_archivo = recv_nombre_archivo(socket_cliente);
+			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
+			manejar_f_create(nombre_archivo);
 			break;
 		case MANEJAR_F_TRUNCATE:
 			break;
@@ -221,4 +199,28 @@ void server_escuchar() {
 		log_info(logger, "Hubo un error en la conexion del %s", server_name);
 	}
 	procesar_conexion();
+}
+
+bool existe_fcb(char* nombre_archivo){
+	//TODO Hacer esta funcion
+	return true;
+}
+
+void manejar_f_open(char* nombre_archivo){
+
+	if(existe_fcb(nombre_archivo)){
+		send_confirmacion_archivo_abierto(socket_cliente);
+	} else{
+		send_aviso_archivo_inexistente(socket_cliente);
+	}
+}
+
+void manejar_f_create(char* nombre_archivo){
+
+	fcb *nuevo_fcb = malloc(sizeof(fcb));
+	//strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);	//TODO Tira un warning, dice que no se inicializo
+	nuevo_fcb->tamanio_archivo = 0;
+	nuevo_fcb->puntero_directo = 0;
+	nuevo_fcb->puntero_indirecto = 0;
+	send_confirmacion_archivo_creado(socket_cliente);
 }

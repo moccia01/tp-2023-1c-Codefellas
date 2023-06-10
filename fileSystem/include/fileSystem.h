@@ -64,6 +64,14 @@ void crear_archivo_de_bloques();
 static void procesar_conexion();
 void server_escuchar();
 
+// Operaciones
+bool existe_fcb(char* nombre_archivo);
+void manejar_f_open(char* nombre_archivo);
+void manejar_f_create(char* nombre_archivo);
+void manejar_f_truncate(char* nombre_archivo, int tamanio);
+void manejar_f_read(char* nombre_archivo, int dir_logica, int tamanio);	//Chequear
+void manejar_f_write(char* nombre_archivo, int dir_logica, int tamanio); //Chequear
+
 // Estructuras
 typedef struct{
 	char* nombre_archivo;
@@ -71,9 +79,10 @@ typedef struct{
 	uint32_t puntero_directo;
 	uint32_t puntero_indirecto;
 }fcb;
-/*
-typedef struct{
 
+typedef struct{
+	char* contenido;
+	uint32_t* punteros;
 }t_bloque;
-*/
+
 #endif /* FILESYSTEM_H_ */

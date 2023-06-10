@@ -44,6 +44,9 @@ typedef enum{
 	PEDIDO_LECTURA_FS,
 	PEDIDO_ESCRITURA_CPU,
 	PEDIDO_ESCRITURA_FS,
+	ARCHIVO_ABIERTO,
+	ARCHIVO_INEXISTENTE,
+	ARCHIVO_CREADO,
 }op_code;
 
 typedef struct{
@@ -107,6 +110,10 @@ void send_inicializar_proceso(int pid, int fd_modulo);
 void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo);
 void send_terminar_proceso(int pid, int fd_modulo);
 void send_base_segmento(int base, int fd_modulo);
+//void send_confirmacion(int fd_modulo);
+void send_confirmacion_archivo_creado(int fd_modulo);
+void send_confirmacion_archivo_abierto(int fd_modulo);
+void send_aviso_archivo_inexistente(int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -123,6 +130,7 @@ int recv_inicializar_proceso(int fd_modulo);
 t_list* recv_proceso_inicializado(int fd_modulo);
 int recv_terminar_proceso(int fd_modulo);
 int recv_base_segmento(int fd_modulo);
+char* recv_nombre_archivo(int fd_modulo);
 
 // Destroyers
 void contexto_destroyer(t_contexto_ejecucion* contexto);

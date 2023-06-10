@@ -411,7 +411,7 @@ void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){
 
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_nombre_f_open(nombre_archivo, socket_cliente);;
+	send_nombre_f_open(nombre_archivo, socket_cliente);
 }
 
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
