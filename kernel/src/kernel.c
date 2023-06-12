@@ -237,7 +237,6 @@ void procesar_conexion(void* void_args) {
 				manejar_io(pcb, tiempo);
 				break;
 			case MANEJAR_WAIT:
-				log_info(logger, "el valor del ax es: %s", pcb->contexto_de_ejecucion->registros->ax);
 				char* recurso_wait = recv_recurso(cliente_socket);
 				manejar_wait(pcb, recurso_wait);
 				free(recurso_wait);
@@ -269,8 +268,11 @@ void procesar_conexion(void* void_args) {
 					segmento_nuevo->base = base_nuevo_segmento;
 					list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
 					log_info(logger, "segmento creado, continuando ejecucion");
+					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 					break;
 				case OUT_OF_MEM:
+					log_info(logger, "memoria insuficiente para la creacion del segmento");
 					pcb->contexto_de_ejecucion->motivo_exit = OUT_OF_MEMORY;
 					safe_pcb_add(cola_exit, pcb, &mutex_cola_exit);
 					sem_post(&sem_exit);
@@ -288,11 +290,11 @@ void procesar_conexion(void* void_args) {
 //					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 //					actualizar_ts_de_pcbs(lista_ts_wrappers);
 //					 - mandarle memoria aviso de create_segment.
+					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 					break;
 				default: log_info(logger, "no entendi el segment response de memoria"); break;
 				}
-				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 				break;
 			case MANEJAR_DELETE_SEGMENT:
 				t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
