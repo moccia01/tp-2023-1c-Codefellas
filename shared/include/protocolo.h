@@ -45,6 +45,8 @@ typedef enum{
 	ARCHIVO_ABIERTO,
 	ARCHIVO_INEXISTENTE,
 	ARCHIVO_CREADO,
+	INICIAR_COMPACTACION,
+	TS_WRAPPERS,
 }op_code;
 
 typedef struct{
@@ -84,6 +86,8 @@ void empaquetar_registro_contexto(t_paquete* paquete, t_registros* registros);
 t_registros* desempaquetar_registros(t_list* paquete, int comienzo);
 void empaquetar_segmento(t_paquete* paquete, t_segmento* segmento);
 t_segmento* desempaquetar_segmento(t_list* paquete, int comienzo);
+void empaquetar_ts_wrappers(t_paquete* paquete, t_list* ts_wrappers);
+t_list* desempaquetar_ts_wrappers(t_list* paquete, int comienzo);
 
 //Sends
 void send_instrucciones(int fd_modulo, t_list* lista_de_instrucciones);
@@ -113,6 +117,8 @@ void send_base_segmento(int base, int fd_modulo);
 void send_confirmacion_archivo_creado(int fd_modulo);
 void send_confirmacion_archivo_abierto(int fd_modulo);
 void send_aviso_archivo_inexistente(int fd_modulo);
+void send_iniciar_compactacion(int fd_modulo);
+void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -130,6 +136,8 @@ t_list* recv_proceso_inicializado(int fd_modulo);
 int recv_terminar_proceso(int fd_modulo);
 int recv_base_segmento(int fd_modulo);
 char* recv_nombre_archivo(int fd_modulo);
+void recv_iniciar_compactacion(int fd_modulo);
+t_list* recv_ts_wrappers(int fd_modulo);
 
 // Destroyers
 void contexto_destroyer(t_contexto_ejecucion* contexto);

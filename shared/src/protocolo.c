@@ -704,3 +704,68 @@ void send_aviso_archivo_inexistente(int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
+
+void send_iniciar_compactacion(int fd_modulo){
+	t_paquete* paquete = crear_paquete(INICIAR_COMPACTACION);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+void recv_iniciar_compactacion(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != INICIAR_COMPACTACION){
+		return;
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	list_destroy(paquete);
+}
+
+void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo){
+	t_paquete* paquete = crear_paquete(TS_WRAPPERS);
+	empaquetar_ts_wrappers(paquete, ts_wrappers);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+t_list* recv_ts_wrappers(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != TS_WRAPPERS){
+		return NULL;
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	t_list* ts_wrappers = desempaquetar_ts_wrappers(paquete, 0);
+	list_destroy(paquete);
+	return ts_wrappers;
+}
+
+void empaquetar_ts_wrappers(t_paquete* paquete, t_list* ts_wrappers){
+	int cantidad_wrappers = list_size(ts_wrappers);
+	agregar_a_paquete(paquete, &cantidad_wrappers, sizeof(int));
+	for(int i = 0; i < cantidad_wrappers; i++){
+		ts_wrapper* wrapper = list_get(ts_wrappers, i);
+		agregar_a_paquete(paquete, &(wrapper->pid), sizeof(int));
+		empaquetar_tabla_segmentos(paquete, wrapper->tabla_de_segmentos);
+	}
+}
+
+t_list* desempaquetar_ts_wrappers(t_list* paquete, int comienzo){
+	t_list* lista_ts_wrappers = list_create();
+	int* cantidad_wrappers = list_get(paquete, comienzo);
+	int i = comienzo + 1;
+	while(i - comienzo - 1 < *(cantidad_wrappers) * 2){
+		ts_wrapper* wrapper = malloc(sizeof(ts_wrapper));
+
+		int* pid = list_get(paquete, i);
+		wrapper->pid = *pid;
+		i++;
+
+		t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, i);
+		wrapper->tabla_de_segmentos = tabla_segmentos;
+		i++; // int cant_segmentos empaquetado
+		i+=list_size(tabla_segmentos)*3; // i+=3 por cada segmento
+
+		list_add(lista_ts_wrappers, wrapper);
+	}
+	free(cantidad_wrappers);
+	return lista_ts_wrappers;
+}

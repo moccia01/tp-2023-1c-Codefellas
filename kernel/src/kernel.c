@@ -279,17 +279,15 @@ void procesar_conexion(void* void_args) {
 					sem_post(&sem_exec);
 					break;
 				case COMPACT:
-//				en caso de compactacion:
-//		        	 - usar semaforo para verificar si se esta ejecutando
-//				operacion de filesystem-memoria -> sem_wait(&ongoing_fs_mem_op); (?)
 					sem_wait(&ongoing_fs_mem_op);
 //					 - avisar a memoria que compacte.
+					send_iniciar_compactacion(fd_memoria);
 //					 - recibir de memoria las tablas de segmentos actualizadas post compact
-//					 - recibir lista de listas de segmento (lista cada tablas de segmento de cada pcb)
-//					t_list* lista_ts_wrappers = recv_ts_post_compact(fd_memoria);
+//					t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
 //					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
-//					actualizar_ts_de_pcbs(lista_ts_wrappers);
+//					actualizar_ts_de_pcbs(ts_wrappers);
 //					 - mandarle memoria aviso de create_segment.
+//					manejar_create_segment() .-.
 					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 					break;
@@ -482,10 +480,8 @@ void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb,
 	pthread_mutex_lock(mutex_cola);
 	for (int i = 0; i < list_size(lista_pcb); i++){
 		t_pcb* pcb = list_get(lista_pcb, i);
-		int pid = pcb->contexto_de_ejecucion->pid;
-		t_list* ts_actualizada = get_ts_from_pid(pid, lista_ts_wrappers);
-		memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, ts_actualizada, sizeof(t_segmento) * list_size(ts_actualizada));
-		list_destroy(ts_actualizada); //puede q aca vaya list_destroy_and_destroy_elements
+		t_list* ts_actualizada = get_ts_from_pid(pcb->contexto_de_ejecucion->pid, lista_ts_wrappers);
+		pcb->contexto_de_ejecucion->tabla_de_segmentos = ts_actualizada;
 	}
 	pthread_mutex_unlock(mutex_cola);
 }
@@ -497,6 +493,7 @@ t_list* get_ts_from_pid(int pid, t_list* lista_ts_wrappers){
 			return wrapper->tabla_de_segmentos;
 		}
 	}
+	log_info(logger, "no encontre el pid en la lista_ts_wrappers");
 	return NULL;
 }
 // ------------------ PLANIFICACION ------------------

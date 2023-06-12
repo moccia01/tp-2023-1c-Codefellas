@@ -101,6 +101,9 @@ static void procesar_conexion(void *void_args) {
 				log_info(logger, "hay q compactar");
 				send_segment_response(verificacion_espacio, cliente_socket);
 				// esperar a que kernel de el ok para compactar y recien ahi compactar
+				recv_iniciar_compactacion(cliente_socket);
+//				compactar();
+//				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
 				break;
 			}
 			break;
