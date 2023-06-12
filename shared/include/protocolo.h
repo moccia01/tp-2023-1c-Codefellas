@@ -34,8 +34,6 @@ typedef enum{
 	MANEJAR_MOV_IN,
 	MANEJAR_MOV_OUT,
 	TABLA_SEGMENTOS,
-	CONSULTAR_TABLA_SEGMENTOS,
-	CONSULTAR_SEGMENTO,
 	INICIALIZAR_PROCESO,
 	FINALIZAR_PROCESO,
 	BASE_SEGMENTO,
@@ -101,9 +99,10 @@ void send_nombre_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes
 void send_nombre_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, int fd_modulo);
 void send_nombre_f_wait(char* nombre_archivo, int fd_modulo);
 void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo);
-void send_create_segment(int id_segmento, int tamanio, int fd_modulo);
+void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo);
 void send_segment_response(t_segment_response resp, int fd_modulo);
-void send_delete_segment(int id_segmento, int fd_modulo);
+void send_delete_segment(int pid, int id_segmento, int fd_modulo);
+void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo);
 void send_leer_valor(int dir_fisica, int fd_modulo);
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
 void send_inicializar_proceso(int pid, int fd_modulo);
@@ -124,7 +123,7 @@ char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
 t_list* recv_create_segment(int fd_modulo);
 t_segment_response recv_segment_response(int fd_modulo);
-int recv_delete_segment(int fd_modulo);
+t_list* recv_delete_segment(int fd_modulo);
 t_list* recv_tabla_segmentos(int fd_modulo);
 int recv_inicializar_proceso(int fd_modulo);
 t_list* recv_proceso_inicializado(int fd_modulo);

@@ -253,17 +253,22 @@ void procesar_conexion(void* void_args) {
 				int* id_segmento = list_get(create_sgm_params, 0);
 				int* tamanio = list_get(create_sgm_params, 1);
 //				mandarle a memoria aviso de create_segment
-				send_create_segment(*id_segmento, *tamanio, fd_memoria);
+				log_info(logger, "manejo create_segment");
+				send_create_segment(pcb->contexto_de_ejecucion->pid, *id_segmento, *tamanio, fd_memoria);
 				list_destroy(create_sgm_params);
 //				recibir de memoria respuesta del create_segment
 				t_segment_response respuesta = recv_segment_response(fd_memoria);
+				log_info(logger, "recibi la respuesta de memoria");
 				switch(respuesta){
 				case SEGMENT_CREATED:
 					int base_nuevo_segmento = recv_base_segmento(fd_memoria);
-					// que pija hago con esto? lo agrego a la tabla para q no tire warning
+					log_info(logger, "recibi de memoria un segmento de base %d", base_nuevo_segmento);
 					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
+					segmento_nuevo->id = *id_segmento;
+					segmento_nuevo->tamanio = *tamanio;
 					segmento_nuevo->base = base_nuevo_segmento;
 					list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
+					log_info(logger, "segmento creado, continuando ejecucion");
 					break;
 				case OUT_OF_MEM:
 					pcb->contexto_de_ejecucion->motivo_exit = OUT_OF_MEMORY;
@@ -284,16 +289,19 @@ void procesar_conexion(void* void_args) {
 //					actualizar_ts_de_pcbs(lista_ts_wrappers);
 //					 - mandarle memoria aviso de create_segment.
 					break;
+				default: log_info(logger, "no entendi el segment response de memoria"); break;
 				}
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
-				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 				break;
 			case MANEJAR_DELETE_SEGMENT:
-				int id = recv_delete_segment(cliente_socket);
-				send_delete_segment(id, fd_memoria);
+				t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
+				int* id = list_get(delete_sgm_params, 0);
+				log_info(logger, "manejo delete_segment");
+				send_delete_segment(pcb->contexto_de_ejecucion->pid, *id, fd_memoria);
 				t_list* tabla_segmentos_actualizada = recv_tabla_segmentos(fd_memoria);
-				memcpy(pcb->contexto_de_ejecucion->tabla_de_segmentos, tabla_segmentos_actualizada, sizeof(t_segmento) * list_size(tabla_segmentos_actualizada));
-				list_destroy(tabla_segmentos_actualizada); // podria ir list_destroy_and_destroy_elements
+				log_info(logger, "recibi la ts actualizada de memoria de tamaño %d", list_size(tabla_segmentos_actualizada));
+				pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;

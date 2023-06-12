@@ -82,26 +82,36 @@ static void procesar_conexion(void *void_args) {
 			t_list* create_sgm_params = recv_create_segment(cliente_socket);
 			int* id = list_get(create_sgm_params, 0);
 			int* tamanio = list_get(create_sgm_params, 1);
-			int* pid = list_get(create_sgm_params, 2);
+			int* pid_cs = list_get(create_sgm_params, 2);
+			log_info(logger, "manejo create_segment");
 			t_segment_response verificacion_espacio = verificar_espacio_memoria(*tamanio);
 			switch(verificacion_espacio){
 			case SEGMENT_CREATED: //crear segmento
+				log_info(logger, "hay espacio contiguo para crear el segmento");
 				send_segment_response(verificacion_espacio, cliente_socket);
-				int direccion = crear_segmento_segun_algoritmo(*id, *tamanio, *pid);
+				int direccion = crear_segmento_segun_algoritmo(*id, *tamanio, *pid_cs);
+				log_info(logger, "se creo un segmento en la direccion %d", direccion);
 				send_base_segmento(direccion, cliente_socket);
 				break;
 			case OUT_OF_MEM:
+				log_info(logger, "no hay espacio contiguo para crear el segmento");
 				send_segment_response(verificacion_espacio, cliente_socket);
 				break;
 			case COMPACT:
+				log_info(logger, "hay q compactar");
 				send_segment_response(verificacion_espacio, cliente_socket);
 				// esperar a que kernel de el ok para compactar y recien ahi compactar
 				break;
 			}
 			break;
 		case MANEJAR_DELETE_SEGMENT:
-		//	deletear_segmento(*id, *base);
-			// send_segment_response(verificacion_espacio,cliente_socket);
+			t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
+			int* id_segmento = list_get(delete_sgm_params, 0);
+			int* pid_ds = list_get(delete_sgm_params, 1);
+			log_info(logger, "manejo delete_segment");
+			t_list* tabla_segmentos_actualizada = deletear_segmento(*id_segmento, *pid_ds);
+			log_info(logger, "mando tabla actualizada de tamaño %d", list_size(tabla_segmentos_actualizada));
+			send_tabla_segmentos(tabla_segmentos_actualizada, cliente_socket);
 			break;
 
 		case INICIALIZAR_PROCESO:
@@ -167,7 +177,6 @@ int server_escuchar(int server_socket) {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
-//TO-DO: ya se puede implementar
 	int tamanio_total=0;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -186,11 +195,17 @@ void inicializar_memoria(){
 	espacio_usuario = malloc(TAM_MEMORIA);
 
 	lista_ts_wrappers = list_create();
+	huecos_libres = list_create();
 
 	segmento_0 = malloc(sizeof(t_segmento));
 	segmento_0->base = 0;
 	segmento_0->id = 0;
 	segmento_0->tamanio = TAM_SEGMENTO_0;
+
+	t_hueco_memoria* hueco_libre_inicial = malloc(sizeof(t_hueco_memoria));
+	hueco_libre_inicial->base = TAM_SEGMENTO_0;
+	hueco_libre_inicial->tamanio = TAM_MEMORIA - TAM_SEGMENTO_0;
+	list_add(huecos_libres, hueco_libre_inicial);
 
 }
 
@@ -205,9 +220,10 @@ t_list* inicializar_proceso(int pid){
 	list_add(lista_ts_wrappers, wrapper);
 
 	// añadir el pid y su lista de escrituras
-	t_escrituras* escrituras = malloc(sizeof(t_escrituras));
-	escrituras->pid = pid;
-	escrituras->escrituras = list_create();
+//	t_escrituras* escrituras = malloc(sizeof(t_escrituras));
+//	escrituras->pid = pid;
+//	escrituras->escrituras = list_create();
+
 	return tabla_segmentos_inicial;
 }
 
@@ -215,12 +231,7 @@ t_list* inicializar_proceso(int pid){
 // cada proceso agregarle segmento_0
 
 void terminar_proceso(int pid){
-	eliminar_escrituras_de_proceso(pid);
 	eliminar_tabla_segmentos(pid);
-}
-
-void eliminar_escrituras_de_proceso(int pid){
-	//TODO: ya se puede implementar
 }
 
 void eliminar_tabla_segmentos(int pid){
@@ -338,28 +349,36 @@ void enviar_tabla_a_kernel(int pid, t_list *tabla_de_segmentos){
 }
 */
 
-void deletear_segmento(int pid, int base){
+t_list* deletear_segmento(int id_segmento, int pid){
+	int base;
 	int tamanio;
+	t_list* ts_actualizada;
 	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
 		ts_wrapper *ts_proceso = list_get(lista_ts_wrappers, i);
 		if(ts_proceso->pid==pid){
+			ts_actualizada = ts_proceso->tabla_de_segmentos;
 			for(int j = 0; j < list_size(ts_proceso->tabla_de_segmentos); j++){
 				t_segmento *segmento = list_get(ts_proceso->tabla_de_segmentos, j);
-				if(segmento->base == base){
-					tamanio = segmento -> tamanio;
-					list_remove_element(ts_proceso->tabla_de_segmentos, segmento);
+				if(segmento->id == id_segmento){
+					base = segmento->base;
+					tamanio = segmento->tamanio;
+					list_remove(ts_proceso->tabla_de_segmentos, j);
 				}
 			}
 		}
 	}
 	agregar_hueco_libre(base, tamanio);
-	return;
+	return ts_actualizada;
 	//estas deleteado papaaa
 }
 
 void agregar_hueco_libre(int base, int tamanio){
 	t_segmento *aux = NULL;
 	int i;
+	t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
+	hueco_nuevo -> base = base;
+	hueco_nuevo -> tamanio = tamanio;
+
 	for(i=0 ; i < list_size(huecos_libres); i++){
 		t_segmento *segmento = list_get(huecos_libres, i);
 		if(segmento->base < base){
@@ -368,20 +387,26 @@ void agregar_hueco_libre(int base, int tamanio){
 		else
 			break;
 	}
-	if(aux->base + aux->tamanio == base){
-		aux->tamanio += tamanio;
-	}
-	else{
-		t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
-		hueco_nuevo -> base = base;
-		hueco_nuevo -> tamanio = tamanio;
-		list_add_in_index(huecos_libres,i,hueco_nuevo);
+	if(aux == NULL){
+		list_add_in_index(huecos_libres, 0, hueco_nuevo);
 		aux = hueco_nuevo;
+	}else{
+		if(aux->base + aux->tamanio == base){
+			aux->tamanio += tamanio;
+			free(hueco_nuevo);
+		}
+		else{
+			list_add_in_index(huecos_libres,i,hueco_nuevo);
+			aux = hueco_nuevo;
+		}
 	}
-	t_segmento *siguiente_hueco = list_get(huecos_libres, i+1);
-
-	if(aux->base + aux->tamanio == siguiente_hueco->base){
-		aux->tamanio += siguiente_hueco->tamanio;
-		list_remove(huecos_libres, i+1);
+	if(i + 1 < list_size(huecos_libres)){
+		t_segmento *siguiente_hueco = list_get(huecos_libres, i+1);
+		if(aux->base + aux->tamanio == siguiente_hueco->base){
+			aux->tamanio += siguiente_hueco->tamanio;
+			list_remove(huecos_libres, i+1);
+		}
 	}
 }
+
+

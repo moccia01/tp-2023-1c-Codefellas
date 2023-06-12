@@ -458,12 +458,12 @@ void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
 
 void ejecutar_create_segment(int id_segmento, int tamanio, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_create_segment(id_segmento, tamanio, socket_cliente);
+	send_create_segment(contexto->pid, id_segmento, tamanio, socket_cliente);
 }
 
 void ejecutar_delete_segment(int id_segmento, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_delete_segment(id_segmento, socket_cliente);
+	send_delete_segment(contexto->pid, id_segmento, socket_cliente);
 }
 
 void ejecutar_yield(t_contexto_ejecucion* contexto){

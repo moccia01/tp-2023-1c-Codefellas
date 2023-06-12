@@ -1,4 +1,3 @@
-
 #ifndef MEMORIA_H_
 #define MEMORIA_H_
 
@@ -45,9 +44,9 @@ void *espacio_usuario;
 t_segmento* segmento_0;
 
 // esto lo hice yo (tomy) para la actualizacion de tablas de segmentos post compactacion
-t_list* lista_ts_wrappers;
-t_list* huecos_libres;
-t_list* huecos_escritos;
+t_list* lista_ts_wrappers; // lista de tablas de segmentos por proceso
+t_list* huecos_libres; // lista de huecos libres para manejo segmentacion
+t_list* huecos_escritos; // lista de lo que van escribiendo los procesos
 
 // --------------------- INIT ---------------------
 void leer_config();
@@ -72,8 +71,7 @@ t_hueco_memoria* encontrar_hueco_worst(int tamanio);
 t_segmento* crear_segmento(int pid, int id, int base, int tamanio);
 void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_viejo);
 void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento);
-void deletear_segmento(int pid, int base);
+t_list* deletear_segmento(int id_segmento, int pid);
 void agregar_hueco_libre(int base, int tamanio);
+
 #endif /* MEMORIA_H_ */
-// aparece y segmento_0
-// cada segmento va a tener base y tamaño

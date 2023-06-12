@@ -202,7 +202,7 @@ t_list* desempaquetar_tabla_segmentos(t_list* paquete, int comienzo){
 	t_list* tabla_segmentos = list_create();
 	int* cantidad_segmentos = list_get(paquete, comienzo);
 	int i = comienzo + 1;
-	while (i - comienzo + 1 < *(cantidad_segmentos) * 4){
+	while (i - comienzo + 1 < *(cantidad_segmentos) * 3){
 		t_segmento* segmento = desempaquetar_segmento(paquete, i);
 		i += 3;
 		list_add(tabla_segmentos, segmento);
@@ -540,10 +540,11 @@ void send_nombre_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_create_segment(int id_segmento, int tamanio, int fd_modulo){
+void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_CREATE_SEGMENT);
 	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -559,32 +560,37 @@ void send_segment_response(t_segment_response resp, int fd_modulo){
 }
 
 t_segment_response recv_segment_response(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != SEGMENT_RESPONSE){
+		return -1;
+	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_segment_response* respuesta = list_get(paquete, 0);
 	return *respuesta;
 }
 
-void send_delete_segment(int id_segmento, int fd_modulo){
+void send_delete_segment(int pid, int id_segmento, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_DELETE_SEGMENT);
 	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-int recv_delete_segment(int fd_modulo){
-	t_list* paquete = recibir_paquete(fd_modulo);
-	int* id = list_get(paquete, 0);
-	return *id;
+t_list* recv_delete_segment(int fd_modulo){
+	return recibir_paquete(fd_modulo);
 }
 
 void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo){
-	t_paquete* paquete = crear_paquete(CONSULTAR_TABLA_SEGMENTOS);
+	t_paquete* paquete = crear_paquete(TABLA_SEGMENTOS);
 	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
 	enviar_paquete(paquete, fd_modulo);
 }
 
 t_list* recv_tabla_segmentos(int fd_modulo){
-	op_code cop;
-	recv(fd_modulo, &cop, sizeof(op_code), 0);
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != TABLA_SEGMENTOS){
+		return NULL;
+	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_list* tabla_segmentos = desempaquetar_tabla_segmentos(paquete, 0);
 	return tabla_segmentos;
