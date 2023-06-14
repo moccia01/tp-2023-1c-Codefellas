@@ -102,7 +102,7 @@ static void procesar_conexion(void *void_args) {
 				send_segment_response(verificacion_espacio, cliente_socket);
 				// esperar a que kernel de el ok para compactar y recien ahi compactar
 				recv_iniciar_compactacion(cliente_socket);
-//				compactar();
+				compactar();
 //				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
 				break;
 			}
@@ -183,7 +183,7 @@ int server_escuchar(int server_socket) {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
-	int tamanio_total=0;
+	tamanio_total=0;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
 		if(hueco_libre->tamanio >= tamanio){
@@ -207,7 +207,7 @@ void inicializar_memoria(){
 	segmento_0->base = 0;
 	segmento_0->id = 0;
 	segmento_0->tamanio = TAM_SEGMENTO_0;
-
+	list_add(segmentos_en_memoria, segmento_0);
 	t_hueco_memoria* hueco_libre_inicial = malloc(sizeof(t_hueco_memoria));
 	hueco_libre_inicial->base = TAM_SEGMENTO_0;
 	hueco_libre_inicial->tamanio = TAM_MEMORIA - TAM_SEGMENTO_0;
@@ -325,7 +325,7 @@ t_segmento* crear_segmento(int pid, int id, int base, int tamanio){
 	segmento->tamanio = tamanio;
 
 	actualizar_tabla_segmentos_de_proceso(pid, segmento);
-//	list_add(segmentos_en_memoria, segmento);
+	list_add(segmentos_en_memoria, segmento);
 
 	return segmento;
 }
@@ -415,4 +415,30 @@ void agregar_hueco_libre(int base, int tamanio){
 	}
 }
 
+void compactar(){
+	//list_sort(segmentos_en_memoria,comparador_de_base);
+	int tam_segmento=0;
+	int base_segmento=0;
+	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
+		t_segmento* segmento_actual = list_get(segmentos_en_memoria, i);
+		segmento_actual->base=base_segmento+tam_segmento;
+		base_segmento=segmento_actual->base;
+		tam_segmento=segmento_actual->tamanio;
+		//actualizar_segmento(segmento_actual);
+	}
+	list_clean(huecos_libres);
+	t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
+	hueco_nuevo -> base = base_segmento+tam_segmento;
+	hueco_nuevo -> tamanio = tamanio_total;
+	list_add(huecos_libres,hueco_nuevo);
+	return;
+}
+
+bool comparador_de_base(t_segmento *s1, t_segmento *s2){
+	if(s1->base < s2->base){
+		return true;
+	}
+	else
+		return false;
+}
 
