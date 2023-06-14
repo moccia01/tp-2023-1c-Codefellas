@@ -129,15 +129,18 @@ static void procesar_conexion(void *void_args) {
 			terminar_proceso(pid_fin);
 			break;
 		case PEDIDO_LECTURA_CPU:
-//			t_list* parametros_lectura_cpu= recv_pedido_lectura(cliente_socket);
-//			void* valor_leido_cpu = espacio_usuario[posicion_cpu];
-//			send_valor_leido(valor_leido_cpu, cliente_socket);
+			t_list* parametros_lectura_cpu = recv_leer_valor(cliente_socket);
+			int* posicion_lec_cpu = list_get(parametros_lectura_cpu, 0);
+			int* tamanio_lec_cpu = list_get(parametros_lectura_cpu, 1);
+			char* valor_leido_cpu = malloc(*tamanio_lec_cpu);
+			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lec_cpu, *tamanio_lec_cpu);
+			send_valor_leido(valor_leido_cpu, cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA_CPU:
-//			t_list* parametros_escritura_cpu = recv_pedido_escritura(cliente_socket);
-//			int* posicion_escritura_cpu = list_get(parametros_escritura, 0);
-//			void* valor_a_escribir_cpu = list_get(parametros_escritura, 1);
-//			espacio_usuario[*posicion_escritura_cpu] = valor_a_escribir_cpu;
+			t_list* parametros_escritura_cpu = recv_escribir_valor(cliente_socket);
+			int* posicion_escritura_cpu = list_get(parametros_escritura_cpu, 0);
+			char* valor_a_escribir_cpu = list_get(parametros_escritura_cpu, 1);
+			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, strlen(valor_a_escribir_cpu));
 			break;
 		case PEDIDO_LECTURA_FS:
 //			t_list* parametros_lectura_fs = recv_pedido_lectura(cliente_socket);

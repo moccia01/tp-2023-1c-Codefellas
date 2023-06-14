@@ -31,8 +31,6 @@ typedef enum{
 	MANEJAR_F_TRUNCATE,
 	MANEJAR_CREATE_SEGMENT,
 	MANEJAR_DELETE_SEGMENT,
-	MANEJAR_MOV_IN,
-	MANEJAR_MOV_OUT,
 	TABLA_SEGMENTOS,
 	INICIALIZAR_PROCESO,
 	FINALIZAR_PROCESO,
@@ -119,6 +117,7 @@ void send_confirmacion_archivo_abierto(int fd_modulo);
 void send_aviso_archivo_inexistente(int fd_modulo);
 void send_iniciar_compactacion(int fd_modulo);
 void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
+void send_valor_leido(char* valor, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -127,6 +126,8 @@ estado_proceso recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
 char* recv_valor(int fd_modulo);
+t_list* recv_leer_valor(int fd_modulo);
+t_list* recv_escribir_valor(int fd_modulo);
 t_list* recv_create_segment(int fd_modulo);
 t_segment_response recv_segment_response(int fd_modulo);
 t_list* recv_delete_segment(int fd_modulo);

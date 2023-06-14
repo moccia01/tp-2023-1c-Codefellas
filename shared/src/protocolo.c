@@ -597,23 +597,41 @@ t_list* recv_tabla_segmentos(int fd_modulo){
 }
 
 void send_leer_valor(int dir_fisica, int fd_modulo){
-	t_paquete* paquete = crear_paquete(MANEJAR_MOV_IN);
+	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
+}
+
+t_list* recv_leer_valor(int fd_modulo){
+	return recibir_paquete(fd_modulo);
 }
 
 char* recv_valor(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != PEDIDO_LECTURA_CPU){
+		return NULL;
+	}
 	t_list* paquete = recibir_paquete(fd_modulo);
-	char* valor_en_memoria = list_get(paquete, 0);
+	char* valor = list_get(paquete, 0);
+	return valor;
+}
 
-	return valor_en_memoria;
+void send_valor_leido(char* valor, int fd_modulo){
+	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
+	agregar_a_paquete(paquete, valor, strlen(valor));
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
 }
 
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
-	t_paquete* paquete = crear_paquete(MANEJAR_MOV_OUT);
+	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_CPU);
 	agregar_a_paquete(paquete, &(valor), strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
+}
+
+t_list* recv_escribir_valor(int fd_modulo){
+	return recibir_paquete(fd_modulo);
 }
 
 void send_inicializar_proceso(int pid, int fd_modulo){
