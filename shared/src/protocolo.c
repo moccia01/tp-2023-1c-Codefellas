@@ -596,9 +596,10 @@ t_list* recv_tabla_segmentos(int fd_modulo){
 	return tabla_segmentos;
 }
 
-void send_leer_valor(int dir_fisica, int fd_modulo){
+void send_leer_valor(int dir_fisica, int tamanio_a_leer, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 

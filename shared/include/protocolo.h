@@ -105,7 +105,7 @@ void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo);
 void send_segment_response(t_segment_response resp, int fd_modulo);
 void send_delete_segment(int pid, int id_segmento, int fd_modulo);
 void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo);
-void send_leer_valor(int dir_fisica, int fd_modulo);
+void send_leer_valor(int dir_fisica, int tamaio_a_leer,int fd_modulo);
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
 void send_inicializar_proceso(int pid, int fd_modulo);
 void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo);

@@ -383,7 +383,7 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 	if(tamanio_a_leer + mmu->desplazamiento_segmento > mmu->tamanio){
 		manejar_seg_fault(contexto, mmu, tamanio_a_leer);
 	}else{
-		send_leer_valor(mmu->dir_fisica, socket_cliente);
+		send_leer_valor(mmu->dir_fisica, mmu->tamanio,socket_cliente);
 		char* valor_leido_en_memoria = recv_valor(socket_cliente);
 		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_leido_en_memoria);
 		set_valor_registro(registro, valor_leido_en_memoria);
