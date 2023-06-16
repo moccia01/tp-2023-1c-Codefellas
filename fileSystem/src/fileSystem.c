@@ -208,19 +208,22 @@ bool existe_fcb(char* nombre_archivo){
 
 void manejar_f_open(char* nombre_archivo){
 
-	if(existe_fcb(nombre_archivo)){
-		send_confirmacion_archivo_abierto(socket_cliente);
-	} else{
+	if(!existe_fcb(nombre_archivo)){
 		send_aviso_archivo_inexistente(socket_cliente);
+		manejar_f_create(nombre_archivo);
 	}
+	send_confirmacion_archivo_abierto(socket_cliente);
 }
 
 void manejar_f_create(char* nombre_archivo){
 
 	fcb *nuevo_fcb = malloc(sizeof(fcb));
-	//strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);	//TODO Tira un warning, dice que no se inicializo
+	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
+	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
 	nuevo_fcb->puntero_directo = 0;
 	nuevo_fcb->puntero_indirecto = 0;
+	//TODO Meter fcb a la lista de fcbs o crear un archivo con el nombre_archivo pasado y no tener un tipo de dato fcb
+	// Tengo que tener una lista de una estructura que contenga un config y un nombre de archivo o algun id para archivo
 	send_confirmacion_archivo_creado(socket_cliente);
 }
