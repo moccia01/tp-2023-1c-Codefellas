@@ -21,6 +21,7 @@ t_config* config;
 t_config* superbloque;
 t_bitarray* bitmap; //Esta nombrado asi xq basicamente el bitmap tiene el bitarray y nada mas
 FILE *bloques;
+t_list* lista_fcbs;
 
 // Variables del config
 char* IP;
@@ -66,6 +67,7 @@ void server_escuchar();
 
 // Operaciones
 bool existe_fcb(char* nombre_archivo);
+t_config* obtener_archivo(char* nombre_archivo);
 void manejar_f_open(char* nombre_archivo);
 void manejar_f_create(char* nombre_archivo);
 void manejar_f_truncate(char* nombre_archivo, int tamanio);
@@ -84,5 +86,10 @@ typedef struct{
 	char* contenido;
 	uint32_t* punteros;
 }t_bloque;
+
+typedef struct{
+	char* nombre_archivo;
+	t_config* archivo;
+}t_archivo;
 
 #endif /* FILESYSTEM_H_ */

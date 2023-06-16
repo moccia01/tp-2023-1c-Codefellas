@@ -155,6 +155,7 @@ void terminar_programa(){
 static void procesar_conexion() {
 	op_code cop;
 	char* nombre_archivo;
+	int tamanio;
 
 	while (socket_cliente != -1) {
         if (recv(socket_cliente, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
@@ -176,6 +177,10 @@ static void procesar_conexion() {
 			manejar_f_create(nombre_archivo);
 			break;
 		case MANEJAR_F_TRUNCATE:
+			nombre_archivo = recv_nombre_archivo(socket_cliente);
+			tamanio = recv_tamanio(socket_cliente);	//TODO Ver como solucionar el recibimiento de estos dos, si por separado o en uno
+			manejar_f_truncate(nombre_archivo, tamanio);
+			log_info(logger,"Se esta ejecutando un MANEJAR_F_TRUNCATE");
 			break;
 		case MANEJAR_F_READ:
 			break;
@@ -202,8 +207,25 @@ void server_escuchar() {
 }
 
 bool existe_fcb(char* nombre_archivo){
-	//TODO Hacer esta funcion
-	return true;
+	for(int i = 0; i < list_size(lista_fcbs); i++){
+		t_archivo* archivo_buscado = list_get(lista_fcbs, i);
+
+		if(strcmp(archivo_buscado->nombre_archivo, nombre_archivo) == 0){
+			return true;
+		}
+	}
+	return false;
+}
+
+t_config* obtener_archivo(char* nombre_archivo){
+	for(int i = 0; i < list_size(lista_fcbs); i++){
+		t_archivo* archivo_buscado = list_get(lista_fcbs, i);
+
+		if(strcmp(archivo_buscado->nombre_archivo, nombre_archivo) == 0){
+			return archivo_buscado->archivo;
+		}
+	}
+	return NULL;
 }
 
 void manejar_f_open(char* nombre_archivo){
@@ -217,13 +239,45 @@ void manejar_f_open(char* nombre_archivo){
 
 void manejar_f_create(char* nombre_archivo){
 
+	char* PATH_FCB = malloc(strlen(nombre_archivo));
+	strcpy(PATH_FCB,"/home/utnso/tp-2023-1c-Codefellas/fileSystem/archivos/fcbs/");
+
 	fcb *nuevo_fcb = malloc(sizeof(fcb));
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
 	nuevo_fcb->puntero_directo = 0;
 	nuevo_fcb->puntero_indirecto = 0;
+
+	char* text_tamanio_archivo = (char*) nuevo_fcb->tamanio_archivo;
+	char* text_puntero_directo = (char*) nuevo_fcb->puntero_directo;		//TODO Solucionar casteo
+	char* text_puntero_indirecto = (char*) nuevo_fcb->puntero_indirecto;
+
+	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
+	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
+	archivo_fcb->archivo = config_create(strcat(PATH_FCB, nombre_archivo));
+
+	config_set_value(archivo_fcb->archivo, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);	//TODO Preguntar si así se usa el key value
+	config_set_value(archivo_fcb->archivo, "TAMANIO_ARCHIVO", text_tamanio_archivo);
+	config_set_value(archivo_fcb->archivo, "PUNTERO_DIRECTO", text_puntero_directo);
+	config_set_value(archivo_fcb->archivo, "PUNTERO_INDIRECTO", text_puntero_indirecto);
+
+	list_add(lista_fcbs, archivo_fcb);
 	//TODO Meter fcb a la lista de fcbs o crear un archivo con el nombre_archivo pasado y no tener un tipo de dato fcb
 	// Tengo que tener una lista de una estructura que contenga un config y un nombre de archivo o algun id para archivo
 	send_confirmacion_archivo_creado(socket_cliente);
+	//free(nuevo_fcb);
+}
+
+void manejar_f_truncate(char* nombre_archivo, int tamanio){
+
+	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
+	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO");
+
+	if(tamanio > tamanio_fcb){
+		// AMPLIAR
+	} else{
+		// REDUCIR
+	}
+
 }
