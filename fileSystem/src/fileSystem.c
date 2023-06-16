@@ -222,7 +222,7 @@ t_config* obtener_archivo(char* nombre_archivo){
 		t_archivo* archivo_buscado = list_get(lista_fcbs, i);
 
 		if(strcmp(archivo_buscado->nombre_archivo, nombre_archivo) == 0){
-			return archivo_buscado->archivo;
+			return archivo_buscado->archivo_fcb;
 		}
 	}
 	return NULL;
@@ -255,12 +255,12 @@ void manejar_f_create(char* nombre_archivo){
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
-	archivo_fcb->archivo = config_create(strcat(PATH_FCB, nombre_archivo));
+	archivo_fcb->archivo_fcb = config_create(strcat(PATH_FCB, nombre_archivo));
 
-	config_set_value(archivo_fcb->archivo, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);	//TODO Preguntar si así se usa el key value
-	config_set_value(archivo_fcb->archivo, "TAMANIO_ARCHIVO", text_tamanio_archivo);
-	config_set_value(archivo_fcb->archivo, "PUNTERO_DIRECTO", text_puntero_directo);
-	config_set_value(archivo_fcb->archivo, "PUNTERO_INDIRECTO", text_puntero_indirecto);
+	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);	//TODO Preguntar si así se usa el key value
+	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
+	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_DIRECTO", text_puntero_directo);
+	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
 
 	list_add(lista_fcbs, archivo_fcb);
 	//TODO Meter fcb a la lista de fcbs o crear un archivo con el nombre_archivo pasado y no tener un tipo de dato fcb

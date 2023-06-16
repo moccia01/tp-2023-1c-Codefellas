@@ -425,14 +425,15 @@ void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* c
 }
 
 void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
-	//traducir_direccion(dir_logica,)	//TODO Pasarlo a fisica
+	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_read(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+	send_manejar_f_read(nombre_archivo, mmu->dir_fisica, cantidad_bytes, socket_cliente);
 }
 
 void ejecutar_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
+	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_write(nombre_archivo, dir_logica, cantidad_bytes, socket_cliente);
+	send_manejar_f_write(nombre_archivo, mmu->dir_fisica, cantidad_bytes, socket_cliente);
 }
 
 void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion* contexto){
