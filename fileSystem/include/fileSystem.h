@@ -45,11 +45,11 @@ int BLOCK_SIZE;
 int BLOCK_COUNT;
 
 // Variable del bitmap
-int* ARRAY_BITMAP;
+
 
 // Variable de archivo de bloques
-int TAMANIO;
-char* ARRAY_BLOQUES;
+int TAMANIO_ARCHIVO_BLOQUES;
+//char* ARRAY_BLOQUES;
 void* buffer_bitmap;
 void* buffer_bloques;
 
@@ -57,6 +57,7 @@ void leer_config();
 void levantar_archivos();
 void terminar_programa();
 void inicializar_variables();
+void inicializar_fcbs();
 
 // ARCHIVOS
 void leer_superbloque();
@@ -82,7 +83,7 @@ typedef struct{
 	int tamanio_archivo;
 	uint32_t puntero_directo;
 	uint32_t puntero_indirecto;
-}fcb;
+}t_fcb;
 
 typedef struct{
 	char* contenido;

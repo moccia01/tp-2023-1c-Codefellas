@@ -39,17 +39,21 @@ void leer_config(){
 	PATH_SUPERBLOQUE = config_get_string_value(config, "PATH_SUPERBLOQUE");
 	PATH_BITMAP = config_get_string_value(config, "PATH_BITMAP");
 	PATH_BLOQUES = config_get_string_value(config, "PATH_BLOQUES");
+	PATH_FCB = config_get_string_value(config, "PATH_FCB");
+	RETARDO_ACCESO_BLOQUE = config_get_string_value(config, "RETARDO_ACCESO_BLOQUE");
 }
 
 // ------------------ INIT --------------------------
 
 void inicializar_variables(){
-	//ARRAY_BLOQUES[TAMANIO];
-	//ARRAY_BITMAP[BLOCK_COUNT];
+	inicializar_fcbs();
+}
+
+void inicializar_fcbs(){
+	//TODO Ver como recorrer el directorio de fcbs (no la lista_fcbs ya que esta en memoria) para ver si hay archivos y si es así, cargarlos en la lista
 }
 
 void leer_superbloque(){
-
 	superbloque = config_create(PATH_SUPERBLOQUE);
 
 	if(superbloque == NULL){
@@ -62,7 +66,6 @@ void leer_superbloque(){
 }
 
 void crear_bitmap(){
-
 	int fd;
 	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
 
@@ -88,10 +91,9 @@ void crear_bitmap(){
 }
 
 void crear_archivo_de_bloques(){
-
 	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
-	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
-	buffer_bloques = mmap(NULL, TAMANIO, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	TAMANIO_ARCHIVO_BLOQUES = BLOCK_SIZE * BLOCK_COUNT;
+	buffer_bloques = mmap(NULL, TAMANIO_ARCHIVO_BLOQUES, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(fd == -1){
 		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
@@ -202,7 +204,6 @@ t_config* obtener_archivo(char* nombre_archivo){
 }
 
 void manejar_f_open(char* nombre_archivo){
-
 	if(!existe_fcb(nombre_archivo)){
 		send_aviso_archivo_inexistente(socket_cliente);
 		manejar_f_create(nombre_archivo);
@@ -211,11 +212,11 @@ void manejar_f_open(char* nombre_archivo){
 }
 
 void manejar_f_create(char* nombre_archivo){
+	char* path_archivo = malloc(strlen(PATH_FCB));
+	strcpy(path_archivo, PATH_FCB);
+	strcat(path_archivo, nombre_archivo);
 
-	char* PATH_FCB = malloc(strlen(nombre_archivo));
-	strcpy(PATH_FCB,"/home/utnso/tp-2023-1c-Codefellas/fileSystem/archivos/fcbs/");
-
-	fcb *nuevo_fcb = malloc(sizeof(fcb));
+	t_fcb *nuevo_fcb = malloc(sizeof(t_fcb));
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
@@ -232,7 +233,7 @@ void manejar_f_create(char* nombre_archivo){
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
-	archivo_fcb->archivo_fcb = config_create(strcat(PATH_FCB, nombre_archivo));
+	archivo_fcb->archivo_fcb = config_create(path_archivo);
 
 	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
@@ -240,12 +241,11 @@ void manejar_f_create(char* nombre_archivo){
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
 
 	list_add(lista_fcbs, archivo_fcb);
-	//TODO Meter fcb a la lista de fcbs o crear un archivo con el nombre_archivo pasado y no tener un tipo de dato fcb
+
 	send_confirmacion_archivo_creado(socket_cliente);
 }
 
 void manejar_f_truncate(char* nombre_archivo, int tamanio){
-
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO");
 
