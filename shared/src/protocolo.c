@@ -597,7 +597,7 @@ t_list* recv_tabla_segmentos(int fd_modulo){
 }
 
 void send_leer_valor(int dir_fisica, int tamanio_a_leer, int fd_modulo){
-	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
+	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
@@ -609,7 +609,7 @@ t_list* recv_leer_valor(int fd_modulo){
 
 char* recv_valor(int fd_modulo){
 	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != PEDIDO_LECTURA_CPU){
+	if(cop != PEDIDO_LECTURA){
 		return NULL;
 	}
 	t_list* paquete = recibir_paquete(fd_modulo);
@@ -618,14 +618,14 @@ char* recv_valor(int fd_modulo){
 }
 
 void send_valor_leido(char* valor, int fd_modulo){
-	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
+	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA);
 	agregar_a_paquete(paquete, valor, strlen(valor));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
-	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_CPU);
+	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA);
 	agregar_a_paquete(paquete, &(valor), strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);

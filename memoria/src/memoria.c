@@ -128,30 +128,19 @@ static void procesar_conexion(void *void_args) {
 			// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
 			terminar_proceso(pid_fin);
 			break;
-		case PEDIDO_LECTURA_CPU:
-			t_list* parametros_lectura_cpu = recv_leer_valor(cliente_socket);
-			int* posicion_lec_cpu = list_get(parametros_lectura_cpu, 0);
-			int* tamanio_lec_cpu = list_get(parametros_lectura_cpu, 1);
-			char* valor_leido_cpu = malloc(*tamanio_lec_cpu);
-			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lec_cpu, *tamanio_lec_cpu);
-			send_valor_leido(valor_leido_cpu, cliente_socket);
+		case PEDIDO_LECTURA:
+			t_list* parametros_lectura= recv_leer_valor(cliente_socket);
+			int* posicion_lectura = list_get(parametros_lectura, 0);
+			int* tamanio_lectura = list_get(parametros_lectura, 1);
+			char* valor_leido = malloc(*tamanio_lectura);
+			memcpy(valor_leido, espacio_usuario + *posicion_lectura, *tamanio_lectura);
+			send_valor_leido(valor_leido, cliente_socket);
 			break;
-		case PEDIDO_ESCRITURA_CPU:
-			t_list* parametros_escritura_cpu = recv_escribir_valor(cliente_socket);
-			int* posicion_escritura_cpu = list_get(parametros_escritura_cpu, 0);
-			char* valor_a_escribir_cpu = list_get(parametros_escritura_cpu, 1);
-			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, strlen(valor_a_escribir_cpu));
-			break;
-		case PEDIDO_LECTURA_FS:
-//			t_list* parametros_lectura_fs = recv_pedido_lectura(cliente_socket);
-//			void* valor_leido_fs = espacio_usuario[posicion_fs];
-//			send_valor_leido(valor_leido_fs, cliente_socket);
-			break;
-		case PEDIDO_ESCRITURA_FS:
-//			t_list* parametros_escritura_fs = recv_pedido_escritura(cliente_socket);
-//			int* posicion_escritura_fs = list_get(parametros_escritura, 0);
-//			void* valor_a_escribir_fs = list_get(parametros_escritura, 1);
-//			espacio_usuario[*posicion_escritura_fs] = valor_a_escribir_fs;
+		case PEDIDO_ESCRITURA:
+			t_list* parametros_escritura = recv_escribir_valor(cliente_socket);
+			int* posicion_escritura = list_get(parametros_escritura, 0);
+			char* valor_a_escribir = list_get(parametros_escritura, 1);
+			memcpy(espacio_usuario + *posicion_escritura, valor_a_escribir, strlen(valor_a_escribir));
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -433,6 +422,37 @@ void compactar(){
 	hueco_nuevo -> tamanio = tamanio_total;
 	list_add(huecos_libres,hueco_nuevo);
 	return;
+}
+
+// prototipo de compactacion (no funca pero les queria dejar una idea)
+void compactar_version_tomy(){
+	// importante que esten las dos listas ordenadas por base
+	// list_sort(segmentos_en_memoria, cmp_base_segmentos);
+
+	// itero la lista de segmentos en memoria
+
+	for(int i,j = 0; i < list_size(segmentos_en_memoria); i++){
+		// ordeno la lista de huecos libres por si en la anterior iteracion agregue un nuevo hueco libre
+		// list_sort(huecos_libres, cmp_base_huecos)
+		t_segmento* segmento = list_get(segmentos_en_memoria, i);
+		t_hueco_memoria* hueco = list_get(huecos_libres, j);
+		if(segmento->base > hueco->base){
+			// esto quiere decir que se puede "empujar hacia abajo" al segmento
+			// o sea que tiene espacio para ser compactado
+			// elimino el hueco de la lista porque ahora el espacio lo ocupa el segmento
+			list_remove(huecos_libres, j);
+			int base_vieja_segmento = segmento->base;
+			segmento->base = hueco->base;
+			//chequear si esta funcion sigue sirviendo en este contexto
+			agregar_hueco_libre(base_vieja_segmento, hueco->tamanio);
+			// cuando se consolidan habria que hacer j-- porque se estan eliminando huecos libres
+			// de alguna manera tendriamos que saber si en agregar_hueco_libre se eliminaron huecos y cuantos
+			j++;
+		}
+	}
+	// cuando se termina de compactar hay que actualizar la lista de ts_wrappers con los nuevos segmentos
+	// en realidad no son segmentos nuevos, solo bases nuevas de los segmentos viejos
+	// actualizar_lista_ts_wrappers(); (?
 }
 
 bool comparador_de_base(t_segmento *s1, t_segmento *s2){
