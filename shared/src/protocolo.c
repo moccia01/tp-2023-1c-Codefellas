@@ -706,9 +706,12 @@ char* recv_nombre_archivo(int fd_modulo){
 	return nombre_archivo;
 }
 
-int recv_tamanio(int fd_modulo){
-
-	return 0;
+t_list* recv_elementos_fs(int fd_modulo){
+	return recibir_paquete(fd_modulo);
+	/*t_list* paquete = recibir_paquete(fd_modulo);
+	char* nombre_archivo = list_get(paquete, 0);
+	list_destroy(paquete);
+	return nombre_archivo;*/
 }
 
 void send_confirmacion_archivo_creado(int fd_modulo){

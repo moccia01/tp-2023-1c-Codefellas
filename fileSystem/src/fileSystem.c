@@ -66,41 +66,15 @@ void crear_bitmap(){
 	int fd;
 	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
 
-	if(access(PATH_BITMAP, F_OK) != -1){
-		fd = open(PATH_BITMAP, O_RDWR);
-		void* buffer = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-		bitmap = bitarray_create_with_mode(buffer, tamanio_bitmap, LSB_FIRST);
+	if(access(PATH_BITMAP, F_OK) == -1){
+		log_error(logger, "No pude acceder al archivo bitmap");
+		exit(1);
 	}
-	else{
-		// El archivo no existe entonces lo creo y lo cierro, puede que esto se borre y sea innecesario
-		fd = open(PATH_BITMAP, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
-		if(fd == -1){
-			log_error(logger, "Hubo un problema creando el archivo de bitmap >:(");
-			exit(1);
-		}
+	fd = open(PATH_BITMAP, O_RDWR);
+	buffer_bitmap = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	bitmap = bitarray_create_with_mode(buffer_bitmap, tamanio_bitmap, LSB_FIRST);
 
-		log_info(logger, "fd: %d", fd);
-
-		char bitarray[tamanio_bitmap];
-		//lleno de 0s el bitarray
-		memset(bitarray, 0, tamanio_bitmap);
-
-		// Mapea el archivo en memoria
-		void* buffer = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-		if(buffer == MAP_FAILED){
-			log_error(logger, "Error ejecutando mmap.");
-			close(fd);
-			return;
-		}
-
-		bitmap = bitarray_create_with_mode(buffer, tamanio_bitmap, LSB_FIRST);
-
-		msync(bitmap->bitarray, tamanio_bitmap, MS_SYNC);
-
-		write(fd, bitmap->bitarray, sizeof(bitarray));
-	}
 	// Esta parte puede que ni vaya por el momento
     // Copia los bits del bitarray al mapeo en memoria
 //    memcpy(mmap_funciono, bitmap->bitarray, tamanio_bitmap);
@@ -117,6 +91,8 @@ void crear_archivo_de_bloques(){
 
 	//Primero deberia leer el archivo y en caso de que no este creado crearlo
 	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
+	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
+	buffer_bloques = mmap(NULL, TAMANIO, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(fd == -1){
 		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
@@ -136,6 +112,7 @@ void crear_archivo_de_bloques(){
 		strcpy(ARRAY_BLOQUES[i], "");
 	}
 	*/
+	close(fd);
 }
 
 
@@ -155,7 +132,9 @@ void terminar_programa(){
 static void procesar_conexion() {
 	op_code cop;
 	char* nombre_archivo;
-	int tamanio;
+	int* tamanio;
+	int* dir_fisica;
+	t_list* parametros_fs;
 
 	while (socket_cliente != -1) {
         if (recv(socket_cliente, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
@@ -167,24 +146,39 @@ static void procesar_conexion() {
 			recibir_mensaje(logger, socket_cliente);
 			break;
 		case MANEJAR_F_OPEN:
-			nombre_archivo = recv_nombre_archivo(socket_cliente);
+			parametros_fs = recv_elementos_fs(socket_cliente);	//TODO Chequear esta funcion, parece que rompe
+			nombre_archivo = list_get(parametros_fs, 0);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
 			manejar_f_open(nombre_archivo);
 			break;
 		case MANEJAR_F_CREATE:
-			nombre_archivo = recv_nombre_archivo(socket_cliente);
+			parametros_fs = recv_elementos_fs(socket_cliente);
+			nombre_archivo = list_get(parametros_fs, 0);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
 			manejar_f_create(nombre_archivo);
 			break;
 		case MANEJAR_F_TRUNCATE:
-			nombre_archivo = recv_nombre_archivo(socket_cliente);
-			tamanio = recv_tamanio(socket_cliente);	//TODO Ver como solucionar el recibimiento de estos dos, si por separado o en uno
+			parametros_fs = recv_elementos_fs(socket_cliente);
+			nombre_archivo = list_get(parametros_fs, 0);
+			tamanio = list_get(parametros_fs, 1);
 			manejar_f_truncate(nombre_archivo, tamanio);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_TRUNCATE");
 			break;
 		case MANEJAR_F_READ:
+			parametros_fs = recv_elementos_fs(socket_cliente);
+			nombre_archivo = list_get(parametros_fs, 0);
+			tamanio = list_get(parametros_fs, 1);
+			dir_fisica = list_get(parametros_fs, 2);
+			manejar_f_read(nombre_archivo, dir_fisica, tamanio);
+			log_info(logger,"Se esta ejecutando un MANEJAR_F_READ");
 			break;
 		case MANEJAR_F_WRITE:
+			parametros_fs = recv_elementos_fs(socket_cliente);
+			nombre_archivo = list_get(parametros_fs, 0);
+			tamanio = list_get(parametros_fs, 1);
+			dir_fisica = list_get(parametros_fs, 2);
+			manejar_f_write(nombre_archivo, dir_fisica, tamanio);
+			log_info(logger,"Se esta ejecutando un MANEJAR_F_WRITE");
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
@@ -249,35 +243,44 @@ void manejar_f_create(char* nombre_archivo){
 	nuevo_fcb->puntero_directo = 0;
 	nuevo_fcb->puntero_indirecto = 0;
 
-	char* text_tamanio_archivo = (char*) nuevo_fcb->tamanio_archivo;
-	char* text_puntero_directo = (char*) nuevo_fcb->puntero_directo;		//TODO Solucionar casteo
-	char* text_puntero_indirecto = (char*) nuevo_fcb->puntero_indirecto;
+	char* text_tamanio_archivo = malloc(10);
+	char* text_puntero_directo = malloc(10);
+	char* text_puntero_indirecto = malloc(10);
+
+	sprintf(text_tamanio_archivo, "%d", nuevo_fcb->tamanio_archivo);
+	sprintf(text_puntero_directo, "%d", nuevo_fcb->puntero_directo);
+	sprintf(text_puntero_indirecto, "%d", nuevo_fcb->puntero_indirecto);
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	archivo_fcb->archivo_fcb = config_create(strcat(PATH_FCB, nombre_archivo));
 
-	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);	//TODO Preguntar si así se usa el key value
+	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_DIRECTO", text_puntero_directo);
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
 
 	list_add(lista_fcbs, archivo_fcb);
 	//TODO Meter fcb a la lista de fcbs o crear un archivo con el nombre_archivo pasado y no tener un tipo de dato fcb
-	// Tengo que tener una lista de una estructura que contenga un config y un nombre de archivo o algun id para archivo
 	send_confirmacion_archivo_creado(socket_cliente);
-	//free(nuevo_fcb);
 }
 
-void manejar_f_truncate(char* nombre_archivo, int tamanio){
+void manejar_f_truncate(char* nombre_archivo, int* tamanio){
 
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO");
 
-	if(tamanio > tamanio_fcb){
+	if(tamanio > &tamanio_fcb){
 		// AMPLIAR
 	} else{
 		// REDUCIR
 	}
+}
+
+void manejar_f_read(char* nombre_archivo, int* dir_fisica, int* tamanio){
+
+}
+
+void manejar_f_write(char* nombre_archivo, int* dir_fisica, int *tamanio){
 
 }
