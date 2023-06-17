@@ -112,7 +112,7 @@ void inicializar_variables() {
 	cola_block_io = list_create();
 	lista_recursos = inicializar_recursos();
 	fs_mem_op_count = 0;
-
+	archivos_abiertos = list_create();
 
 	//Semaforos
 	pthread_mutex_init(&mutex_generador_pid, NULL);
@@ -247,52 +247,12 @@ void procesar_conexion(void* void_args) {
 				free(recurso_signal);
 				break;
 			case MANEJAR_CREATE_SEGMENT:
-//				recibir parametros del create_segment
 				t_list* create_sgm_params = recv_create_segment(cliente_socket);
 				int* id_segmento = list_get(create_sgm_params, 0);
 				int* tamanio = list_get(create_sgm_params, 1);
-//				mandarle a memoria aviso de create_segment
 				log_info(logger, "manejo create_segment");
-				send_create_segment(pcb->contexto_de_ejecucion->pid, *id_segmento, *tamanio, fd_memoria);
+				manejar_create_segment(pcb, cliente_socket, *id_segmento, *tamanio);
 				list_destroy(create_sgm_params);
-//				recibir de memoria respuesta del create_segment
-				t_segment_response respuesta = recv_segment_response(fd_memoria);
-				log_info(logger, "recibi la respuesta de memoria");
-				switch(respuesta){
-				case SEGMENT_CREATED:
-					int base_nuevo_segmento = recv_base_segmento(fd_memoria);
-					log_info(logger, "recibi de memoria un segmento de base %d", base_nuevo_segmento);
-					t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
-					segmento_nuevo->id = *id_segmento;
-					segmento_nuevo->tamanio = *tamanio;
-					segmento_nuevo->base = base_nuevo_segmento;
-					list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
-					log_info(logger, "segmento creado, continuando ejecucion");
-					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
-					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
-					break;
-				case OUT_OF_MEM:
-					log_info(logger, "memoria insuficiente para la creacion del segmento");
-					pcb->contexto_de_ejecucion->motivo_exit = OUT_OF_MEMORY;
-					safe_pcb_add(cola_exit, pcb, &mutex_cola_exit);
-					sem_post(&sem_exit);
-					sem_post(&sem_exec);
-					break;
-				case COMPACT:
-					sem_wait(&ongoing_fs_mem_op);
-//					 - avisar a memoria que compacte.
-					send_iniciar_compactacion(fd_memoria);
-//					 - recibir de memoria las tablas de segmentos actualizadas post compact
-//					t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
-//					 - actualizar la tabla de segmentos de TODOS (!) los pcb O.o
-//					actualizar_ts_de_pcbs(ts_wrappers);
-//					 - mandarle memoria aviso de create_segment.
-//					manejar_create_segment() .-.
-					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
-					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
-					break;
-				default: log_info(logger, "no entendi el segment response de memoria"); break;
-				}
 				break;
 			case MANEJAR_DELETE_SEGMENT:
 				t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
@@ -332,6 +292,26 @@ void procesar_conexion(void* void_args) {
 					sem_post(&ongoing_fs_mem_op);
 				}
 				// manejo fin f_write...
+				break;
+			case MANEJAR_F_OPEN:
+				char* nombre_archivo = recv_nombre_archivo(cliente_socket);
+				if(!archivo_is_open(nombre_archivo)){
+					send_manejar_f_open(nombre_archivo, fd_filesystem);
+					agregar_archivo_a_tabla_global(nombre_archivo);
+					agregar_archivo_a_tabla_proceso(nombre_archivo, pcb);
+				}else{
+					t_archivo* archivo = agregar_archivo_a_tabla_proceso(nombre_archivo, pcb);
+					bloquear_proceso_por_archivo(pcb, archivo);
+				}
+				break;
+			case MANEJAR_F_CLOSE:
+
+				break;
+			case MANEJAR_F_SEEK:
+
+				break;
+			case MANEJAR_F_TRUNCATE:
+
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -375,6 +355,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	t_pcb *pcb = malloc(sizeof(t_pcb));
 	pcb->fd_consola = cliente_socket;
 	pcb->estimado_proxima_rafaga = ESTIMACION_INICIAL;
+	pcb->archivos_abiertos = list_create();
 
 	t_contexto_ejecucion* contexto = malloc(sizeof(t_contexto_ejecucion));
 	pcb->contexto_de_ejecucion = contexto;
@@ -474,6 +455,8 @@ void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_block, &mutex_cola_block);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_exit, &mutex_cola_exit);
 
+	// TODO faltan las colas de los procesos bloqueados por recursos y archivos (LA CONCHA DE LA LORA)
+
 }
 
 void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb, pthread_mutex_t* mutex_cola){
@@ -481,6 +464,7 @@ void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb,
 	for (int i = 0; i < list_size(lista_pcb); i++){
 		t_pcb* pcb = list_get(lista_pcb, i);
 		t_list* ts_actualizada = get_ts_from_pid(pcb->contexto_de_ejecucion->pid, lista_ts_wrappers);
+		// falta free de la tabla_de_segmentos vieja pero no se donde ponerlo para q no rompa ;.;
 		pcb->contexto_de_ejecucion->tabla_de_segmentos = ts_actualizada;
 	}
 	pthread_mutex_unlock(mutex_cola);
@@ -746,3 +730,76 @@ t_recurso* buscar_recurso(char* recurso){
 	return recursobuscado;
 }
 
+void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int tamanio){
+	send_create_segment(pcb->contexto_de_ejecucion->pid, id_segmento, tamanio, fd_memoria);
+//				recibir de memoria respuesta del create_segment
+	t_segment_response respuesta = recv_segment_response(fd_memoria);
+	log_info(logger, "recibi la respuesta de memoria");
+	switch(respuesta){
+	case SEGMENT_CREATED:
+		int base_nuevo_segmento = recv_base_segmento(fd_memoria);
+		log_info(logger, "recibi de memoria un segmento de base %d", base_nuevo_segmento);
+		t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
+		segmento_nuevo->id = id_segmento;
+		segmento_nuevo->tamanio = tamanio;
+		segmento_nuevo->base = base_nuevo_segmento;
+		list_add(pcb->contexto_de_ejecucion->tabla_de_segmentos, segmento_nuevo);
+		log_info(logger, "segmento creado, continuando ejecucion");
+		safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+		send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
+		break;
+	case OUT_OF_MEM:
+		log_info(logger, "memoria insuficiente para la creacion del segmento");
+		pcb->contexto_de_ejecucion->motivo_exit = OUT_OF_MEMORY;
+		safe_pcb_add(cola_exit, pcb, &mutex_cola_exit);
+		sem_post(&sem_exit);
+		sem_post(&sem_exec);
+		break;
+	case COMPACT:
+		sem_wait(&ongoing_fs_mem_op);
+//					 - avisar a memoria que compacte.
+		send_iniciar_compactacion(fd_memoria);
+//		- recibir de memoria las tablas de segmentos actualizadas post compact
+		t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
+//		- actualizar la tabla de segmentos de TODOS (!) los pcb O.o
+		actualizar_ts_de_pcbs(ts_wrappers);
+//		- mandarle memoria aviso de create_segment.
+		manejar_create_segment(pcb, cliente_socket, id_segmento, tamanio);
+		break;
+	default: log_info(logger, "no entendi el segment response de memoria"); break;
+	}
+}
+
+bool archivo_is_open(char* nombre_archivo){
+	for(int i = 0; i < list_size(archivos_abiertos); i++){
+		t_archivo* archivo = list_get(archivos_abiertos, i);
+		if(strcmp(archivo->nombre_archivo, nombre_archivo) == 0){
+			return true;
+		}
+	}
+	return false;
+}
+
+void agregar_archivo_a_tabla_global(char* nombre_archivo){
+	t_archivo* archivo = archivo_create(nombre_archivo);
+	list_add(archivos_abiertos, archivo);
+}
+
+t_archivo* archivo_create(char* nombre_archivo){
+	t_archivo* archivo = malloc(sizeof(t_archivo));
+	archivo->nombre_archivo = nombre_archivo;
+	archivo->cola_block_asignada = list_create();
+	pthread_mutex_t mutex_asignado;
+	pthread_mutex_init(&mutex_asignado, NULL);
+	archivo->mutex_asignado = mutex_asignado;
+	return archivo;
+}
+
+t_archivo* agregar_archivo_a_tabla_proceso(t_pcb* pcb, char* nombre_archivo){
+	t_archivo* archivo = archivo_create(nombre_archivo);
+	list_add(pcb->archivos_abiertos, archivo);
+	return archivo;
+}
+void bloquear_proceso_por_archivo(t_pcb* pcb, t_archivo* archivo){
+	safe_pcb_add(archivo->cola_block_asignada, pcb, &(archivo->mutex_asignado));
+}

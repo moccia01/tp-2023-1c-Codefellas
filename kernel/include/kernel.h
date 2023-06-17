@@ -24,8 +24,15 @@ typedef struct{
 }t_recurso;
 
 typedef struct{
+	char* nombre_archivo;
+	t_list* cola_block_asignada;
+	pthread_mutex_t mutex_asignado;
+}t_archivo;
+
+typedef struct{
 	int fd_consola;
 	t_contexto_ejecucion* contexto_de_ejecucion;
+	t_list* archivos_abiertos; // capaz esto necesita mutex (?
 	uint16_t estimado_proxima_rafaga;
 	time_t tiempo_ingreso_ready;
 	time_t tiempo_ingreso_exec;
@@ -88,6 +95,9 @@ sem_t sem_exit;
 sem_t sem_block_return;
 sem_t ongoing_fs_mem_op;
 
+// Variables de archivos
+t_list* archivos_abiertos;
+
 // INIT
 void leer_config();
 int* string_to_int_array(char** array_de_strings);
@@ -140,5 +150,12 @@ void exec_io(void* void_arg);
 void manejar_wait(t_pcb* pcb, char* recurso);
 t_recurso* buscar_recurso(char* recurso);
 void manejar_signal(t_pcb* pcb, char* recurso);
+void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int tamanio);
+bool archivo_is_open(char* nombre_archivo);
+void agregar_archivo_a_tabla_global(char* nombre_archivo);
+t_archivo* archivo_create(char* nombre_archivo);
+t_archivo* agregar_archivo_a_tabla_proceso(t_pcb* pcb, char* nombre_archivo);
+void bloquear_proceso_por_archivo(t_pcb* pcb, t_archivo* archivo);
+
 
 #endif /* KERNEL_H_ */

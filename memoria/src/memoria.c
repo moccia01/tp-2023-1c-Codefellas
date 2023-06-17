@@ -202,6 +202,7 @@ void inicializar_memoria(){
 
 	lista_ts_wrappers = list_create();
 	huecos_libres = list_create();
+	segmentos_en_memoria = list_create();
 
 	segmento_0 = malloc(sizeof(t_segmento));
 	segmento_0->base = 0;
