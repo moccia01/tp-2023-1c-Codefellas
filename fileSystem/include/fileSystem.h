@@ -13,6 +13,7 @@
 #include <pthread.h>
 #include <commons/bitarray.h>
 #include <sys/mman.h>
+#include <dirent.h>
 
 // Variables globales
 t_log* logger;

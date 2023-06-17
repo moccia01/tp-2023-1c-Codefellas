@@ -1,5 +1,13 @@
 #include "../include/fileSystem.h"
 
+#include <bits/mman-linux.h>
+#include <commons/collections/list.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
 int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
@@ -51,6 +59,9 @@ void inicializar_variables(){
 
 void inicializar_fcbs(){
 	//TODO Ver como recorrer el directorio de fcbs (no la lista_fcbs ya que esta en memoria) para ver si hay archivos y si es así, cargarlos en la lista
+	//Investigar que función de dirent.h sirve para esto, puede que readdir, habría que iterar en un while
+	//Esto nos devuelve un struct con los directorios en teoría y con eso podríamos jugar a cargar la lista_fcbs
+	//No debería ser complejo
 }
 
 void leer_superbloque(){
