@@ -295,12 +295,12 @@ void procesar_conexion(void* void_args) {
 				break;
 			case MANEJAR_F_OPEN:
 				char* nombre_archivo = recv_nombre_archivo(cliente_socket);
-				if(!archivo_is_open(nombre_archivo)){
+				if(!archivo_is_opened(nombre_archivo)){
 					send_manejar_f_open(nombre_archivo, fd_filesystem);
 					agregar_archivo_a_tabla_global(nombre_archivo);
-					agregar_archivo_a_tabla_proceso(nombre_archivo, pcb);
+					agregar_archivo_a_tabla_proceso(pcb, nombre_archivo);
 				}else{
-					t_archivo* archivo = agregar_archivo_a_tabla_proceso(nombre_archivo, pcb);
+					t_archivo* archivo = agregar_archivo_a_tabla_proceso(pcb, nombre_archivo);
 					bloquear_proceso_por_archivo(pcb, archivo);
 				}
 				break;
@@ -770,7 +770,7 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 	}
 }
 
-bool archivo_is_open(char* nombre_archivo){
+bool archivo_is_opened(char* nombre_archivo){
 	for(int i = 0; i < list_size(archivos_abiertos); i++){
 		t_archivo* archivo = list_get(archivos_abiertos, i);
 		if(strcmp(archivo->nombre_archivo, nombre_archivo) == 0){

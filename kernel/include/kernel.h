@@ -151,7 +151,7 @@ void manejar_wait(t_pcb* pcb, char* recurso);
 t_recurso* buscar_recurso(char* recurso);
 void manejar_signal(t_pcb* pcb, char* recurso);
 void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int tamanio);
-bool archivo_is_open(char* nombre_archivo);
+bool archivo_is_opened(char* nombre_archivo);
 void agregar_archivo_a_tabla_global(char* nombre_archivo);
 t_archivo* archivo_create(char* nombre_archivo);
 t_archivo* agregar_archivo_a_tabla_proceso(t_pcb* pcb, char* nombre_archivo);
