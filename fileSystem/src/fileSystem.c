@@ -1,13 +1,5 @@
 #include "../include/fileSystem.h"
 
-#include <bits/mman-linux.h>
-#include <commons/collections/list.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
 int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
@@ -18,10 +10,8 @@ int main(int argc, char **argv) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
-	leer_config();
 
-	levantar_archivos();
-	//inicializar_variables();
+	inicializar_variables();
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -54,6 +44,8 @@ void leer_config(){
 // ------------------ INIT --------------------------
 
 void inicializar_variables(){
+	leer_config();
+	levantar_archivos();
 	inicializar_fcbs();
 }
 
@@ -186,7 +178,7 @@ void server_escuchar() {
 	server_name = "Filesystem";
 	socket_cliente = esperar_cliente(logger, server_name, fd_filesystem);
 
-	if (socket_cliente == -1) {
+	if (socket_cliente == -1){
 		log_info(logger, "Hubo un error en la conexion del %s", server_name);
 	}
 	procesar_conexion();
@@ -252,7 +244,6 @@ void manejar_f_create(char* nombre_archivo){
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
 
 	list_add(lista_fcbs, archivo_fcb);
-
 	send_confirmacion_archivo_creado(socket_cliente);
 }
 

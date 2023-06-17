@@ -1,19 +1,26 @@
 #ifndef FILESYSTEM_H_
 #define FILESYSTEM_H_
 
-#include <fcntl.h> //Esta libreria es para la funcion open
-#include <sys/stat.h>
-#include <math.h>
-#include <string.h>
-#include <commons/log.h>
-#include <commons/config.h>
-#include <sockets.h>
-#include <protocolo.h>
-#include <shared.h>
-#include <pthread.h>
+//#include <bits/mman-linux.h>
 #include <commons/bitarray.h>
+#include <commons/collections/list.h>
+#include <commons/config.h>
+#include <commons/log.h>
+#include <dirent.h>		//Esta libreria es para readdir
+#include <fcntl.h> 		//Esta libreria es para open
+#include <math.h>
+#include <protocolo.h>
+#include <pthread.h>
+#include <shared.h>
+#include <sockets.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
-#include <dirent.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 // Variables globales
 t_log* logger;
@@ -37,8 +44,8 @@ char* RETARDO_ACCESO_BLOQUE;
 
 // Variables de conexion
 int fd_filesystem;
-int socket_cliente;
 int fd_memoria;
+int socket_cliente;
 char* server_name;
 
 // Variables del superbloque
@@ -54,13 +61,12 @@ int TAMANIO_ARCHIVO_BLOQUES;
 void* buffer_bitmap;
 void* buffer_bloques;
 
+// Funciones
 void leer_config();
 void levantar_archivos();
 void terminar_programa();
 void inicializar_variables();
 void inicializar_fcbs();
-
-// ARCHIVOS
 void leer_superbloque();
 void crear_bitmap();
 void crear_archivo_de_bloques();
@@ -85,11 +91,6 @@ typedef struct{
 	uint32_t puntero_directo;
 	uint32_t puntero_indirecto;
 }t_fcb;
-
-typedef struct{
-	char* contenido;
-	uint32_t* punteros;
-}t_bloque;
 
 typedef struct{
 	char* nombre_archivo;
