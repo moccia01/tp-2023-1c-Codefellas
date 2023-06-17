@@ -138,8 +138,10 @@ static void procesar_conexion(void *void_args) {
 			break;
 		case PEDIDO_ESCRITURA:
 			t_list* parametros_escritura = recv_escribir_valor(cliente_socket);
-			int* posicion_escritura = list_get(parametros_escritura, 0);
-			char* valor_a_escribir = list_get(parametros_escritura, 1);
+			char* valor_a_escribir = list_get(parametros_escritura, 0);
+			int* posicion_escritura = list_get(parametros_escritura, 1);
+			int tam_esc = strlen(valor_a_escribir);
+			log_info(logger, "el tamaño del valor a escribir es: %d", tam_esc);
 			memcpy(espacio_usuario + *posicion_escritura, valor_a_escribir, strlen(valor_a_escribir));
 			log_info(logger, "se escribio el valor: %s,  en la posicion %d de espacio_usuario", valor_a_escribir, *posicion_escritura);
 			break;

@@ -236,9 +236,10 @@ void decode(t_instruccion* proxima_instruccion, t_contexto_ejecucion* contexto){
 }
 
 t_segmento* obtener_segmento_de_tabla(t_list* tabla_de_segmentos, int num_segmento){
+	log_info(logger, "la cantidad de segmentos de la tabla es: %d", list_size(tabla_de_segmentos));
 	for(int i = 0; i < list_size(tabla_de_segmentos); i++){
 		t_segmento* segmento_buscado = list_get(tabla_de_segmentos, i);
-
+		log_info(logger, "el id del segmento en la posicion %d de la tabla es: %d", i, segmento_buscado->id);
 		if(segmento_buscado->id == num_segmento){
 			return segmento_buscado;
 		}
@@ -251,7 +252,7 @@ t_traduccion_mmu* traducir_direccion(int dir_logica, t_contexto_ejecucion* conte
 
 	mmu->num_segmento = floor(dir_logica/TAM_MAX_SEGMENTO);
 	mmu->desplazamiento_segmento = dir_logica % TAM_MAX_SEGMENTO;
-	t_segmento* segmento_buscado = obtener_segmento_de_tabla(contexto->tabla_de_segmentos, mmu->desplazamiento_segmento);
+	t_segmento* segmento_buscado = obtener_segmento_de_tabla(contexto->tabla_de_segmentos, mmu->num_segmento);
 	mmu->tamanio = segmento_buscado->tamanio;
 	mmu->dir_fisica = segmento_buscado->base + mmu->desplazamiento_segmento;
 
@@ -383,8 +384,8 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 	if(tamanio_a_leer + mmu->desplazamiento_segmento > mmu->tamanio){
 		manejar_seg_fault(contexto, mmu, tamanio_a_leer);
 	}else{
-		send_leer_valor(mmu->dir_fisica, mmu->tamanio,socket_cliente);
-		char* valor_leido_en_memoria = recv_valor(socket_cliente);
+		send_leer_valor(mmu->dir_fisica, mmu->tamanio, fd_memoria);
+		char* valor_leido_en_memoria = recv_valor(fd_memoria);
 		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_leido_en_memoria);
 		set_valor_registro(registro, valor_leido_en_memoria);
 	}
@@ -400,7 +401,7 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 	}else{
 		char* valor_escrito_en_memoria = leer_valor_registro(registro);
 		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_escrito_en_memoria);
-		send_escribir_valor(valor_escrito_en_memoria, mmu->dir_fisica, socket_cliente);
+		send_escribir_valor(valor_escrito_en_memoria, mmu->dir_fisica, fd_memoria);
 	}
 }
 

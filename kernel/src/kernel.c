@@ -370,7 +370,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	log_info(logger, "hice el send");
 	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
 	log_info(logger, "recibo tabla segmentos inicial de tamaño: %d", list_size(tabla_segmentos));
-	pcb->contexto_de_ejecucion->tabla_de_segmentos = list_create();
+	pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos;
 	pcb->contexto_de_ejecucion->estado = NEW;
 
 	return pcb;

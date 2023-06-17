@@ -619,14 +619,14 @@ char* recv_valor(int fd_modulo){
 
 void send_valor_leido(char* valor, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA);
-	agregar_a_paquete(paquete, valor, strlen(valor));
+	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA);
-	agregar_a_paquete(paquete, &(valor), strlen(valor) + 1);
+	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
