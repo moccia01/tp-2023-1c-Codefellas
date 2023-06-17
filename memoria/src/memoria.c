@@ -116,7 +116,6 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger, "mando tabla actualizada de tamaño %d", list_size(tabla_segmentos_actualizada));
 			send_tabla_segmentos(tabla_segmentos_actualizada, cliente_socket);
 			break;
-
 		case INICIALIZAR_PROCESO:
 			int pid_init = recv_inicializar_proceso(cliente_socket);
 			log_info(logger, "se inicializa proceso");
@@ -134,6 +133,7 @@ static void procesar_conexion(void *void_args) {
 			int* tamanio_lectura = list_get(parametros_lectura, 1);
 			char* valor_leido = malloc(*tamanio_lectura);
 			memcpy(valor_leido, espacio_usuario + *posicion_lectura, *tamanio_lectura);
+			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido);
 			send_valor_leido(valor_leido, cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA:
@@ -141,6 +141,7 @@ static void procesar_conexion(void *void_args) {
 			int* posicion_escritura = list_get(parametros_escritura, 0);
 			char* valor_a_escribir = list_get(parametros_escritura, 1);
 			memcpy(espacio_usuario + *posicion_escritura, valor_a_escribir, strlen(valor_a_escribir));
+			log_info(logger, "se escribio el valor: %s,  en la posicion %d de espacio_usuario", valor_a_escribir, *posicion_escritura);
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -244,6 +245,7 @@ void eliminar_tabla_segmentos(int pid){
 int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 	t_hueco_memoria* hueco;
 	switch(ALGORITMO_ASIGNACION){
+	//TODO queda testear como funcionan cada algoritmo
 	case FIRST_FIT:
 		hueco = encontrar_hueco_first(tamanio);
 		break;
@@ -369,14 +371,14 @@ t_list* deletear_segmento(int id_segmento, int pid){
 }
 
 void agregar_hueco_libre(int base, int tamanio){
-	t_segmento *aux = NULL;
+	t_hueco_memoria *aux = NULL;
 	int i;
-	t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
+	t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
 	hueco_nuevo -> base = base;
 	hueco_nuevo -> tamanio = tamanio;
 
 	for(i=0 ; i < list_size(huecos_libres); i++){
-		t_segmento *segmento = list_get(huecos_libres, i);
+		t_hueco_memoria *segmento = list_get(huecos_libres, i);
 		if(segmento->base < base){
 			aux = segmento;
 		}
@@ -397,7 +399,7 @@ void agregar_hueco_libre(int base, int tamanio){
 		}
 	}
 	if(i + 1 < list_size(huecos_libres)){
-		t_segmento *siguiente_hueco = list_get(huecos_libres, i+1);
+		t_hueco_memoria *siguiente_hueco = list_get(huecos_libres, i+1);
 		if(aux->base + aux->tamanio == siguiente_hueco->base){
 			aux->tamanio += siguiente_hueco->tamanio;
 			list_remove(huecos_libres, i+1);
@@ -406,7 +408,7 @@ void agregar_hueco_libre(int base, int tamanio){
 }
 
 void compactar(){
-	//list_sort(segmentos_en_memoria,comparador_de_base);
+	list_sort(segmentos_en_memoria, (void*) comparador_de_base);
 	int tam_segmento=0;
 	int base_segmento=0;
 	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
@@ -414,7 +416,7 @@ void compactar(){
 		segmento_actual->base=base_segmento+tam_segmento;
 		base_segmento=segmento_actual->base;
 		tam_segmento=segmento_actual->tamanio;
-		//actualizar_segmento(segmento_actual);
+		actualizar_segmento(segmento_actual);
 	}
 	list_clean(huecos_libres);
 	t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
@@ -424,42 +426,61 @@ void compactar(){
 	return;
 }
 
-// prototipo de compactacion (no funca pero les queria dejar una idea)
-void compactar_version_tomy(){
-	// importante que esten las dos listas ordenadas por base
-	// list_sort(segmentos_en_memoria, cmp_base_segmentos);
-
-	// itero la lista de segmentos en memoria
-
-	for(int i,j = 0; i < list_size(segmentos_en_memoria); i++){
-		// ordeno la lista de huecos libres por si en la anterior iteracion agregue un nuevo hueco libre
-		// list_sort(huecos_libres, cmp_base_huecos)
-		t_segmento* segmento = list_get(segmentos_en_memoria, i);
-		t_hueco_memoria* hueco = list_get(huecos_libres, j);
-		if(segmento->base > hueco->base){
-			// esto quiere decir que se puede "empujar hacia abajo" al segmento
-			// o sea que tiene espacio para ser compactado
-			// elimino el hueco de la lista porque ahora el espacio lo ocupa el segmento
-			list_remove(huecos_libres, j);
-			int base_vieja_segmento = segmento->base;
-			segmento->base = hueco->base;
-			//chequear si esta funcion sigue sirviendo en este contexto
-			agregar_hueco_libre(base_vieja_segmento, hueco->tamanio);
-			// cuando se consolidan habria que hacer j-- porque se estan eliminando huecos libres
-			// de alguna manera tendriamos que saber si en agregar_hueco_libre se eliminaron huecos y cuantos
-			j++;
+void actualizar_segmento(t_segmento* segmento){
+	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
+		ts_wrapper* wrapper = list_get(lista_ts_wrappers, i);
+		if(buscar_segmento_en_ts(segmento, wrapper->tabla_de_segmentos)){
+			return;
 		}
 	}
-	// cuando se termina de compactar hay que actualizar la lista de ts_wrappers con los nuevos segmentos
-	// en realidad no son segmentos nuevos, solo bases nuevas de los segmentos viejos
-	// actualizar_lista_ts_wrappers(); (?
+	log_info(logger, "no se encontro el segmento de id: %d para actualizar el ts wrapper", segmento->id);
 }
 
-bool comparador_de_base(t_segmento *s1, t_segmento *s2){
-	if(s1->base < s2->base){
-		return true;
+bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos){
+	for(int i = 0; i < list_size(tabla_segmentos); i++){
+		t_segmento* segmento_en_ts = list_get(tabla_segmentos, i);
+		if(segmento_en_ts->id == segmento->id){
+			segmento_en_ts->base = segmento->base;
+			return true;
+		}
 	}
-	else
-		return false;
+	return false;
 }
+
+//// prototipo de compactacion (no funca pero les queria dejar una idea)
+//void compactar_version_tomy(){
+//	// importante que esten las dos listas ordenadas por base
+//	// list_sort(segmentos_en_memoria, cmp_base_segmentos);
+//
+//	// itero la lista de segmentos en memoria
+//
+//	for(int i,j = 0; i < list_size(segmentos_en_memoria); i++){
+//		// ordeno la lista de huecos libres por si en la anterior iteracion agregue un nuevo hueco libre
+//		// list_sort(huecos_libres, cmp_base_huecos)
+//		t_segmento* segmento = list_get(segmentos_en_memoria, i);
+//		t_hueco_memoria* hueco = list_get(huecos_libres, j);
+//		if(segmento->base > hueco->base){
+//			// esto quiere decir que se puede "empujar hacia abajo" al segmento
+//			// o sea que tiene espacio para ser compactado
+//			// elimino el hueco de la lista porque ahora el espacio lo ocupa el segmento
+//			list_remove(huecos_libres, j);
+//			int base_vieja_segmento = segmento->base;
+//			segmento->base = hueco->base;
+//			//chequear si esta funcion sigue sirviendo en este contexto
+//			agregar_hueco_libre(base_vieja_segmento, hueco->tamanio);
+//			// cuando se consolidan habria que hacer j-- porque se estan eliminando huecos libres
+//			// de alguna manera tendriamos que saber si en agregar_hueco_libre se eliminaron huecos y cuantos
+//			j++;
+//		}
+//	}
+//	// cuando se termina de compactar hay que actualizar la lista de ts_wrappers con los nuevos segmentos
+//	// en realidad no son segmentos nuevos, solo bases nuevas de los segmentos viejos
+//	// actualizar_lista_ts_wrappers(); (?
+//}
+
+bool comparador_de_base(t_segmento *s1, t_segmento *s2){
+	return s1->base <= s2->base;
+}
+
+
 
