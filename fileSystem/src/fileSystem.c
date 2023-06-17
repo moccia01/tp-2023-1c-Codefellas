@@ -89,7 +89,6 @@ void crear_bitmap(){
 
 void crear_archivo_de_bloques(){
 
-	//Primero deberia leer el archivo y en caso de que no este creado crearlo
 	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
 	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
 	buffer_bloques = mmap(NULL, TAMANIO, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -98,20 +97,6 @@ void crear_archivo_de_bloques(){
 		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
 		exit(1);
 	}
-
-	//X AHORA QUEDA HASTA ACA CHECKPOINT 3
-
-	/*
-
-	//Ver que onda despues con esto
-	TAMANIO = BLOCK_SIZE * BLOCK_COUNT;
-	ARRAY_BLOQUES= malloc(TAMANIO);
-
-	for(int i = 0; i < TAMANIO; i++){
-		//ARRAY_BLOQUES[i] = malloc();
-		strcpy(ARRAY_BLOQUES[i], "");
-	}
-	*/
 	close(fd);
 }
 
@@ -131,10 +116,6 @@ void terminar_programa(){
 
 static void procesar_conexion() {
 	op_code cop;
-	char* nombre_archivo;
-	int* tamanio;
-	int* dir_fisica;
-	t_list* parametros_fs;
 
 	while (socket_cliente != -1) {
         if (recv(socket_cliente, &cop, sizeof(op_code), 0) != sizeof(op_code)) {
@@ -146,38 +127,36 @@ static void procesar_conexion() {
 			recibir_mensaje(logger, socket_cliente);
 			break;
 		case MANEJAR_F_OPEN:
-			parametros_fs = recv_elementos_fs(socket_cliente);	//TODO Chequear esta funcion, parece que rompe
-			nombre_archivo = list_get(parametros_fs, 0);
+			char* nombre_archivo_open = recv_manejo_f_open(socket_cliente);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
-			manejar_f_open(nombre_archivo);
+			manejar_f_open(nombre_archivo_open);
 			break;
 		case MANEJAR_F_CREATE:
-			parametros_fs = recv_elementos_fs(socket_cliente);
-			nombre_archivo = list_get(parametros_fs, 0);
-			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
-			manejar_f_create(nombre_archivo);
+//			nombre_archivo = recv_manejo_f_open(socket_cliente);
+//			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
+//			manejar_f_create(nombre_archivo);
 			break;
 		case MANEJAR_F_TRUNCATE:
-			parametros_fs = recv_elementos_fs(socket_cliente);
-			nombre_archivo = list_get(parametros_fs, 0);
-			tamanio = list_get(parametros_fs, 1);
-			manejar_f_truncate(nombre_archivo, tamanio);
+			t_list* parametros_truncate = recv_manejo_f_truncate(socket_cliente);
+			char* nombre_archivo_truncate = list_get(parametros_truncate, 0);
+			int* tamanio_truncate = list_get(parametros_truncate, 1);
+			manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_TRUNCATE");
 			break;
 		case MANEJAR_F_READ:
-			parametros_fs = recv_elementos_fs(socket_cliente);
-			nombre_archivo = list_get(parametros_fs, 0);
-			tamanio = list_get(parametros_fs, 1);
-			dir_fisica = list_get(parametros_fs, 2);
-			manejar_f_read(nombre_archivo, dir_fisica, tamanio);
+			t_list* parametros_read = recv_manejo_f_read(socket_cliente);
+			char* nombre_archivo_read = list_get(parametros_read, 0);
+			int* tamanio_read = list_get(parametros_read, 1);
+			int* dir_fisica_read = list_get(parametros_read, 2);
+			manejar_f_read(nombre_archivo_read, *dir_fisica_read, *tamanio_read);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_READ");
 			break;
 		case MANEJAR_F_WRITE:
-			parametros_fs = recv_elementos_fs(socket_cliente);
-			nombre_archivo = list_get(parametros_fs, 0);
-			tamanio = list_get(parametros_fs, 1);
-			dir_fisica = list_get(parametros_fs, 2);
-			manejar_f_write(nombre_archivo, dir_fisica, tamanio);
+			t_list* parametros_write = recv_manejo_f_write(socket_cliente);
+			char* nombre_archivo_write = list_get(parametros_write, 0);
+			int* dir_fisica_write = list_get(parametros_write, 1);
+			int* tamanio_write = list_get(parametros_write, 2);
+			manejar_f_write(nombre_archivo_write, *dir_fisica_write, *tamanio_write);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_WRITE");
 			break;
 		default:
@@ -265,22 +244,22 @@ void manejar_f_create(char* nombre_archivo){
 	send_confirmacion_archivo_creado(socket_cliente);
 }
 
-void manejar_f_truncate(char* nombre_archivo, int* tamanio){
+void manejar_f_truncate(char* nombre_archivo, int tamanio){
 
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO");
 
-	if(tamanio > &tamanio_fcb){
+	if(tamanio > tamanio_fcb){
 		// AMPLIAR
 	} else{
 		// REDUCIR
 	}
 }
 
-void manejar_f_read(char* nombre_archivo, int* dir_fisica, int* tamanio){
+void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio){
 
 }
 
-void manejar_f_write(char* nombre_archivo, int* dir_fisica, int *tamanio){
+void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio){
 
 }

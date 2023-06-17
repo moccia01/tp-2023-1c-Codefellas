@@ -294,9 +294,8 @@ void procesar_conexion(void* void_args) {
 				// manejo fin f_write...
 				break;
 			case MANEJAR_F_OPEN:
-//				t_list* algo = recv_elementos_fs(cliente_socket);
-//				char* nombre_archivo = list_get(algo, 0);
-				char* nombre_archivo = recv_nombre_archivo(cliente_socket);
+
+				char* nombre_archivo = recv_manejo_f_open(cliente_socket);
 				if(!archivo_is_opened(nombre_archivo)){
 					send_manejar_f_open(nombre_archivo, fd_filesystem);
 					agregar_archivo_a_tabla_global(nombre_archivo);

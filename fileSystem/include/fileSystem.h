@@ -72,9 +72,9 @@ bool existe_fcb(char* nombre_archivo);
 t_config* obtener_archivo(char* nombre_archivo);
 void manejar_f_open(char* nombre_archivo);
 void manejar_f_create(char* nombre_archivo);
-void manejar_f_truncate(char* nombre_archivo, int* tamanio);
-void manejar_f_read(char* nombre_archivo, int* dir_fisica, int* tamanio);
-void manejar_f_write(char* nombre_archivo, int* dir_fisica, int* tamanio);
+void manejar_f_truncate(char* nombre_archivo, int tamanio);
+void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio);
+void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio);
 
 // Estructuras
 typedef struct{

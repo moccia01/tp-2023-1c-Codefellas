@@ -134,8 +134,10 @@ int recv_inicializar_proceso(int fd_modulo);
 t_list* recv_proceso_inicializado(int fd_modulo);
 int recv_terminar_proceso(int fd_modulo);
 int recv_base_segmento(int fd_modulo);
-t_list* recv_elementos_fs(int fd_modulo);
-char* recv_nombre_archivo(int fd_modulo);
+char* recv_manejo_f_open(int fd_modulo);
+t_list* recv_manejo_f_truncate(int fd_modulo);
+t_list* recv_manejo_f_read(int fd_modulo);
+t_list* recv_manejo_f_write(int fd_modulo);
 void recv_iniciar_compactacion(int fd_modulo);
 t_list* recv_ts_wrappers(int fd_modulo);
 
