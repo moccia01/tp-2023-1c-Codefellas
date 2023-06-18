@@ -50,10 +50,30 @@ void inicializar_variables(){
 }
 
 void inicializar_fcbs(){
-	//TODO Ver como recorrer el directorio de fcbs (no la lista_fcbs ya que esta en memoria) para ver si hay archivos y si es así, cargarlos en la lista
-	//Investigar que función de dirent.h sirve para esto, puede que readdir, habría que iterar en un while
-	//Esto nos devuelve un struct con los directorios en teoría y con eso podríamos jugar a cargar la lista_fcbs
-	//No debería ser complejo
+
+	DIR *directorio_archivos = opendir(PATH_FCB);
+	struct dirent *fcb;
+
+	if(directorio_archivos == NULL){
+		log_error(logger, "No se pudo abrir el directorio de fcbs");
+		exit(1);
+	}
+
+	while((fcb = readdir(directorio_archivos)) != NULL){
+		t_archivo *archivo = malloc(sizeof(t_archivo));
+		archivo->nombre_archivo = malloc(strlen(fcb->d_name));
+		strcpy(archivo->nombre_archivo, fcb->d_name);
+
+		char* path_archivo = malloc(strlen(PATH_FCB) + strlen(fcb->d_name));
+		strcpy(path_archivo, PATH_FCB);
+		strcat(path_archivo, fcb->d_name);
+		archivo->archivo_fcb = config_create(path_archivo);
+
+		list_add(lista_fcbs, archivo);
+	}
+
+	closedir(directorio_archivos);
+
 }
 
 void leer_superbloque(){
@@ -96,7 +116,7 @@ void crear_bitmap(){
 void crear_archivo_de_bloques(){
 	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
 	TAMANIO_ARCHIVO_BLOQUES = BLOCK_SIZE * BLOCK_COUNT;
-	buffer_bloques = mmap(NULL, TAMANIO_ARCHIVO_BLOQUES, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	buffer_bloques = mSmap(NULL, TAMANIO_ARCHIVO_BLOQUES, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(fd == -1){
 		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
@@ -208,14 +228,14 @@ t_config* obtener_archivo(char* nombre_archivo){
 
 void manejar_f_open(char* nombre_archivo){
 	if(!existe_fcb(nombre_archivo)){
-		send_aviso_archivo_inexistente(socket_cliente);
+		//send_aviso_archivo_inexistente(socket_cliente);
 		manejar_f_create(nombre_archivo);
 	}
-	send_confirmacion_archivo_abierto(socket_cliente);
+	//send_confirmacion_archivo_abierto(socket_cliente);
 }
 
 void manejar_f_create(char* nombre_archivo){
-	char* path_archivo = malloc(strlen(PATH_FCB));
+	char* path_archivo = malloc(strlen(PATH_FCB) + strlen(nombre_archivo));
 	strcpy(path_archivo, PATH_FCB);
 	strcat(path_archivo, nombre_archivo);
 
