@@ -422,7 +422,7 @@ void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
 
 void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* contexto){
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_seek(nombre_archivo, socket_cliente);
+	send_manejar_f_seek(nombre_archivo, posicion, socket_cliente);
 }
 
 void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){

@@ -25,6 +25,7 @@ typedef struct{
 
 typedef struct{
 	char* nombre_archivo;
+	int puntero;
 	t_list* cola_block_asignada;
 	pthread_mutex_t mutex_asignado;
 }t_archivo;
@@ -77,6 +78,7 @@ t_list* cola_listos_para_ready;
 t_list* cola_exec;
 t_list* cola_block;
 t_list* cola_block_io;
+t_list* cola_block_truncate;
 int fs_mem_op_count;
 
 // Semaforos y pthread
@@ -87,6 +89,7 @@ pthread_mutex_t mutex_cola_exit;
 pthread_mutex_t mutex_cola_exec;
 pthread_mutex_t mutex_cola_block;
 pthread_mutex_t mutex_cola_block_io;
+pthread_mutex_t mutex_cola_truncate;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;
@@ -151,11 +154,11 @@ void manejar_wait(t_pcb* pcb, char* recurso);
 t_recurso* buscar_recurso(char* recurso);
 void manejar_signal(t_pcb* pcb, char* recurso);
 void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int tamanio);
+t_archivo* get_archivo_global(char* nombre_archivo);
+t_archivo* get_archivo_pcb(char* nombre_archivo, t_pcb* pcb);
 bool archivo_is_opened(char* nombre_archivo);
-void agregar_archivo_a_tabla_global(char* nombre_archivo);
 t_archivo* archivo_create(char* nombre_archivo);
-t_archivo* agregar_archivo_a_tabla_proceso(t_pcb* pcb, char* nombre_archivo);
-void bloquear_proceso_por_archivo(t_pcb* pcb, t_archivo* archivo);
+t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb);
 
 
 #endif /* KERNEL_H_ */

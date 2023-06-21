@@ -110,6 +110,7 @@ void inicializar_variables() {
 	cola_exec = list_create();
 	cola_block = list_create();
 	cola_block_io = list_create();
+	cola_block_truncate = list_create();
 	lista_recursos = inicializar_recursos();
 	fs_mem_op_count = 0;
 	archivos_abiertos = list_create();
@@ -122,6 +123,8 @@ void inicializar_variables() {
 	pthread_mutex_init(&mutex_cola_exec, NULL);
 	pthread_mutex_init(&mutex_cola_block, NULL);
 	pthread_mutex_init(&mutex_cola_block_io, NULL);
+	pthread_mutex_init(&mutex_cola_truncate, NULL);
+
 	sem_init(&sem_multiprog, 0, GRADO_MAX_MULTIPROGRAMACION);
 	sem_init(&sem_listos_ready, 0, 0);
 	sem_init(&sem_ready, 0, 0);
@@ -272,13 +275,6 @@ void procesar_conexion(void* void_args) {
 				fs_mem_op_count++;
 				// manejo f_read;
 				break;
-			case FIN_F_READ:
-				fs_mem_op_count--;
-				if(fs_mem_op_count == 0){
-					sem_post(&ongoing_fs_mem_op);
-				}
-				// manejo fin f_read...
-				break;
 			case MANEJAR_F_WRITE:
 				if(fs_mem_op_count == 0){
 					sem_wait(&ongoing_fs_mem_op);
@@ -286,42 +282,75 @@ void procesar_conexion(void* void_args) {
 				fs_mem_op_count++;
 				// manejo f_write;
 				break;
-			case FIN_F_WRITE:
-				fs_mem_op_count--;
-				if(fs_mem_op_count == 0){
-					sem_post(&ongoing_fs_mem_op);
-				}
-				// manejo fin f_write...
-				break;
 			case MANEJAR_F_OPEN:
-
-				char* nombre_archivo = recv_manejo_f_open(cliente_socket);
-				if(!archivo_is_opened(nombre_archivo)){
-					send_manejar_f_open(nombre_archivo, fd_filesystem);
-					agregar_archivo_a_tabla_global(nombre_archivo);
-					agregar_archivo_a_tabla_proceso(pcb, nombre_archivo);
+				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
+				t_archivo* archivo_open = archivo_create(nombre_archivo_open);
+				if(!archivo_is_opened(nombre_archivo_open)){
+					send_manejar_f_open(nombre_archivo_open, fd_filesystem);
+					list_add(archivos_abiertos, archivo_open);
+					list_add(pcb->archivos_abiertos, archivo_open);
+					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+					send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				}else{
-					t_archivo* archivo = agregar_archivo_a_tabla_proceso(pcb, nombre_archivo);
-					bloquear_proceso_por_archivo(pcb, archivo);
+					safe_pcb_add(archivo_open->cola_block_asignada, pcb, &(archivo_open->mutex_asignado));
 				}
 				break;
 			case MANEJAR_F_CLOSE:
-
+				char* nombre_archivo_close = recv_manejo_f_close(cliente_socket);
+				t_archivo* archivo_close = quitar_archivo_de_tabla_proceso(nombre_archivo_close, pcb);
+				pthread_mutex_lock(&(archivo_close->mutex_asignado));
+				if(!list_is_empty(archivo_close->cola_block_asignada)){
+					t_pcb* pcb_bloqueado = list_get(archivo_close->cola_block_asignada, 0);
+					safe_pcb_add(cola_block, pcb_bloqueado, &mutex_cola_block);
+					sem_post(&sem_block_return);
+				}else{
+					list_remove_element(archivos_abiertos, archivo_close);
+				}
+				pthread_mutex_unlock(&(archivo_close->mutex_asignado));
+				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_SEEK:
-
+				t_list* f_seek_params = recv_manejo_f_seek(cliente_socket);
+				char* nombre_archivo_seek = list_get(f_seek_params, 0);
+				int* puntero_seek = list_get(f_seek_params, 1);
+				t_archivo* archivo_seek = get_archivo_global(nombre_archivo_seek);
+				archivo_seek->puntero = *puntero_seek;
+				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_TRUNCATE:
-
+				t_list* f_truncate_params = recv_manejo_f_truncate(cliente_socket);
+				char* nombre_archivo_truncate = list_get(f_truncate_params, 0);
+				int* tamanio_truncate = list_get(f_truncate_params, 1);
+				send_manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate, fd_filesystem);
+				sem_post(&sem_exec);
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 				return;
 			}
 			break;
-//		case INICIALIZAR_PROCESO:
-//			log_info(logger, "se recibe de memoria la tabla de segmentos inicial del proceso");
-//			return;
+		case FIN_F_READ:
+			fs_mem_op_count--;
+			if(fs_mem_op_count == 0){
+				sem_post(&ongoing_fs_mem_op);
+			}
+			// manejo fin f_read...
+			break;
+		case FIN_F_WRITE:
+			fs_mem_op_count--;
+			if(fs_mem_op_count == 0){
+				sem_post(&ongoing_fs_mem_op);
+			}
+			// manejo fin f_write...
+			break;
+		case FIN_F_TRUNCATE:
+//			recv_fin_f_truncate(cliente_socket);
+			t_pcb* pcb_truncate = safe_pcb_remove(cola_block_truncate, &mutex_cola_truncate);
+			safe_pcb_add(cola_block, pcb_truncate, &mutex_cola_truncate);
+			sem_post(&sem_block_return);
+			break;
 		default:
 			log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
 			log_info(logger, "el numero del cop es: %d", cop);
@@ -771,24 +800,34 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 	}
 }
 
-bool archivo_is_opened(char* nombre_archivo){
+t_archivo* get_archivo_global(char* nombre_archivo){
 	for(int i = 0; i < list_size(archivos_abiertos); i++){
 		t_archivo* archivo = list_get(archivos_abiertos, i);
 		if(strcmp(archivo->nombre_archivo, nombre_archivo) == 0){
-			return true;
+			return archivo;
 		}
 	}
-	return false;
+	return NULL;
 }
 
-void agregar_archivo_a_tabla_global(char* nombre_archivo){
-	t_archivo* archivo = archivo_create(nombre_archivo);
-	list_add(archivos_abiertos, archivo);
+t_archivo* get_archivo_pcb(char* nombre_archivo, t_pcb* pcb){
+	for(int i = 0; i < list_size(pcb->archivos_abiertos); i++){
+		t_archivo* archivo = list_get(pcb->archivos_abiertos, i);
+		if(strcmp(archivo->nombre_archivo, nombre_archivo) == 0){
+			return archivo;
+		}
+	}
+	return NULL;
+}
+
+bool archivo_is_opened(char* nombre_archivo){
+	return get_archivo_global(nombre_archivo) != NULL;
 }
 
 t_archivo* archivo_create(char* nombre_archivo){
 	t_archivo* archivo = malloc(sizeof(t_archivo));
 	archivo->nombre_archivo = nombre_archivo;
+	archivo->puntero = 0;
 	archivo->cola_block_asignada = list_create();
 	pthread_mutex_t mutex_asignado;
 	pthread_mutex_init(&mutex_asignado, NULL);
@@ -796,11 +835,8 @@ t_archivo* archivo_create(char* nombre_archivo){
 	return archivo;
 }
 
-t_archivo* agregar_archivo_a_tabla_proceso(t_pcb* pcb, char* nombre_archivo){
-	t_archivo* archivo = archivo_create(nombre_archivo);
-	list_add(pcb->archivos_abiertos, archivo);
+t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb){
+	t_archivo* archivo = get_archivo_pcb(nombre_archivo, pcb);
+	list_remove_element(pcb->archivos_abiertos, archivo);
 	return archivo;
-}
-void bloquear_proceso_por_archivo(t_pcb* pcb, t_archivo* archivo){
-	safe_pcb_add(archivo->cola_block_asignada, pcb, &(archivo->mutex_asignado));
 }

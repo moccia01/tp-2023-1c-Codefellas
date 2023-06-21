@@ -511,10 +511,12 @@ void send_manejar_f_close(char* nombre_archivo, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_manejar_f_seek(char* nombre_archivo, int fd_modulo){
+void send_manejar_f_seek(char* nombre_archivo, int posicion, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_SEEK);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &posicion, sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_read(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int fd_modulo){
@@ -706,7 +708,15 @@ char* recv_manejo_f_open(int fd_modulo){
 	return nombre_archivo;
 }
 
+char* recv_manejo_f_close(int fd_modulo){
+	return recv_manejo_f_open(fd_modulo);
+}
+
 t_list* recv_manejo_f_truncate(int fd_modulo){
+	return recibir_paquete(fd_modulo);
+}
+
+t_list* recv_manejo_f_seek(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
