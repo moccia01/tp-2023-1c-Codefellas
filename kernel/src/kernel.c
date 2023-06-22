@@ -485,7 +485,18 @@ void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_block, &mutex_cola_block);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_exit, &mutex_cola_exit);
 
-	// TODO faltan las colas de los procesos bloqueados por recursos y archivos (LA CONCHA DE LA LORA)
+	// TODO falta testear esto
+	for(int i = 0; i < list_size(lista_recursos); i++){
+		t_recurso* recurso = list_get(lista_recursos, i);
+		actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, recurso->cola_block_asignada, &(recurso->mutex_asignado));
+	}
+
+	for(int i = 0; i < list_size(archivos_abiertos); i++){
+		t_archivo* archivo = list_get(archivos_abiertos, i);
+		actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, archivo->cola_block_asignada, &(archivo->mutex_asignado));
+	}
+
+
 
 }
 
