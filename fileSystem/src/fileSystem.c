@@ -297,12 +297,12 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	if(tamanio_nuevo > tamanio_fcb){
 		// AMPLIAR
 		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
+		//int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
 		//asignar_bloques(cantidad_bloques, archivo_fcb);
 	} else{
 		// REDUCIR
 		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
+		//int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
 		//sacar_bloques(cantidad_bloques, archivo_fcb);
 	}
 }

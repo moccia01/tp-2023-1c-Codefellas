@@ -283,34 +283,43 @@ void procesar_conexion(void* void_args) {
 				// manejo f_write;
 				break;
 			case MANEJAR_F_OPEN:
+				log_info(logger, "Manejo F_OPEN");
 				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
 				t_archivo* archivo_open = archivo_create(nombre_archivo_open);
 				if(!archivo_is_opened(nombre_archivo_open)){
+					log_info(logger, "aviso al fs que abra o cree el archivo");
 					send_manejar_f_open(nombre_archivo_open, fd_filesystem);
 					list_add(archivos_abiertos, archivo_open);
+					log_info(logger, "ahora hay %d archivos abiertos", list_size(archivos_abiertos));
 					list_add(pcb->archivos_abiertos, archivo_open);
+					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
 					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 					send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				}else{
+					log_info(logger, "bloqueo al proceso %d porque el archivo %s ya estaba abierto", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 					safe_pcb_add(archivo_open->cola_block_asignada, pcb, &(archivo_open->mutex_asignado));
 				}
 				break;
 			case MANEJAR_F_CLOSE:
+				log_info(logger, "Manejo F_CLOSE");
 				char* nombre_archivo_close = recv_manejo_f_close(cliente_socket);
 				t_archivo* archivo_close = quitar_archivo_de_tabla_proceso(nombre_archivo_close, pcb);
 				pthread_mutex_lock(&(archivo_close->mutex_asignado));
 				if(!list_is_empty(archivo_close->cola_block_asignada)){
 					t_pcb* pcb_bloqueado = list_get(archivo_close->cola_block_asignada, 0);
+					log_info(logger, "Desbloqueo al proceso %d bloqueado por archivo %s", pcb_bloqueado->contexto_de_ejecucion->pid, nombre_archivo_close);
 					safe_pcb_add(cola_block, pcb_bloqueado, &mutex_cola_block);
 					sem_post(&sem_block_return);
 				}else{
 					list_remove_element(archivos_abiertos, archivo_close);
+					log_info(logger, "Cierro el archivo %s, quedan %d archivos abiertos", nombre_archivo_close, list_size(archivos_abiertos));
 				}
 				pthread_mutex_unlock(&(archivo_close->mutex_asignado));
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_SEEK:
+				log_info(logger, "Manejo F_SEEK");
 				t_list* f_seek_params = recv_manejo_f_seek(cliente_socket);
 				char* nombre_archivo_seek = list_get(f_seek_params, 0);
 				int* puntero_seek = list_get(f_seek_params, 1);
@@ -320,6 +329,7 @@ void procesar_conexion(void* void_args) {
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_TRUNCATE:
+				log_info(logger, "Manejo F_TRUNCATE");
 				t_list* f_truncate_params = recv_manejo_f_truncate(cliente_socket);
 				char* nombre_archivo_truncate = list_get(f_truncate_params, 0);
 				int* tamanio_truncate = list_get(f_truncate_params, 1);
@@ -347,6 +357,7 @@ void procesar_conexion(void* void_args) {
 			break;
 		case FIN_F_TRUNCATE:
 //			recv_fin_f_truncate(cliente_socket);
+			log_info(logger, "el fs termino de truncar el archivo del proceso %d", pcb->contexto_de_ejecucion->pid);
 			t_pcb* pcb_truncate = safe_pcb_remove(cola_block_truncate, &mutex_cola_truncate);
 			safe_pcb_add(cola_block, pcb_truncate, &mutex_cola_truncate);
 			sem_post(&sem_block_return);

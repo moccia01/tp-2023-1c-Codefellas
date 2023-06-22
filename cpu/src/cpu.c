@@ -416,33 +416,49 @@ void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
 	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_manejar_f_open(nombre, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_close(nombre_archivo, socket_cliente);
+	send_manejar_f_close(nombre, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_f_seek(char* nombre_archivo, int posicion, t_contexto_ejecucion* contexto){
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_seek(nombre_archivo, posicion, socket_cliente);
+	send_manejar_f_seek(nombre, posicion, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_f_read(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_read(nombre_archivo, mmu->dir_fisica, cantidad_bytes, socket_cliente);
+	send_manejar_f_read(nombre, mmu->dir_fisica, cantidad_bytes, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_f_write(char* nombre_archivo, int dir_logica, int cantidad_bytes, t_contexto_ejecucion* contexto){
 	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_write(nombre_archivo, mmu->dir_fisica, cantidad_bytes, socket_cliente);
+	send_manejar_f_write(nombre, mmu->dir_fisica, cantidad_bytes, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion* contexto){
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_truncate(nombre_archivo, tamanio, socket_cliente);
+	send_manejar_f_truncate(nombre, tamanio, socket_cliente);
+	free(nombre);
 }
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
