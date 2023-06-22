@@ -86,6 +86,8 @@ void leer_superbloque(){
 
 	BLOCK_SIZE = config_get_int_value(superbloque, "BLOCK_SIZE");
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
+
+	// TODO comment de tomy: acuerdense de hacerle un config_destroy a superbloque si no lo usan mas
 }
 
 void crear_bitmap(){
@@ -109,19 +111,25 @@ void crear_bitmap(){
 //    // Liberar recursos
 //    munmap(mmap_funciono, tamanio_bitmap);
 //    bitarray_destroy(bitmap);
-    close(fd);
+
+	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre?
+	// Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
+	close(fd);
 
 }
 
 void crear_archivo_de_bloques(){
 	int fd = open(PATH_BLOQUES, O_CREAT | O_RDWR);
 	TAMANIO_ARCHIVO_BLOQUES = BLOCK_SIZE * BLOCK_COUNT;
-	buffer_bloques = mSmap(NULL, TAMANIO_ARCHIVO_BLOQUES, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	buffer_bloques = mmap(NULL, TAMANIO_ARCHIVO_BLOQUES, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(fd == -1){
 		log_error(logger, "Hubo un problema creando o abriendo el archivo de bloques >:(");
 		exit(1);
 	}
+
+	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre?
+	// Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
 	close(fd);
 }
 
