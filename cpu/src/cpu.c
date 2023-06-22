@@ -411,8 +411,11 @@ void ejecutar_io(int tiempo_io, t_contexto_ejecucion* contexto){
 }
 
 void ejecutar_f_open(char* nombre_archivo, t_contexto_ejecucion* contexto){
+	log_info(logger,"Me llego este nombre: %s", nombre_archivo);
+	char* nombre = malloc(strlen(nombre_archivo) + 1);
+	strcpy(nombre, nombre_archivo);
 	send_contexto_ejecucion(contexto, socket_cliente);
-	send_manejar_f_open(nombre_archivo, socket_cliente);
+	send_manejar_f_open(nombre, socket_cliente);
 }
 
 void ejecutar_f_close(char* nombre_archivo, t_contexto_ejecucion* contexto){
@@ -444,7 +447,7 @@ void ejecutar_f_truncate(char* nombre_archivo, int tamanio, t_contexto_ejecucion
 
 void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 	log_info(logger,"Se esta ejecutando un WAIT al recurso %s", recurso);
-	char* r = malloc(sizeof(recurso));
+	char* r = malloc(strlen(recurso) + 1);
 	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_wait(r, socket_cliente);
@@ -452,7 +455,7 @@ void ejecutar_wait(char* recurso, t_contexto_ejecucion* contexto){
 }
 
 void ejecutar_signal(char* recurso, t_contexto_ejecucion* contexto){
-	char* r = malloc(sizeof(recurso));
+	char* r = malloc(strlen(recurso) + 1);
 	strcpy(r, recurso);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_recurso_signal(r, socket_cliente);

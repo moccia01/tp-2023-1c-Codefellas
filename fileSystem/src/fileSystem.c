@@ -47,6 +47,7 @@ void inicializar_variables(){
 	leer_config();
 	levantar_archivos();
 	inicializar_fcbs();
+	lista_fcbs = list_create();
 }
 
 void inicializar_fcbs(){
@@ -60,10 +61,10 @@ void inicializar_fcbs(){
 	}
 
 	while((fcb = readdir(directorio_archivos)) != NULL){
-		log_info(logger, "Lei esto del directorio: %s", fcb->d_name);
 		if (strcmp(fcb->d_name, ".") == 0 || strcmp(fcb->d_name, "..") == 0){
 			continue;
 		}
+		log_info(logger, "Lei esto del directorio: %s", fcb->d_name);
 
 		t_archivo *archivo = malloc(sizeof(t_archivo));
 		archivo->nombre_archivo = malloc(strlen(fcb->d_name));
@@ -91,6 +92,8 @@ void leer_superbloque(){
 
 	BLOCK_SIZE = config_get_int_value(superbloque, "BLOCK_SIZE");
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
+
+	config_destroy(superbloque);
 
 	// TODO comment de tomy: acuerdense de hacerle un config_destroy a superbloque si no lo usan mas
 }
@@ -167,6 +170,7 @@ static void procesar_conexion() {
 		case MANEJAR_F_OPEN:
 			char* nombre_archivo_open = recv_manejo_f_open(socket_cliente);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
+			log_info(logger,"Me llego este nombre: %s", nombre_archivo_open);
 			manejar_f_open(nombre_archivo_open);
 			break;
 		case MANEJAR_F_CREATE:
@@ -267,9 +271,18 @@ void manejar_f_create(char* nombre_archivo){
 	sprintf(text_puntero_directo, "%d", nuevo_fcb->puntero_directo);
 	sprintf(text_puntero_indirecto, "%d", nuevo_fcb->puntero_indirecto);
 
+	//Momento creo archivo
+	FILE* f_fcb = fopen(path_archivo, "r+w");
+
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	archivo_fcb->archivo_fcb = config_create(path_archivo);
+
+	//Momento diccionario
+	dictionary_put(archivo_fcb->archivo_fcb->properties, "NOMBRE_ARCHIVO","");
+	dictionary_put(archivo_fcb->archivo_fcb->properties, "TAMANIO_ARCHIVO","");
+	dictionary_put(archivo_fcb->archivo_fcb->properties, "PUNTERO_DIRECTO","");
+	dictionary_put(archivo_fcb->archivo_fcb->properties, "PUNTERO_INDIRECTO","");
 
 	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
@@ -278,6 +291,7 @@ void manejar_f_create(char* nombre_archivo){
 
 	list_add(lista_fcbs, archivo_fcb);
 	send_confirmacion_archivo_creado(socket_cliente);
+	fclose(f_fcb);
 }
 
 void manejar_f_truncate(char* nombre_archivo, int tamanio){
