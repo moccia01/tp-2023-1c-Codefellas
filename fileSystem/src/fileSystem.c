@@ -46,8 +46,8 @@ void leer_config(){
 void inicializar_variables(){
 	leer_config();
 	levantar_archivos();
-	inicializar_fcbs();
 	lista_fcbs = list_create();
+	inicializar_fcbs();
 }
 
 void inicializar_fcbs(){
@@ -272,7 +272,7 @@ void manejar_f_create(char* nombre_archivo){
 	sprintf(text_puntero_indirecto, "%d", nuevo_fcb->puntero_indirecto);
 
 	//Momento creo archivo
-	FILE* f_fcb = fopen(path_archivo, "r+w");
+	FILE* f_fcb = fopen(path_archivo, "a+");
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
