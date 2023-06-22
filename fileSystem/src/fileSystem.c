@@ -271,23 +271,17 @@ void manejar_f_create(char* nombre_archivo){
 	sprintf(text_puntero_directo, "%d", nuevo_fcb->puntero_directo);
 	sprintf(text_puntero_indirecto, "%d", nuevo_fcb->puntero_indirecto);
 
-	//Momento creo archivo
 	FILE* f_fcb = fopen(path_archivo, "a+");
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	archivo_fcb->archivo_fcb = config_create(path_archivo);
 
-	//Momento diccionario
-	dictionary_put(archivo_fcb->archivo_fcb->properties, "NOMBRE_ARCHIVO","");
-	dictionary_put(archivo_fcb->archivo_fcb->properties, "TAMANIO_ARCHIVO","");
-	dictionary_put(archivo_fcb->archivo_fcb->properties, "PUNTERO_DIRECTO","");
-	dictionary_put(archivo_fcb->archivo_fcb->properties, "PUNTERO_INDIRECTO","");
-
 	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_DIRECTO", text_puntero_directo);
 	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
+	config_save(archivo_fcb->archivo_fcb);
 
 	list_add(lista_fcbs, archivo_fcb);
 	send_confirmacion_archivo_creado(socket_cliente);
