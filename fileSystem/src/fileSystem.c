@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	pthread_create(&conexion_memoria, NULL, (void*) server_escuchar, NULL);
 	pthread_join(conexion_memoria, NULL);
 
-	terminar_programa(logger, config);
+	terminar_programa();
 	return 0;
 }
 
@@ -60,6 +60,11 @@ void inicializar_fcbs(){
 	}
 
 	while((fcb = readdir(directorio_archivos)) != NULL){
+		log_info(logger, "Lei esto del directorio: %s", fcb->d_name);
+		if (strcmp(fcb->d_name, ".") == 0 || strcmp(fcb->d_name, "..") == 0){
+			continue;
+		}
+
 		t_archivo *archivo = malloc(sizeof(t_archivo));
 		archivo->nombre_archivo = malloc(strlen(fcb->d_name));
 		strcpy(archivo->nombre_archivo, fcb->d_name);
