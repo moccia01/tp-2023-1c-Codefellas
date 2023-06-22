@@ -288,14 +288,22 @@ void manejar_f_create(char* nombre_archivo){
 	fclose(f_fcb);
 }
 
-void manejar_f_truncate(char* nombre_archivo, int tamanio){
+void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
-	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO");
+	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO_ARCHIVO");
+	char* texto_tamanio_archivo = malloc(10);
+	sprintf(texto_tamanio_archivo, "%d", tamanio_nuevo);
 
-	if(tamanio > tamanio_fcb){
+	if(tamanio_nuevo > tamanio_fcb){
 		// AMPLIAR
+		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
+		int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
+		//asignar_bloques(cantidad_bloques, archivo_fcb);
 	} else{
 		// REDUCIR
+		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
+		int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
+		//sacar_bloques(cantidad_bloques, archivo_fcb);
 	}
 }
 
