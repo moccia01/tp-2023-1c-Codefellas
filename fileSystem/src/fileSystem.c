@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
 	}
 
 	inicializar_variables();
+	iniciar_atencion_peticiones();
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
@@ -219,6 +220,22 @@ void server_escuchar() {
 		log_info(logger, "Hubo un error en la conexion del %s", server_name);
 	}
 	procesar_conexion();
+}
+
+
+// ------------------ MANEJO OPERACIONES ------------------
+
+void iniciar_atencion_peticiones(){
+	pthread_t hilo_peticiones;
+
+	pthread_create(&hilo_peticiones, NULL, (void* )atender_peticiones, NULL);
+	pthread_detach(hilo_peticiones);
+}
+
+void atender_peticiones(){
+	while(1){
+
+	}
 }
 
 bool existe_fcb(char* nombre_archivo){

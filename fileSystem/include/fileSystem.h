@@ -30,6 +30,7 @@ t_config* superbloque;
 t_bitarray* bitmap; //Esta nombrado asi xq basicamente el bitmap tiene el bitarray y nada mas
 FILE *bloques;
 t_list* lista_fcbs;
+t_list* peticiones_pendientes;
 
 // Variables del config
 char* IP;
