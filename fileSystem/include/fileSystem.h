@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 // Variables globales
 t_log* logger;
@@ -31,6 +32,22 @@ t_bitarray* bitmap; //Esta nombrado asi xq basicamente el bitmap tiene el bitarr
 FILE *bloques;
 t_list* lista_fcbs;
 t_list* peticiones_pendientes;
+sem_t contador_peticiones;
+pthread_mutex_t mutex_peticiones_pendientes;
+
+typedef enum{
+	OPEN,
+	TRUNCATE,
+	READ,
+	WRITE,
+}t_operacion_fs;
+
+typedef struct{
+	t_operacion_fs operacion;
+	char* nombre;
+	int tamanio;
+	int dir_fisica;
+}t_peticion;
 
 // Variables del config
 char* IP;
@@ -71,12 +88,18 @@ void inicializar_fcbs();
 void leer_superbloque();
 void crear_bitmap();
 void crear_archivo_de_bloques();
+void iniciar_atencion_peticiones();
+void atender_peticiones();
+void agrego_a_pendientes(t_peticion* peticion);
+t_peticion* saco_de_pendientes();
 
 // COMUNICACION
 static void procesar_conexion();
 void server_escuchar();
 
 // Operaciones
+t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica);
+void manejar_peticion(t_peticion* peticion);
 bool existe_fcb(char* nombre_archivo);
 t_config* obtener_archivo(char* nombre_archivo);
 void manejar_f_open(char* nombre_archivo);

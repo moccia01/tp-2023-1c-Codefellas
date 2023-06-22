@@ -48,6 +48,9 @@ void inicializar_variables(){
 	leer_config();
 	levantar_archivos();
 	lista_fcbs = list_create();
+	peticiones_pendientes = list_create();
+	pthread_mutex_init(&mutex_peticiones_pendientes, NULL);
+	sem_init(&contador_peticiones, 0, 0);
 	inicializar_fcbs();
 }
 
@@ -171,8 +174,9 @@ static void procesar_conexion() {
 		case MANEJAR_F_OPEN:
 			char* nombre_archivo_open = recv_manejo_f_open(socket_cliente);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
-			log_info(logger,"Me llego este nombre: %s", nombre_archivo_open);
-			manejar_f_open(nombre_archivo_open);
+			t_peticion* peticion_open = crear_peticion(OPEN,nombre_archivo_open, 0, 0);
+			agrego_a_pendientes(peticion_open);
+			sem_post(&contador_peticiones);
 			break;
 		case MANEJAR_F_CREATE:
 //			nombre_archivo = recv_manejo_f_open(socket_cliente);
@@ -183,24 +187,32 @@ static void procesar_conexion() {
 			t_list* parametros_truncate = recv_manejo_f_truncate(socket_cliente);
 			char* nombre_archivo_truncate = list_get(parametros_truncate, 0);
 			int* tamanio_truncate = list_get(parametros_truncate, 1);
-			manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_TRUNCATE");
+			t_peticion* peticion_truncate = crear_peticion(TRUNCATE, nombre_archivo_truncate, *tamanio_truncate, 0);
+			agrego_a_pendientes(peticion_truncate);
+			sem_post(&contador_peticiones);
 			break;
 		case MANEJAR_F_READ:
 			t_list* parametros_read = recv_manejo_f_read(socket_cliente);
 			char* nombre_archivo_read = list_get(parametros_read, 0);
 			int* tamanio_read = list_get(parametros_read, 1);
 			int* dir_fisica_read = list_get(parametros_read, 2);
-			manejar_f_read(nombre_archivo_read, *dir_fisica_read, *tamanio_read);
+
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_READ");
+			t_peticion* peticion_read = crear_peticion(READ, nombre_archivo_read, *tamanio_read, *dir_fisica_read);
+			agrego_a_pendientes(peticion_read);
+			sem_post(&contador_peticiones);
 			break;
 		case MANEJAR_F_WRITE:
 			t_list* parametros_write = recv_manejo_f_write(socket_cliente);
 			char* nombre_archivo_write = list_get(parametros_write, 0);
 			int* dir_fisica_write = list_get(parametros_write, 1);
 			int* tamanio_write = list_get(parametros_write, 2);
-			manejar_f_write(nombre_archivo_write, *dir_fisica_write, *tamanio_write);
+
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_WRITE");
+			t_peticion* peticion_write = crear_peticion(WRITE, nombre_archivo_write, *tamanio_write, *dir_fisica_write);
+			agrego_a_pendientes(peticion_write);
+			sem_post(&contador_peticiones);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
@@ -225,16 +237,72 @@ void server_escuchar() {
 
 // ------------------ MANEJO OPERACIONES ------------------
 
+void manejar_peticion(t_peticion* peticion){
+	t_operacion_fs cop = peticion->operacion;
+
+	switch (cop) {
+	case OPEN:
+		log_info(logger,"Se esta ejecutando un F_OPEN");
+		log_info(logger,"Me llego este nombre: %s", peticion->nombre);
+		manejar_f_open(peticion->nombre);
+		break;
+	case TRUNCATE:
+		log_info(logger,"Se esta ejecutando un F_TRUNCATE");
+		manejar_f_truncate(peticion->nombre, peticion->tamanio);
+		break;
+	case READ:
+		log_info(logger,"Se esta ejecutando un F_READ");
+		manejar_f_read(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
+		break;
+	case WRITE:
+		log_info(logger,"Se esta ejecutando un F_WRITE");
+		manejar_f_write(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
+		break;
+	default:
+		log_error(logger, "Algo anduvo mal en el server de %s", server_name);
+		return;
+	}
+}
+
+t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica){
+	t_peticion* peticion = malloc(sizeof(t_peticion));
+	peticion->nombre = malloc(strlen(nombre) + 1);
+
+	peticion->operacion = operacion;
+	strcpy(peticion->nombre, nombre);
+	peticion->tamanio = tamanio;
+	peticion->dir_fisica = dir_fisica;
+
+	return peticion;
+}
+
+void agrego_a_pendientes(t_peticion* peticion){
+	pthread_mutex_lock(&mutex_peticiones_pendientes);
+	list_add(peticiones_pendientes, peticion);
+	pthread_mutex_unlock(&mutex_peticiones_pendientes);
+}
+
+t_peticion* saco_de_pendientes(){
+	pthread_mutex_lock(&mutex_peticiones_pendientes);
+	t_peticion* peticion = list_remove(peticiones_pendientes, 0);
+	pthread_mutex_unlock(&mutex_peticiones_pendientes);
+	return peticion;
+}
+
 void iniciar_atencion_peticiones(){
 	pthread_t hilo_peticiones;
+	log_info(logger, "Inicio atencion de peticiones");
 
-	pthread_create(&hilo_peticiones, NULL, (void* )atender_peticiones, NULL);
+	pthread_create(&hilo_peticiones, NULL, (void*) atender_peticiones, NULL);
 	pthread_detach(hilo_peticiones);
 }
 
 void atender_peticiones(){
 	while(1){
-
+		sem_wait(&contador_peticiones);
+		log_info(logger, "Hay peticion pendiente");
+		t_peticion* peticion = saco_de_pendientes();
+		manejar_peticion(peticion);
 	}
 }
 
