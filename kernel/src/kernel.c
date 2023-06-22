@@ -840,9 +840,7 @@ t_archivo* archivo_create(char* nombre_archivo){
 	archivo->nombre_archivo = nombre_archivo;
 	archivo->puntero = 0;
 	archivo->cola_block_asignada = list_create();
-	pthread_mutex_t mutex_asignado;
-	pthread_mutex_init(&mutex_asignado, NULL);
-	archivo->mutex_asignado = mutex_asignado;
+	pthread_mutex_init(&archivo->mutex_asignado, NULL);
 	return archivo;
 }
 
