@@ -245,18 +245,22 @@ void manejar_peticion(t_peticion* peticion){
 		log_info(logger,"Se esta ejecutando un F_OPEN");
 		log_info(logger,"Me llego este nombre: %s", peticion->nombre);
 		manejar_f_open(peticion->nombre);
+		send_fin_operacion_no_bloqueante(socket_cliente);
 		break;
 	case TRUNCATE:
 		log_info(logger,"Se esta ejecutando un F_TRUNCATE");
 		manejar_f_truncate(peticion->nombre, peticion->tamanio);
+		send_fin_operacion_bloqueante(socket_cliente);
 		break;
 	case READ:
 		log_info(logger,"Se esta ejecutando un F_READ");
 		manejar_f_read(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
+		send_fin_operacion_bloqueante(socket_cliente);
 		break;
 	case WRITE:
 		log_info(logger,"Se esta ejecutando un F_WRITE");
 		manejar_f_write(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
+		send_fin_operacion_bloqueante(socket_cliente);
 		break;
 	default:
 		log_error(logger, "Algo anduvo mal en el server de %s", server_name);
@@ -368,7 +372,6 @@ void manejar_f_create(char* nombre_archivo){
 	config_save(archivo_fcb->archivo_fcb);
 
 	list_add(lista_fcbs, archivo_fcb);
-	send_confirmacion_archivo_creado(socket_cliente);
 	fclose(f_fcb);
 }
 
