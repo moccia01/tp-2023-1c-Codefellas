@@ -266,31 +266,52 @@ void procesar_conexion(void* void_args) {
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_READ:
+//				t_list* f_read_params = recv_manejo_f_read(cliente_socket);
+//				char* nombre_archivo_read = list_get(f_read_params, 0);
+//				int* dir_fisica_read = list_get(f_read_params, 1);
+//				int* cant_bytes_read = list_get(f_read_params, 2);
+				log_info(logger, "manejo f_read");
+
 				if(fs_mem_op_count == 0){
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
-				// manejo f_read;
+				log_info(logger, "bloqueo al proceso %d por f_read,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+				// manejo f_read
+//				t_archivo* archivo_read = get_archivo_global(nombre_archivo_read);
+//				send_manejar_f_read_fs(nombre_archivo_read, dir_fisica_read, cant_bytes_read, archivo_read->puntero, fd_filesystem);
+				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				break;
 			case MANEJAR_F_WRITE:
+//				t_list* f_write_params = recv_manejo_f_write(cliente_socket);
+//				char* nombre_archivo_write = list_get(f_write_params, 0);
+//				int* dir_fisica_write = list_get(f_write_params, 1);
+//				int* cant_bytes_write = list_get(f_write_params, 2);
+				log_info(logger, "manejo f_write");
+
 				if(fs_mem_op_count == 0){
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
-				// manejo f_write;
+				log_info(logger, "bloqueo al proceso %d por f_write,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+				// manejo f_write
+//				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
+//				send_manejar_f_write_fs(nombre_archivo_read, dir_fisica_read, cant_bytes_read, archivo_read->puntero, fd_filesystem);
+				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				break;
 			case MANEJAR_F_OPEN:
 				log_info(logger, "Manejo F_OPEN");
 				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
 				t_archivo* archivo_open = archivo_create(nombre_archivo_open);
 				if(!archivo_is_opened(nombre_archivo_open)){
+					safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
+					log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", list_size(cola_block_fs));
 					log_info(logger, "aviso al fs que abra o cree el archivo");
 					send_manejar_f_open(nombre_archivo_open, fd_filesystem);
 					list_add(archivos_abiertos, archivo_open);
 					log_info(logger, "ahora hay %d archivos abiertos", list_size(archivos_abiertos));
 					list_add(pcb->archivos_abiertos, archivo_open);
 					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
-					safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				}else{
 					log_info(logger, "bloqueo al proceso %d porque el archivo %s ya estaba abierto", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 					safe_pcb_add(archivo_open->cola_block_asignada, pcb, &(archivo_open->mutex_asignado));
@@ -331,6 +352,7 @@ void procesar_conexion(void* void_args) {
 				int* tamanio_truncate = list_get(f_truncate_params, 1);
 				send_manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate, fd_filesystem);
 				sem_post(&sem_exec);
+				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -370,48 +392,49 @@ void procesar_conexion_fs(void* void_args) {
 	int cliente_socket = *args;
 
 	op_code cop;
-
+	int i = 1;
 	while (cliente_socket != -1) {
+		log_info(logger, "i: %d", i);
 		cop = recibir_operacion(cliente_socket);
 		if (cop == -1) {
 			log_info(logger, "El cliente se desconecto de %s server", server_name);
 			return;
 		}
 
-		t_pcb* pcb = safe_pcb_remove(cola_block_fs, &mutex_cola_block_fs);
+		t_pcb* pcb_block_fs = safe_pcb_remove(cola_block_fs, &mutex_cola_block_fs);
 		switch(cop){
 		case FIN_F_OPEN:
 			recv_fin_f_open(cliente_socket);
-			log_info(logger, "el fs termino de abrir o crear un archivo del proceso %d", pcb->contexto_de_ejecucion->pid);
-			safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
-			send_contexto_ejecucion(pcb->contexto_de_ejecucion, fd_cpu);
+			log_info(logger, "el fs termino de abrir o crear un archivo del proceso %d", pcb_block_fs->contexto_de_ejecucion->pid);
+			safe_pcb_add(cola_exec, pcb_block_fs, &mutex_cola_exec);
+			send_contexto_ejecucion(pcb_block_fs->contexto_de_ejecucion, fd_cpu);
 			break;
 		case FIN_F_READ:
 			recv_fin_f_read(cliente_socket);
-			log_info(logger, "el fs termino de leer un archivo del proceso %d, fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+			log_info(logger, "el fs termino de leer un archivo del proceso %d, fs_mem_op_count: %d", pcb_block_fs->contexto_de_ejecucion->pid, fs_mem_op_count);
 			fs_mem_op_count--;
 			if(fs_mem_op_count == 0){
 				sem_post(&ongoing_fs_mem_op);
 			}
 			// manejo fin f_read...
-			safe_pcb_add(cola_block, pcb, &mutex_cola_block_fs);
+			safe_pcb_add(cola_block, pcb_block_fs, &mutex_cola_block_fs);
 			sem_post(&sem_block_return);
 			break;
 		case FIN_F_WRITE:
 			recv_fin_f_write(cliente_socket);
-			log_info(logger, "el fs termino de escribir un archivo del proceso %d, fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+			log_info(logger, "el fs termino de escribir un archivo del proceso %d, fs_mem_op_count: %d", pcb_block_fs->contexto_de_ejecucion->pid, fs_mem_op_count);
 			fs_mem_op_count--;
 			if(fs_mem_op_count == 0){
 				sem_post(&ongoing_fs_mem_op);
 			}
 			// manejo fin f_write...
-			safe_pcb_add(cola_block, pcb, &mutex_cola_block_fs);
+			safe_pcb_add(cola_block, pcb_block_fs, &mutex_cola_block_fs);
 			sem_post(&sem_block_return);
 			break;
 		case FIN_F_TRUNCATE:
 			recv_fin_f_truncate(cliente_socket);
-			log_info(logger, "el fs termino de truncar un archivo del proceso %d", pcb->contexto_de_ejecucion->pid);
-			safe_pcb_add(cola_block, pcb, &mutex_cola_block_fs);
+			log_info(logger, "el fs termino de truncar un archivo del proceso %d", pcb_block_fs->contexto_de_ejecucion->pid);
+			safe_pcb_add(cola_block, pcb_block_fs, &mutex_cola_block_fs);
 			sem_post(&sem_block_return);
 			break;
 		default:
@@ -419,6 +442,7 @@ void procesar_conexion_fs(void* void_args) {
 			log_info(logger, "el numero del cop es: %d", cop);
 			return;
 		}
+		i++;
 	}
 }
 // ------------------ PCBS ------------------

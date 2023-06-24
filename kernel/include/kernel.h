@@ -115,6 +115,7 @@ void terminar_programa();
 void procesar_conexion(void* args);
 void iterator(char* value);
 int server_escuchar(int server_socket);
+void procesar_conexion_fs(void* void_args);
 
 // PCBS
 t_pcb *pcb_create(t_list* instrucciones, int pid, int cliente_socket);
