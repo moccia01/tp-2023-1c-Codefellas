@@ -746,18 +746,29 @@ void send_aviso_archivo_inexistente(int fd_modulo){
 	eliminar_paquete(paquete);
 }
 
-void send_fin_operacion_no_bloqueante(int fd_modulo){
-	t_paquete* paquete = crear_paquete(FIN_OPERACION_NO_BLOQUEANTE);
+void send_fin_f_open(int fd_modulo){
+	t_paquete* paquete = crear_paquete(FIN_F_OPEN);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
-void send_fin_operacion_bloqueante(int fd_modulo){
-	t_paquete* paquete = crear_paquete(FIN_OPERACION_BLOQUEANTE);
+void send_fin_f_truncate(int fd_modulo){
+	t_paquete* paquete = crear_paquete(FIN_F_TRUNCATE);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
+void send_fin_f_read(int fd_modulo){
+	t_paquete* paquete = crear_paquete(FIN_F_READ);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
+
+void send_fin_f_write(int fd_modulo){
+	t_paquete* paquete = crear_paquete(FIN_F_WRITE);
+	enviar_paquete(paquete, fd_modulo);
+	eliminar_paquete(paquete);
+}
 
 void send_iniciar_compactacion(int fd_modulo){
 	t_paquete* paquete = crear_paquete(INICIAR_COMPACTACION);

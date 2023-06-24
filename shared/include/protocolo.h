@@ -42,8 +42,10 @@ typedef enum{
 	ARCHIVO_ABIERTO,
 	ARCHIVO_INEXISTENTE,
 	ARCHIVO_CREADO,
-	FIN_OPERACION_NO_BLOQUEANTE,
-	FIN_OPERACION_BLOQUEANTE,
+	FIN_F_OPEN,
+	FIN_F_TRUNCATE,
+	FIN_F_READ,
+	FIN_F_WRITE,
 	INICIAR_COMPACTACION,
 	TS_WRAPPERS,
 }op_code;
@@ -116,6 +118,10 @@ void send_base_segmento(int base, int fd_modulo);
 void send_confirmacion_archivo_creado(int fd_modulo);
 void send_confirmacion_archivo_abierto(int fd_modulo);
 void send_aviso_archivo_inexistente(int fd_modulo);
+void send_fin_f_open(int fd_modulo);
+void send_fin_f_truncate(int fd_modulo);
+void send_fin_f_read(int fd_modulo);
+void send_fin_f_write(int fd_modulo);
 void send_iniciar_compactacion(int fd_modulo);
 void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
 void send_valor_leido(char* valor, int fd_modulo);

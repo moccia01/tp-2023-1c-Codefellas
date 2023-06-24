@@ -245,7 +245,7 @@ void manejar_peticion(t_peticion* peticion){
 		log_info(logger,"Se esta ejecutando un F_OPEN");
 		log_info(logger,"Me llego este nombre: %s", peticion->nombre);
 		manejar_f_open(peticion->nombre);
-		send_fin_operacion_no_bloqueante(socket_cliente);
+		send_fin_f_open(socket_cliente);
 		break;
 	case TRUNCATE:
 		log_info(logger,"Se esta ejecutando un F_TRUNCATE");
