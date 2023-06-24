@@ -345,10 +345,8 @@ void manejar_f_create(char* nombre_archivo){
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
-	//TODO: ver si podemos inicializar fcb sin estas dos keys(preguntar a lucas q se refiere)
-	nuevo_fcb->puntero_directo = 0; //Esto lo hago xq existe el bloque 0 asi que no podemos usarlo
-	nuevo_fcb->puntero_indirecto = 0; //TIENE Q SER DISTINTO AL DE ARRIBA
-
+	nuevo_fcb->puntero_directo = buscar_bloque_libre();
+	nuevo_fcb->puntero_indirecto = buscar_bloque_libre();
 	char* text_tamanio_archivo = malloc(10);
 	char* text_puntero_directo = malloc(10);
 	char* text_puntero_indirecto = malloc(10);
@@ -374,41 +372,58 @@ void manejar_f_create(char* nombre_archivo){
 	fclose(f_fcb);
 }
 
-uint32_t buscar_bloque_libre(){
-	int bloque_libre = 0;
-	int pos_bitmap_bloque;
+int obtener_cantidad_punteros(uint32_t* array_punteros){
+	//ver q onda con lo q nos dice nahu maniana
+	return 0;
+}
 
-	//recorre el array de bloques hasta encontrar uno vacio
-	/*
+uint32_t buscar_bloque_libre(){ //busca un bloque libre y lo ocupa
+
 	for(int i = 0; i < tamanio_bitmap; i++){
-		if(buffer_bitmap[i] == 0){
-			pos_bitmap_bloque = i;
-			break;
+		if(!bitarray_test_bit(bitmap, i)){
+			bitarray_set_bit(bitmap, i);
+			return i;
 		}
 	}
-	*/
 
-	return bloque_libre;
+	log_error(logger, "No hay bloques libres");
+	return 0;
 }
 
 void asignar_bloques(int cant_bloques, t_config* archivo){
-	int puntero_directo = config_get_int_value(archivo, "PUNTERO_DIRECTO");
 	int puntero_indirecto = config_get_int_value(archivo, "PUNTERO_INDIRECTO");
-	char* nuevo_puntero_directo = malloc(10);
-	char* nuevo_puntero_indirecto = malloc(10);
-	uint32_t* array_bloque_de_punteros;
 
-	if(puntero_directo == -1){
-		sprintf(nuevo_puntero_directo, "%d", buscar_bloque_libre());//necesito el array de bloques para buscar bloque libre
-		config_set_value(archivo, "PUNTERO_DIRECTO", nuevo_puntero_directo);
-	}
-	else if(puntero_indirecto == -2){
-		sprintf(nuevo_puntero_indirecto, "%d", buscar_bloque_libre());//necesito el array de bloques para buscar bloque libre
-		config_set_value(archivo, "PUNTERO_INDIRECTO", nuevo_puntero_indirecto);
-	}
-	else{
-		memcpy(array_bloque_de_punteros, buffer_bloques + (puntero_indirecto * BLOCK_SIZE), BLOCK_SIZE); //ver como obtener el array de bloques
+	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
+	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
+	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
+	int pos_nuevo_bloque = cant_punteros_bloque*sizeof(uint32_t);
+
+	for(int i = cant_bloques; i > 0; i--){
+		uint32_t puntero_a_bloque = buscar_bloque_libre();
+		memcpy(buffer_bloques+pos_bloque_punteros+pos_nuevo_bloque, &puntero_a_bloque, sizeof(uint32_t));
+		pos_nuevo_bloque += sizeof(uint32_t);
+	}
+
+}
+
+void sacar_bloques(int cant_bloques, t_config* archivo){
+	int puntero_indirecto = config_get_int_value(archivo, "PUNTERO_INDIRECTO");
+
+	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
+	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
+
+	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
+	int pos_ultimo_bloque = (cant_punteros_bloque-1)*sizeof(uint32_t);
+	int pos_bitmap_ultimo_bloque = cant_punteros_bloque - 1;
+
+	for(int i = cant_bloques; i > 0; i--){
+		//liberar_bloque(pos_ultimo_bloque); TODO: esta funcion tiene q poner en el valor q nos diga nahu al bloque en el archivo de bloques, basicamente borrar el puntero
+		bitarray_clean_bit(bitmap, pos_bitmap_ultimo_bloque);
+		pos_ultimo_bloque -= sizeof(uint32_t);
+		pos_bitmap_ultimo_bloque--;
 	}
 
 }
