@@ -178,11 +178,11 @@ static void procesar_conexion() {
 			agrego_a_pendientes(peticion_open);
 			sem_post(&contador_peticiones);
 			break;
-		case MANEJAR_F_CREATE:
+//		case MANEJAR_F_CREATE:
 //			nombre_archivo = recv_manejo_f_open(socket_cliente);
 //			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
 //			manejar_f_create(nombre_archivo);
-			break;
+//			break;
 		case MANEJAR_F_TRUNCATE:
 			t_list* parametros_truncate = recv_manejo_f_truncate(socket_cliente);
 			char* nombre_archivo_truncate = list_get(parametros_truncate, 0);
@@ -250,17 +250,17 @@ void manejar_peticion(t_peticion* peticion){
 	case TRUNCATE:
 		log_info(logger,"Se esta ejecutando un F_TRUNCATE");
 		manejar_f_truncate(peticion->nombre, peticion->tamanio);
-		send_fin_operacion_bloqueante(socket_cliente);
+		send_fin_f_truncate(socket_cliente);
 		break;
 	case READ:
 		log_info(logger,"Se esta ejecutando un F_READ");
 		manejar_f_read(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
-		send_fin_operacion_bloqueante(socket_cliente);
+		send_fin_f_read(socket_cliente);
 		break;
 	case WRITE:
 		log_info(logger,"Se esta ejecutando un F_WRITE");
 		manejar_f_write(peticion->nombre, peticion->dir_fisica, peticion->tamanio);
-		send_fin_operacion_bloqueante(socket_cliente);
+		send_fin_f_write(socket_cliente);
 		break;
 	default:
 		log_error(logger, "Algo anduvo mal en el server de %s", server_name);

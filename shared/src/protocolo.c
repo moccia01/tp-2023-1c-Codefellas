@@ -728,28 +728,19 @@ t_list* recv_manejo_f_write(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
-void send_confirmacion_archivo_creado(int fd_modulo){
-	t_paquete* paquete = crear_paquete(ARCHIVO_CREADO);
-	enviar_paquete(paquete, fd_modulo);
-	eliminar_paquete(paquete);
-}
-
-void send_confirmacion_archivo_abierto(int fd_modulo){
-	t_paquete* paquete = crear_paquete(ARCHIVO_ABIERTO);
-	enviar_paquete(paquete, fd_modulo);
-	eliminar_paquete(paquete);
-}
-
-void send_aviso_archivo_inexistente(int fd_modulo){
-	t_paquete* paquete = crear_paquete(ARCHIVO_INEXISTENTE);
-	enviar_paquete(paquete, fd_modulo);
-	eliminar_paquete(paquete);
-}
-
 void send_fin_f_open(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_OPEN);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
+}
+
+void recv_fin_f_open(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != FIN_F_OPEN){
+		exit(1);
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	list_destroy(paquete);
 }
 
 void send_fin_f_truncate(int fd_modulo){
@@ -758,16 +749,43 @@ void send_fin_f_truncate(int fd_modulo){
 	eliminar_paquete(paquete);
 }
 
+void recv_fin_f_truncate(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != FIN_F_TRUNCATE){
+		exit(1);
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	list_destroy(paquete);
+}
+
 void send_fin_f_read(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_READ);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
+void recv_fin_f_read(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != FIN_F_READ){
+		exit(1);
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	list_destroy(paquete);
+}
+
 void send_fin_f_write(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_WRITE);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
+}
+
+void recv_fin_f_write(int fd_modulo){
+	op_code cop = recibir_operacion(fd_modulo);
+	if(cop != FIN_F_WRITE){
+		exit(1);
+	}
+	t_list* paquete = recibir_paquete(fd_modulo);
+	list_destroy(paquete);
 }
 
 void send_iniciar_compactacion(int fd_modulo){

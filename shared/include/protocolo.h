@@ -21,7 +21,7 @@ typedef enum{
 	MANEJAR_WAIT,
 	MANEJAR_SIGNAL,
 	MANEJAR_F_OPEN,
-	MANEJAR_F_CREATE,
+	FIN_F_OPEN,
 	MANEJAR_F_CLOSE,
 	MANEJAR_F_SEEK,
 	MANEJAR_F_READ,
@@ -39,13 +39,6 @@ typedef enum{
 	SEGMENT_RESPONSE,
 	PEDIDO_LECTURA,
 	PEDIDO_ESCRITURA,
-	ARCHIVO_ABIERTO,
-	ARCHIVO_INEXISTENTE,
-	ARCHIVO_CREADO,
-	FIN_F_OPEN,
-	FIN_F_TRUNCATE,
-	FIN_F_READ,
-	FIN_F_WRITE,
 	INICIAR_COMPACTACION,
 	TS_WRAPPERS,
 }op_code;
@@ -114,10 +107,6 @@ void send_inicializar_proceso(int pid, int fd_modulo);
 void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo);
 void send_terminar_proceso(int pid, int fd_modulo);
 void send_base_segmento(int base, int fd_modulo);
-//void send_confirmacion(int fd_modulo);
-void send_confirmacion_archivo_creado(int fd_modulo);
-void send_confirmacion_archivo_abierto(int fd_modulo);
-void send_aviso_archivo_inexistente(int fd_modulo);
 void send_fin_f_open(int fd_modulo);
 void send_fin_f_truncate(int fd_modulo);
 void send_fin_f_read(int fd_modulo);
@@ -151,6 +140,10 @@ t_list* recv_manejo_f_read(int fd_modulo);
 t_list* recv_manejo_f_write(int fd_modulo);
 void recv_iniciar_compactacion(int fd_modulo);
 t_list* recv_ts_wrappers(int fd_modulo);
+void recv_fin_f_open(int fd_modulo);
+void recv_fin_f_truncate(int fd_modulo);
+void recv_fin_f_read(int fd_modulo);
+void recv_fin_f_write(int fd_modulo);
 
 // Destroyers
 void contexto_destroyer(t_contexto_ejecucion* contexto);
