@@ -71,7 +71,7 @@ int BLOCK_SIZE;
 int BLOCK_COUNT;
 
 // Variable del bitmap
-
+int tamanio_bitmap;
 
 // Variable de archivo de bloques
 int TAMANIO_ARCHIVO_BLOQUES;
@@ -107,6 +107,10 @@ void manejar_f_create(char* nombre_archivo);
 void manejar_f_truncate(char* nombre_archivo, int tamanio);
 void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio);
 void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio);
+
+//Funciones auxiliares de f_truncate
+void asignar_bloques(int cant_bloques, t_config* archivo);
+uint32_t buscar_bloque_libre();
 
 // Estructuras
 typedef struct{

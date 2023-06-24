@@ -104,7 +104,7 @@ void leer_superbloque(){
 
 void crear_bitmap(){
 	int fd;
-	int tamanio_bitmap = ceil(BLOCK_COUNT/8);
+	tamanio_bitmap = ceil(BLOCK_COUNT/8);
 
 	if(access(PATH_BITMAP, F_OK) == -1){
 		log_error(logger, "No pude acceder al archivo bitmap");
@@ -345,8 +345,9 @@ void manejar_f_create(char* nombre_archivo){
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
-	nuevo_fcb->puntero_directo = 0;
-	nuevo_fcb->puntero_indirecto = 0;
+	//TODO: ver si podemos inicializar fcb sin estas dos keys(preguntar a lucas q se refiere)
+	nuevo_fcb->puntero_directo = 0; //Esto lo hago xq existe el bloque 0 asi que no podemos usarlo
+	nuevo_fcb->puntero_indirecto = 0; //TIENE Q SER DISTINTO AL DE ARRIBA
 
 	char* text_tamanio_archivo = malloc(10);
 	char* text_puntero_directo = malloc(10);
@@ -373,6 +374,45 @@ void manejar_f_create(char* nombre_archivo){
 	fclose(f_fcb);
 }
 
+uint32_t buscar_bloque_libre(){
+	int bloque_libre = 0;
+	int pos_bitmap_bloque;
+
+	//recorre el array de bloques hasta encontrar uno vacio
+	/*
+	for(int i = 0; i < tamanio_bitmap; i++){
+		if(buffer_bitmap[i] == 0){
+			pos_bitmap_bloque = i;
+			break;
+		}
+	}
+	*/
+
+	return bloque_libre;
+}
+
+void asignar_bloques(int cant_bloques, t_config* archivo){
+	int puntero_directo = config_get_int_value(archivo, "PUNTERO_DIRECTO");
+	int puntero_indirecto = config_get_int_value(archivo, "PUNTERO_INDIRECTO");
+	char* nuevo_puntero_directo = malloc(10);
+	char* nuevo_puntero_indirecto = malloc(10);
+	uint32_t* array_bloque_de_punteros;
+
+	if(puntero_directo == -1){
+		sprintf(nuevo_puntero_directo, "%d", buscar_bloque_libre());//necesito el array de bloques para buscar bloque libre
+		config_set_value(archivo, "PUNTERO_DIRECTO", nuevo_puntero_directo);
+	}
+	else if(puntero_indirecto == -2){
+		sprintf(nuevo_puntero_indirecto, "%d", buscar_bloque_libre());//necesito el array de bloques para buscar bloque libre
+		config_set_value(archivo, "PUNTERO_INDIRECTO", nuevo_puntero_indirecto);
+	}
+	else{
+		memcpy(array_bloque_de_punteros, buffer_bloques + (puntero_indirecto * BLOCK_SIZE), BLOCK_SIZE); //ver como obtener el array de bloques
+
+	}
+
+}
+
 void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO_ARCHIVO");
@@ -382,13 +422,13 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	if(tamanio_nuevo > tamanio_fcb){
 		// AMPLIAR
 		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		//int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
-		//asignar_bloques(cantidad_bloques, archivo_fcb);
+		int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
+		//asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
 	} else{
 		// REDUCIR
 		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		//int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
-		//sacar_bloques(cantidad_bloques, archivo_fcb);
+		int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
+		//sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
 	}
 }
 
