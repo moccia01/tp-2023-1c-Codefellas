@@ -78,7 +78,7 @@ t_list* cola_listos_para_ready;
 t_list* cola_exec;
 t_list* cola_block;
 t_list* cola_block_io;
-t_list* cola_block_truncate;
+t_list* cola_block_fs;
 int fs_mem_op_count;
 
 // Semaforos y pthread
@@ -89,7 +89,7 @@ pthread_mutex_t mutex_cola_exit;
 pthread_mutex_t mutex_cola_exec;
 pthread_mutex_t mutex_cola_block;
 pthread_mutex_t mutex_cola_block_io;
-pthread_mutex_t mutex_cola_truncate;
+pthread_mutex_t mutex_cola_block_fs;
 sem_t sem_multiprog;
 sem_t sem_listos_ready;
 sem_t sem_ready;

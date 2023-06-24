@@ -735,10 +735,6 @@ void send_fin_f_open(int fd_modulo){
 }
 
 void recv_fin_f_open(int fd_modulo){
-	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_F_OPEN){
-		exit(1);
-	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	list_destroy(paquete);
 }
@@ -750,10 +746,6 @@ void send_fin_f_truncate(int fd_modulo){
 }
 
 void recv_fin_f_truncate(int fd_modulo){
-	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_F_TRUNCATE){
-		exit(1);
-	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	list_destroy(paquete);
 }
@@ -765,10 +757,6 @@ void send_fin_f_read(int fd_modulo){
 }
 
 void recv_fin_f_read(int fd_modulo){
-	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_F_READ){
-		exit(1);
-	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	list_destroy(paquete);
 }
@@ -780,10 +768,6 @@ void send_fin_f_write(int fd_modulo){
 }
 
 void recv_fin_f_write(int fd_modulo){
-	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_F_WRITE){
-		exit(1);
-	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	list_destroy(paquete);
 }
