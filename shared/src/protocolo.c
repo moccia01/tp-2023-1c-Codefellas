@@ -730,45 +730,61 @@ t_list* recv_manejo_f_write(int fd_modulo){
 
 void send_fin_f_open(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_OPEN);
+	op_code cop = FIN_F_OPEN;
+	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void recv_fin_f_open(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
+	op_code* cop = list_get(paquete, 0);
+	free(cop);
 	list_destroy(paquete);
 }
 
 void send_fin_f_truncate(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_TRUNCATE);
+	op_code cop = FIN_F_TRUNCATE;
+	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void recv_fin_f_truncate(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
+	op_code* cop = list_get(paquete, 0);
+	free(cop);
 	list_destroy(paquete);
 }
 
 void send_fin_f_read(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_READ);
+	op_code cop = FIN_F_READ;
+	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void recv_fin_f_read(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
+	op_code* cop = list_get(paquete, 0);
+	free(cop);
 	list_destroy(paquete);
 }
 
 void send_fin_f_write(int fd_modulo){
 	t_paquete* paquete = crear_paquete(FIN_F_WRITE);
+	op_code cop = FIN_F_WRITE;
+	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
 void recv_fin_f_write(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
+	op_code* cop = list_get(paquete, 0);
+	free(cop);
 	list_destroy(paquete);
 }
 

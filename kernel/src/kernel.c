@@ -394,13 +394,11 @@ void procesar_conexion_fs(void* void_args) {
 	op_code cop;
 	int i = 1;
 	while (cliente_socket != -1) {
-		log_info(logger, "i: %d", i);
 		cop = recibir_operacion(cliente_socket);
 		if (cop == -1) {
 			log_info(logger, "El cliente se desconecto de %s server", server_name);
 			return;
 		}
-
 		t_pcb* pcb_block_fs = safe_pcb_remove(cola_block_fs, &mutex_cola_block_fs);
 		switch(cop){
 		case FIN_F_OPEN:
