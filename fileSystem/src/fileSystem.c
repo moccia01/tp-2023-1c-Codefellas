@@ -240,6 +240,7 @@ void server_escuchar() {
 void manejar_peticion(t_peticion* peticion){
 	t_operacion_fs cop = peticion->operacion;
 
+	//TODO: agregar los retardos de acceso a bloque (usleep) todas las veces que se acceda a un bloque (datos o punteros)
 	switch (cop) {
 	case OPEN:
 		log_info(logger,"Se esta ejecutando un F_OPEN");

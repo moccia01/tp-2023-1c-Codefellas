@@ -392,7 +392,6 @@ void procesar_conexion_fs(void* void_args) {
 	int cliente_socket = *args;
 
 	op_code cop;
-	int i = 1;
 	while (cliente_socket != -1) {
 		cop = recibir_operacion(cliente_socket);
 		if (cop == -1) {
@@ -440,7 +439,6 @@ void procesar_conexion_fs(void* void_args) {
 			log_info(logger, "el numero del cop es: %d", cop);
 			return;
 		}
-		i++;
 	}
 }
 // ------------------ PCBS ------------------

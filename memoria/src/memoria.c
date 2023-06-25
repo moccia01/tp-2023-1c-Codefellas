@@ -103,7 +103,8 @@ static void procesar_conexion(void *void_args) {
 				// esperar a que kernel de el ok para compactar y recien ahi compactar
 				recv_iniciar_compactacion(cliente_socket);
 				compactar();
-//				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
+				usleep(RETARDO_COMPACTACION * 1000);
+				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
 				break;
 			}
 			break;
@@ -132,6 +133,7 @@ static void procesar_conexion(void *void_args) {
 			int* posicion_lectura = list_get(parametros_lectura, 0);
 			int* tamanio_lectura = list_get(parametros_lectura, 1);
 			char* valor_leido = malloc(*tamanio_lectura);
+			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido, espacio_usuario + *posicion_lectura, *tamanio_lectura);
 			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido);
 			send_valor_leido(valor_leido, cliente_socket);
@@ -142,6 +144,7 @@ static void procesar_conexion(void *void_args) {
 			int* posicion_escritura = list_get(parametros_escritura, 1);
 			int tam_esc = strlen(valor_a_escribir);
 			log_info(logger, "el tamaño del valor a escribir es: %d", tam_esc);
+			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(espacio_usuario + *posicion_escritura, valor_a_escribir, strlen(valor_a_escribir));
 			log_info(logger, "se escribio el valor: %s,  en la posicion %d de espacio_usuario", valor_a_escribir, *posicion_escritura);
 			break;
