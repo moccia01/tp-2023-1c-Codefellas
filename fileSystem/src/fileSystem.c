@@ -364,6 +364,7 @@ void manejar_f_create(char* nombre_archivo){
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
+	strcpy(archivo_fcb->nombre_archivo, nombre_archivo);
 	archivo_fcb->archivo_fcb = config_create(path_archivo);
 
 	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
