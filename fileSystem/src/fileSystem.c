@@ -377,8 +377,22 @@ void manejar_f_create(char* nombre_archivo){
 }
 
 int obtener_cantidad_punteros(uint32_t* array_punteros){
-	//ver q onda con lo q nos dice nahu maniana
-	return 0;
+
+	uint32_t* cant_punteros_bloque = malloc(sizeof(uint32_t));
+
+	memcpy(cant_punteros_bloque, array_punteros, sizeof(uint32_t));
+
+	return *cant_punteros_bloque;
+}
+
+void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punteros){
+
+	uint32_t* nuevo_valor_puntero = malloc(sizeof(uint32_t));
+	*nuevo_valor_puntero = 0;
+
+	//poner el ultimo puntero en 0
+	memcpy(array_bloque_de_punteros + posicion_ultimo_bloque, nuevo_valor_puntero,sizeof(uint32_t));
+
 }
 
 uint32_t buscar_bloque_libre(){ //busca un bloque libre y lo ocupa
@@ -402,13 +416,25 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
-	int pos_nuevo_bloque = cant_punteros_bloque*sizeof(uint32_t);
+
+	log_info(logger, "La cantidad de punteros del bloque es %d", cant_punteros_bloque);
+
+	int pos_nuevo_bloque = (cant_punteros_bloque + 1)*sizeof(uint32_t);
 
 	for(int i = cant_bloques; i > 0; i--){
 		uint32_t puntero_a_bloque = buscar_bloque_libre();
+
+		log_info(logger, "El nuevo bloque asignado es %d", puntero_a_bloque);
+
 		memcpy(buffer_bloques+pos_bloque_punteros+pos_nuevo_bloque, &puntero_a_bloque, sizeof(uint32_t));
 		pos_nuevo_bloque += sizeof(uint32_t);
+		cant_punteros_bloque++;
 	}
+
+	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
+
+	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
+	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 
 }
 
@@ -420,15 +446,27 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
-	int pos_ultimo_bloque = (cant_punteros_bloque-1)*sizeof(uint32_t);
-	int pos_bitmap_ultimo_bloque = cant_punteros_bloque - 1;
+	int pos_ultimo_puntero = (cant_punteros_bloque)*sizeof(uint32_t);
+
+	log_info(logger, "La cantidad de punteros del bloque es %d", cant_punteros_bloque);
+
+	int pos_bitmap_ultimo_bloque;
 
 	for(int i = cant_bloques; i > 0; i--){
-		//liberar_bloque(pos_ultimo_bloque); TODO: esta funcion tiene q poner en el valor q nos diga nahu al bloque en el archivo de bloques, basicamente borrar el puntero
+		liberar_bloque(pos_ultimo_puntero, array_bloque_de_punteros);
+
+		log_info(logger, "El bloque eliminado es %d", pos_ultimo_puntero);
+
+		memcpy(&pos_bitmap_ultimo_bloque, array_bloque_de_punteros + pos_ultimo_puntero, sizeof(uint32_t));
 		bitarray_clean_bit(bitmap, pos_bitmap_ultimo_bloque);
-		pos_ultimo_bloque -= sizeof(uint32_t);
-		pos_bitmap_ultimo_bloque--;
+		pos_ultimo_puntero -= sizeof(uint32_t);
+		cant_punteros_bloque--;
 	}
+
+	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
+
+	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
+	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 
 }
 
@@ -438,17 +476,28 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	char* texto_tamanio_archivo = malloc(10);
 	sprintf(texto_tamanio_archivo, "%d", tamanio_nuevo);
 
+	log_info(logger, "El tamanio nuevo es %s", texto_tamanio_archivo);
+
+	config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
+	config_save(archivo_fcb);
+
+	log_info(logger, "El tamanio viejo era %d", tamanio_fcb);
+
 	if(tamanio_nuevo > tamanio_fcb){
 		// AMPLIAR
-		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		int cantidad_bloques_a_agregar = tamanio_nuevo - tamanio_fcb;
-		//asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
+		int cantidad_bloques_a_agregar = floor((tamanio_nuevo - tamanio_fcb)/BLOCK_SIZE) + 1;
+
+		log_info(logger, "La cantidad de bloques a agregar en %s es %d", nombre_archivo, cantidad_bloques_a_agregar);
+
+		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
+
 	} else{
 		// REDUCIR
-		config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
-		int cantidad_bloques_a_sacar = tamanio_fcb - tamanio_nuevo;
-		//sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
+		int cantidad_bloques_a_sacar = floor((tamanio_fcb - tamanio_nuevo)/BLOCK_SIZE);
+		sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
 	}
+
+
 }
 
 void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio){

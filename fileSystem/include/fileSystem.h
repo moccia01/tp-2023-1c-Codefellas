@@ -109,9 +109,11 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio);
 void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio);
 
 //Funciones auxiliares de f_truncate
-void asignar_bloques(int cant_bloques, t_config* archivo);
-uint32_t buscar_bloque_libre();
 int obtener_cantidad_punteros(uint32_t* array_punteros);
+void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punteros);
+uint32_t buscar_bloque_libre();
+void asignar_bloques(int cant_bloques, t_config* archivo);
+void sacar_bloques(int cant_bloques, t_config* archivo);
 
 // Estructuras
 typedef struct{
