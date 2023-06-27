@@ -527,11 +527,29 @@ void send_manejar_f_read(char* nombre_archivo, int dir_fisica, int cantidad_byte
 	enviar_paquete(paquete, fd_modulo);
 }
 
+void send_manejar_f_read_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_READ);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
+	agregar_a_paquete(paquete, &(puntero), sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+}
+
 void send_manejar_f_write(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_WRITE);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
+	enviar_paquete(paquete, fd_modulo);
+}
+
+void send_manejar_f_write_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int fd_modulo){
+	t_paquete* paquete = crear_paquete(MANEJAR_F_WRITE);
+	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
+	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
+	agregar_a_paquete(paquete, &(puntero), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -724,7 +742,15 @@ t_list* recv_manejo_f_read(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
+t_list* recv_manejo_f_read_fs(int fd_modulo){
+	return recibir_paquete(fd_modulo);
+}
+
 t_list* recv_manejo_f_write(int fd_modulo){
+	return recibir_paquete(fd_modulo);
+}
+
+t_list* recv_manejo_f_write_fs(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
