@@ -816,6 +816,8 @@ void recv_fin_f_write(int fd_modulo){
 
 void send_iniciar_compactacion(int fd_modulo){
 	t_paquete* paquete = crear_paquete(INICIAR_COMPACTACION);
+	op_code cop = INICIAR_COMPACTACION;
+	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
@@ -826,6 +828,8 @@ void recv_iniciar_compactacion(int fd_modulo){
 		return;
 	}
 	t_list* paquete = recibir_paquete(fd_modulo);
+	op_code* cop_paquete = list_get(paquete, 0);
+	free(cop_paquete);
 	list_destroy(paquete);
 }
 
