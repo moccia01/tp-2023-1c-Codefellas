@@ -385,7 +385,7 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 		manejar_seg_fault(contexto, mmu, tamanio_a_leer);
 	}else{
 		send_leer_valor(mmu->dir_fisica, mmu->tamanio, fd_memoria);
-		char* valor_leido_en_memoria = recv_valor(fd_memoria);
+		char* valor_leido_en_memoria = recv_valor_leido(fd_memoria);
 		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_leido_en_memoria);
 		set_valor_registro(registro, valor_leido_en_memoria);
 	}

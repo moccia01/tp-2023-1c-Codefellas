@@ -627,7 +627,7 @@ t_list* recv_leer_valor(int fd_modulo){
 	return recibir_paquete(fd_modulo);
 }
 
-char* recv_valor(int fd_modulo){
+char* recv_valor_leido(int fd_modulo){
 	op_code cop = recibir_operacion(fd_modulo);
 	if(cop != PEDIDO_LECTURA){
 		return NULL;
