@@ -508,7 +508,7 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 	return NULL;
 }
 
-void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, t_list* datos_a_escribir){
+void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir){
 
 }
 
@@ -527,7 +527,7 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 
 	//Solicitar a Memoria la información que se encuentra a partir de la dirección física
 	send_leer_valor(dir_fisica, tamanio, fd_memoria);			//Creo que con esta funcion solicito la info
-	t_list* datos_a_escribir = recv_leer_valor(fd_memoria);
+	char* datos_a_escribir = recv_valor_leido(fd_memoria);
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
 	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);		//TODO: Implementar escribir_datos()
