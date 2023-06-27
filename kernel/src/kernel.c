@@ -266,42 +266,44 @@ void procesar_conexion(void* void_args) {
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_READ:
-//				t_list* f_read_params = recv_manejo_f_read(cliente_socket);
-//				char* nombre_archivo_read = list_get(f_read_params, 0);
-//				int* dir_fisica_read = list_get(f_read_params, 1);
-//				int* cant_bytes_read = list_get(f_read_params, 2);
-				log_info(logger, "manejo f_read");
+				t_list* f_read_params = recv_manejo_f_read(cliente_socket);
+				char* nombre_archivo_read = list_get(f_read_params, 0);
+				int* dir_fisica_read = list_get(f_read_params, 1);
+				int* cant_bytes_read = list_get(f_read_params, 2);
 
 				if(fs_mem_op_count == 0){
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
 				log_info(logger, "bloqueo al proceso %d por f_read,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+
 				// manejo f_read
-//				t_archivo* archivo_read = get_archivo_global(nombre_archivo_read);
-//				send_manejar_f_read_fs(nombre_archivo_read, dir_fisica_read, cant_bytes_read, archivo_read->puntero, fd_filesystem);
+				t_archivo* archivo_read = get_archivo_global(nombre_archivo_read);
+				log_info(logger_obligatorio, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_read, archivo_read->puntero, *dir_fisica_read, *cant_bytes_read);
+				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				break;
 			case MANEJAR_F_WRITE:
-//				t_list* f_write_params = recv_manejo_f_write(cliente_socket);
-//				char* nombre_archivo_write = list_get(f_write_params, 0);
-//				int* dir_fisica_write = list_get(f_write_params, 1);
-//				int* cant_bytes_write = list_get(f_write_params, 2);
-				log_info(logger, "manejo f_write");
+				t_list* f_write_params = recv_manejo_f_write(cliente_socket);
+				char* nombre_archivo_write = list_get(f_write_params, 0);
+				int* dir_fisica_write = list_get(f_write_params, 1);
+				int* cant_bytes_write = list_get(f_write_params, 2);
 
 				if(fs_mem_op_count == 0){
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
 				log_info(logger, "bloqueo al proceso %d por f_write,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+
 				// manejo f_write
-//				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
-//				send_manejar_f_write_fs(nombre_archivo_read, dir_fisica_read, cant_bytes_read, archivo_read->puntero, fd_filesystem);
+				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
+				log_info(logger_obligatorio, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_write, archivo_write->puntero, *dir_fisica_write, *cant_bytes_write);
+				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				break;
 			case MANEJAR_F_OPEN:
-				log_info(logger, "Manejo F_OPEN");
 				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
+				log_info(logger_obligatorio, "PID: %d - Abrir Archivo: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 				t_archivo* archivo_open = archivo_create(nombre_archivo_open);
 				if(!archivo_is_opened(nombre_archivo_open)){
 					safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
@@ -318,8 +320,8 @@ void procesar_conexion(void* void_args) {
 				}
 				break;
 			case MANEJAR_F_CLOSE:
-				log_info(logger, "Manejo F_CLOSE");
 				char* nombre_archivo_close = recv_manejo_f_close(cliente_socket);
+				log_info(logger_obligatorio, "PID: %d - Cerrar Archivo: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_close);
 				t_archivo* archivo_close = quitar_archivo_de_tabla_proceso(nombre_archivo_close, pcb);
 				pthread_mutex_lock(&(archivo_close->mutex_asignado));
 				if(!list_is_empty(archivo_close->cola_block_asignada)){
@@ -336,20 +338,20 @@ void procesar_conexion(void* void_args) {
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_SEEK:
-				log_info(logger, "Manejo F_SEEK");
 				t_list* f_seek_params = recv_manejo_f_seek(cliente_socket);
 				char* nombre_archivo_seek = list_get(f_seek_params, 0);
 				int* puntero_seek = list_get(f_seek_params, 1);
+				log_info(logger_obligatorio, "PID: %d - Actualizar puntero Archivo: %s - Puntero %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_seek, *puntero_seek);
 				t_archivo* archivo_seek = get_archivo_global(nombre_archivo_seek);
 				archivo_seek->puntero = *puntero_seek;
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
 				break;
 			case MANEJAR_F_TRUNCATE:
-				log_info(logger, "Manejo F_TRUNCATE");
 				t_list* f_truncate_params = recv_manejo_f_truncate(cliente_socket);
 				char* nombre_archivo_truncate = list_get(f_truncate_params, 0);
 				int* tamanio_truncate = list_get(f_truncate_params, 1);
+				log_info(logger_obligatorio, "PID: %d - Truncar Archivo: %s - Tamaño: %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_truncate, *tamanio_truncate);
 				send_manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate, fd_filesystem);
 				sem_post(&sem_exec);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
@@ -841,6 +843,7 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 	switch(respuesta){
 	case SEGMENT_CREATED:
 		int base_nuevo_segmento = recv_base_segmento(fd_memoria);
+		log_info(logger_obligatorio, "PID: %d - Crear Segmento - Id: %d - Tamaño: %d", pcb->contexto_de_ejecucion->pid, id_segmento, tamanio);
 		log_info(logger, "recibi de memoria un segmento de base %d", base_nuevo_segmento);
 		t_segmento* segmento_nuevo = malloc(sizeof(t_segmento));
 		segmento_nuevo->id = id_segmento;
@@ -859,11 +862,14 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 		sem_post(&sem_exec);
 		break;
 	case COMPACT:
+		log_info(logger_obligatorio, "Compactación: Esperando Fin de Operaciones de FS");
 		sem_wait(&ongoing_fs_mem_op);
 //					 - avisar a memoria que compacte.
+		log_info(logger_obligatorio, "Compactación: Se solicitó compactación");
 		send_iniciar_compactacion(fd_memoria);
 //		- recibir de memoria las tablas de segmentos actualizadas post compact
 		t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
+		log_info(logger_obligatorio, "Se finalizó el proceso de compactación");
 //		- actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 		actualizar_ts_de_pcbs(ts_wrappers);
 //		- mandarle memoria aviso de create_segment.
