@@ -47,6 +47,7 @@ typedef struct{
 	char* nombre;
 	int tamanio;
 	int dir_fisica;
+	int puntero;
 }t_peticion;
 
 // Variables del config
@@ -93,20 +94,20 @@ void atender_peticiones();
 void agrego_a_pendientes(t_peticion* peticion);
 t_peticion* saco_de_pendientes();
 
-// COMUNICACION
+// Comunicacion
 static void procesar_conexion();
 void server_escuchar();
 
 // Operaciones
-t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica);
+t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica, int puntero);
 void manejar_peticion(t_peticion* peticion);
 bool existe_fcb(char* nombre_archivo);
 t_config* obtener_archivo(char* nombre_archivo);
 void manejar_f_open(char* nombre_archivo);
 void manejar_f_create(char* nombre_archivo);
 void manejar_f_truncate(char* nombre_archivo, int tamanio);
-void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio);
-void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio);
+void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer);
+void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir);
 
 //Funciones auxiliares de f_truncate
 int obtener_cantidad_punteros(uint32_t* array_punteros);
@@ -114,6 +115,10 @@ void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punter
 uint32_t buscar_bloque_libre();
 void asignar_bloques(int cant_bloques, t_config* archivo);
 void sacar_bloques(int cant_bloques, t_config* archivo);
+
+//Funciones auxiliares de f_read y f_write
+char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio);
+void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, t_list* datos_a_escribir);
 
 // Estructuras
 typedef struct{
