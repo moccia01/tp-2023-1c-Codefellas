@@ -5,6 +5,7 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("filesystem.log", "filesystem_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
@@ -337,6 +338,7 @@ t_config* obtener_archivo(char* nombre_archivo){
 }
 
 void manejar_f_open(char* nombre_archivo){
+	log_info(logger_obligatorio, "Abrir Archivo: %s", nombre_archivo);
 	if(!existe_fcb(nombre_archivo)){
 		//send_aviso_archivo_inexistente(socket_cliente);
 		manejar_f_create(nombre_archivo);
@@ -345,6 +347,7 @@ void manejar_f_open(char* nombre_archivo){
 }
 
 void manejar_f_create(char* nombre_archivo){
+	log_info(logger_obligatorio, "Crear Archivo: %s", nombre_archivo);
 	char* path_archivo = malloc(strlen(PATH_FCB) + strlen(nombre_archivo));
 	strcpy(path_archivo, PATH_FCB);
 	strcat(path_archivo, nombre_archivo);
@@ -381,7 +384,6 @@ void manejar_f_create(char* nombre_archivo){
 }
 
 int obtener_cantidad_punteros(uint32_t* array_punteros){
-
 	uint32_t* cant_punteros_bloque = malloc(sizeof(uint32_t));
 
 	memcpy(cant_punteros_bloque, array_punteros, sizeof(uint32_t));
@@ -390,17 +392,14 @@ int obtener_cantidad_punteros(uint32_t* array_punteros){
 }
 
 void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punteros){
-
 	uint32_t* nuevo_valor_puntero = malloc(sizeof(uint32_t));
 	*nuevo_valor_puntero = 0;
 
 	//poner el ultimo puntero en 0
 	memcpy(array_bloque_de_punteros + posicion_ultimo_bloque, nuevo_valor_puntero,sizeof(uint32_t));
-
 }
 
 uint32_t buscar_bloque_libre(){ //busca un bloque libre y lo ocupa
-
 	for(int i = 0; i < tamanio_bitmap; i++){
 		if(!bitarray_test_bit(bitmap, i)){
 			bitarray_set_bit(bitmap, i);
@@ -439,7 +438,6 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
-
 }
 
 void sacar_bloques(int cant_bloques, t_config* archivo){
@@ -475,6 +473,7 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 }
 
 void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
+	log_info(logger_obligatorio, "Truncar Archivo: %s - Tamaño: %d", nombre_archivo, tamanio_nuevo);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO_ARCHIVO");
 	char* texto_tamanio_archivo = malloc(10);
@@ -500,8 +499,6 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 		int cantidad_bloques_a_sacar = floor((tamanio_fcb - tamanio_nuevo)/BLOCK_SIZE);
 		sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
 	}
-
-
 }
 
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
@@ -514,6 +511,7 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 
 void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer){
 	//Leer la información correspondiente de los bloques a partir del puntero y el tamaño recibidos
+	log_info(logger_obligatorio, "Leer Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_leer, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);	//TODO: Implementar leer_datos()
 
@@ -523,6 +521,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 }
 
 void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir){
+	log_info(logger_obligatorio, "Escribir Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_escribir, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 
 	//Solicitar a Memoria la información que se encuentra a partir de la dirección física
