@@ -37,6 +37,7 @@ t_algoritmo_memoria ALGORITMO_ASIGNACION;
 
 // Variables globales
 t_log* logger;
+t_log* logger_obligatorio;
 t_config* config;
 int fd_memoria;
 char* server_name;
@@ -80,4 +81,6 @@ void actualizar_segmento(t_segmento* segmento);
 bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos);
 void compactar_version_tomy();
 bool comparador_de_base(t_segmento *, t_segmento *);
+void log_resultado_compactacion();
+
 #endif /* MEMORIA_H_ */

@@ -5,13 +5,17 @@ int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
 	}
-	logger = log_create("memoria.log", "memoria_main", true, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
+	logger = log_create("memoria.log", "memoria_main", true, LOG_LEVEL_INFO);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
+		config_destroy(config);
+		log_destroy(logger);
 		exit(1);
 	}
+	logger = log_create("memoria_obligatorio.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
 	leer_config();
+
 	inicializar_memoria();
 	// Inicio servidor
 	fd_memoria = iniciar_servidor(logger, IP, PUERTO);
@@ -90,7 +94,7 @@ static void procesar_conexion(void *void_args) {
 				log_info(logger, "hay espacio contiguo para crear el segmento");
 				send_segment_response(verificacion_espacio, cliente_socket);
 				int direccion = crear_segmento_segun_algoritmo(*id, *tamanio, *pid_cs);
-				log_info(logger, "se creo un segmento en la direccion %d", direccion);
+				log_info(logger_obligatorio, "PID: %d - Crear Segmento: %d - Base: %d - TAMAÑO: %d", *pid_cs, *id, direccion, *tamanio);
 				send_base_segmento(direccion, cliente_socket);
 				break;
 			case OUT_OF_MEM:
@@ -102,8 +106,11 @@ static void procesar_conexion(void *void_args) {
 				send_segment_response(verificacion_espacio, cliente_socket);
 				// esperar a que kernel de el ok para compactar y recien ahi compactar
 				recv_iniciar_compactacion(cliente_socket);
+				log_info(logger_obligatorio, "Solicitud de Compactación");
 				compactar();
 				usleep(RETARDO_COMPACTACION * 1000);
+				log_info(logger_obligatorio, "Resultado compactacion: ");
+				log_resultado_compactacion();
 				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
 				break;
 			}
@@ -112,20 +119,20 @@ static void procesar_conexion(void *void_args) {
 			t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
 			int* id_segmento = list_get(delete_sgm_params, 0);
 			int* pid_ds = list_get(delete_sgm_params, 1);
-			log_info(logger, "manejo delete_segment");
+			log_info(logger_obligatorio, "PID: %d - Eliminar Segmento: <ID SEGMENTO> - Base: <DIRECCIÓN BASE> - TAMAÑO: <TAMAÑO>");
 			t_list* tabla_segmentos_actualizada = deletear_segmento(*id_segmento, *pid_ds);
 			log_info(logger, "mando tabla actualizada de tamaño %d", list_size(tabla_segmentos_actualizada));
 			send_tabla_segmentos(tabla_segmentos_actualizada, cliente_socket);
 			break;
 		case INICIALIZAR_PROCESO:
 			int pid_init = recv_inicializar_proceso(cliente_socket);
-			log_info(logger, "se inicializa proceso");
+			log_info(logger_obligatorio, "Creación de Proceso PID: %d", pid_init);
 			t_list* tabla_segmentos_inicial = inicializar_proceso(pid_init);
 			send_proceso_inicializado(tabla_segmentos_inicial, cliente_socket);
 			break;
 		case FINALIZAR_PROCESO:
 			int pid_fin = recv_terminar_proceso(cliente_socket);
-			// hacer lo q haya q hacer segun el enunciado para finalizar un proceso.
+			log_info(logger_obligatorio, "Eliminación de Proceso PID: %d", pid_fin);
 			terminar_proceso(pid_fin);
 			break;
 		case PEDIDO_LECTURA:
@@ -135,7 +142,7 @@ static void procesar_conexion(void *void_args) {
 			char* valor_leido = malloc(*tamanio_lectura);
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido, espacio_usuario + *posicion_lectura, *tamanio_lectura);
-			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido);
+			log_info(logger_obligatorio, "se leyo del espacio de usuario el valor: %s", valor_leido);
 			send_valor_leido(valor_leido, cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA:
@@ -221,23 +228,14 @@ t_list* inicializar_proceso(int pid){
 	wrapper->tabla_de_segmentos = tabla_segmentos_inicial;
 	list_add(lista_ts_wrappers, wrapper);
 
-	// añadir el pid y su lista de escrituras
-//	t_escrituras* escrituras = malloc(sizeof(t_escrituras));
-//	escrituras->pid = pid;
-//	escrituras->escrituras = list_create();
-
 	return tabla_segmentos_inicial;
 }
-
-// creamos lista por proceso que a su vez tiene segmentos
-// cada proceso agregarle segmento_0
 
 void terminar_proceso(int pid){
 	eliminar_tabla_segmentos(pid);
 }
 
 void eliminar_tabla_segmentos(int pid){
-	//TO-DO: ya se puede implementar
 	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
 		ts_wrapper *tabla_segmento = list_get(lista_ts_wrappers, i);
 		if(tabla_segmento->pid==pid){
@@ -266,7 +264,7 @@ int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 	actualizar_hueco_libre(nuevo_segmento, hueco);
 	return nuevo_segmento->base;
 }
-//TESTEAR FUNCION
+// TODO TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -276,9 +274,8 @@ t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	}
 	return NULL;
 }
-//TESTEAR FUNCION
+// TODO TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_best(int tamanio){
-	//TO-DO: ya se puede implementar
 	t_hueco_memoria *aux=NULL;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 			t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -295,9 +292,8 @@ t_hueco_memoria* encontrar_hueco_best(int tamanio){
 		}
 	return aux;
 }
-//TESTEAR FUNCION
+// TODO TESTEAR FUNCION
 t_hueco_memoria* encontrar_hueco_worst(int tamanio){
-	//TO-DO: ya se puede implementar
 	t_hueco_memoria *aux=NULL;
 		for(int i = 0; i < list_size(huecos_libres); i++){
 				t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -336,21 +332,14 @@ void actualizar_hueco_libre(t_segmento* segmento_nuevo, t_hueco_memoria* hueco_v
 }
 
 void actualizar_tabla_segmentos_de_proceso(int pid, t_segmento* segmento){
-	//TO-DO: ya se puede implementar
 	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
 		ts_wrapper *ts_proceso = list_get(lista_ts_wrappers, i);
 		if(ts_proceso->pid==pid){
 			list_add(ts_proceso->tabla_de_segmentos,segmento);
-			//enviar_tabla_a_kernel(pid,ts_proceso->tabla_de_segmentos);
 		}
 	}
 	return;
 }
-/*
-void enviar_tabla_a_kernel(int pid, t_list *tabla_de_segmentos){
-//TODO: Que hacemo'?
-}
-*/
 
 t_list* deletear_segmento(int id_segmento, int pid){
 	int base;
@@ -366,13 +355,13 @@ t_list* deletear_segmento(int id_segmento, int pid){
 					base = segmento->base;
 					tamanio = segmento->tamanio;
 					list_remove(ts_proceso->tabla_de_segmentos, j);
+					log_info(logger_obligatorio, "PID: %d - Eliminar Segmento: %d - Base: %d - TAMAÑO: %d", pid, id_segmento, base, tamanio);
 				}
 			}
 		}
 	}
 	agregar_hueco_libre(base, tamanio);
 	return ts_actualizada;
-	//estas deleteado papaaa
 }
 
 void agregar_hueco_libre(int base, int tamanio){
@@ -412,6 +401,7 @@ void agregar_hueco_libre(int base, int tamanio){
 	}
 }
 
+// TODO TESTEAR FUNCION
 void compactar(){
 	list_sort(segmentos_en_memoria, (void*) comparador_de_base);
 	int tam_segmento=0;
@@ -452,40 +442,12 @@ bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos){
 	return false;
 }
 
-//// prototipo de compactacion (no funca pero les queria dejar una idea)
-//void compactar_version_tomy(){
-//	// importante que esten las dos listas ordenadas por base
-//	// list_sort(segmentos_en_memoria, cmp_base_segmentos);
-//
-//	// itero la lista de segmentos en memoria
-//
-//	for(int i,j = 0; i < list_size(segmentos_en_memoria); i++){
-//		// ordeno la lista de huecos libres por si en la anterior iteracion agregue un nuevo hueco libre
-//		// list_sort(huecos_libres, cmp_base_huecos)
-//		t_segmento* segmento = list_get(segmentos_en_memoria, i);
-//		t_hueco_memoria* hueco = list_get(huecos_libres, j);
-//		if(segmento->base > hueco->base){
-//			// esto quiere decir que se puede "empujar hacia abajo" al segmento
-//			// o sea que tiene espacio para ser compactado
-//			// elimino el hueco de la lista porque ahora el espacio lo ocupa el segmento
-//			list_remove(huecos_libres, j);
-//			int base_vieja_segmento = segmento->base;
-//			segmento->base = hueco->base;
-//			//chequear si esta funcion sigue sirviendo en este contexto
-//			agregar_hueco_libre(base_vieja_segmento, hueco->tamanio);
-//			// cuando se consolidan habria que hacer j-- porque se estan eliminando huecos libres
-//			// de alguna manera tendriamos que saber si en agregar_hueco_libre se eliminaron huecos y cuantos
-//			j++;
-//		}
-//	}
-//	// cuando se termina de compactar hay que actualizar la lista de ts_wrappers con los nuevos segmentos
-//	// en realidad no son segmentos nuevos, solo bases nuevas de los segmentos viejos
-//	// actualizar_lista_ts_wrappers(); (?
-//}
-
 bool comparador_de_base(t_segmento *s1, t_segmento *s2){
 	return s1->base <= s2->base;
 }
 
-
+void log_resultado_compactacion(){
+	// TODO  por cada segmento de cada proceso se debera imprimir una linea con el siguiente formato:
+	// “PID: <PID> - Segmento: <ID SEGMENTO> - Base: <BASE> - Tamaño <TAMAÑO>”
+}
 
