@@ -37,8 +37,10 @@ typedef enum{
 	FINALIZAR_PROCESO,
 	BASE_SEGMENTO,
 	SEGMENT_RESPONSE,
-	PEDIDO_LECTURA,
-	PEDIDO_ESCRITURA,
+	PEDIDO_LECTURA_CPU,
+	PEDIDO_LECTURA_FS,
+	PEDIDO_ESCRITURA_CPU,
+	PEDIDO_ESCRITURA_FS,
 	INICIAR_COMPACTACION,
 	TS_WRAPPERS,
 }op_code;
@@ -103,8 +105,10 @@ void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo);
 void send_segment_response(t_segment_response resp, int fd_modulo);
 void send_delete_segment(int pid, int id_segmento, int fd_modulo);
 void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo);
-void send_leer_valor(int dir_fisica, int tamaio_a_leer,int fd_modulo);
-void send_escribir_valor(char* valor, int dir_fisica, int fd_modulo);
+void send_leer_valor_cpu(int dir_fisica, int tamaio_a_leer,int fd_modulo);
+void send_escribir_valor_cpu(char* valor, int dir_fisica, int fd_modulo);
+void send_leer_valor_fs(int dir_fisica, int tamaio_a_leer,int fd_modulo);
+void send_escribir_valor_fs(char* valor, int dir_fisica, int fd_modulo);
 void send_inicializar_proceso(int pid, int fd_modulo);
 void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo);
 void send_terminar_proceso(int pid, int fd_modulo);
@@ -115,7 +119,8 @@ void send_fin_f_read(int fd_modulo);
 void send_fin_f_write(int fd_modulo);
 void send_iniciar_compactacion(int fd_modulo);
 void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
-void send_valor_leido(char* valor, int fd_modulo);
+void send_valor_leido_cpu(char* valor, int fd_modulo);
+void send_valor_leido_fs(char* valor, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);
@@ -123,7 +128,8 @@ t_contexto_ejecucion* recv_contexto_ejecucion(int fd_modulo);
 estado_proceso recv_cambiar_estado(int fd_modulo);
 int recv_tiempo_io(int fd_modulo);
 char* recv_recurso(int fd_modulo);
-char* recv_valor_leido(int fd_modulo);
+char* recv_valor_leido_fs(int fd_modulo);
+char* recv_valor_leido_cpu(int fd_modulo);
 t_list* recv_leer_valor(int fd_modulo);
 t_list* recv_escribir_valor(int fd_modulo);
 t_list* recv_create_segment(int fd_modulo);

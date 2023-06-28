@@ -518,7 +518,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);	//TODO: Implementar leer_datos()
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
-	send_escribir_valor(datos_leidos, dir_fisica, fd_memoria);
+	send_escribir_valor_fs(datos_leidos, dir_fisica, fd_memoria);
 
 }
 
@@ -526,8 +526,8 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 
 	//Solicitar a Memoria la información que se encuentra a partir de la dirección física
-	send_leer_valor(dir_fisica, tamanio, fd_memoria);			//Creo que con esta funcion solicito la info
-	char* datos_a_escribir = recv_valor_leido(fd_memoria);
+	send_leer_valor_fs(dir_fisica, tamanio, fd_memoria);			//Creo que con esta funcion solicito la info
+	char* datos_a_escribir = recv_valor_leido_fs(fd_memoria);
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
 	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);		//TODO: Implementar escribir_datos()

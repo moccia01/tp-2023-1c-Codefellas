@@ -379,13 +379,13 @@ void ejecutar_set(char* registro, char* valor, t_registros* registros_contexto){
 void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto){
 
 	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
-	int tamanio_a_leer = obtener_tamanio_registro(registro);
+	int tamanio_a_leer = obtener_tamanio_registro(registro) + 1;
 
 	if(tamanio_a_leer + mmu->desplazamiento_segmento > mmu->tamanio){
 		manejar_seg_fault(contexto, mmu, tamanio_a_leer);
 	}else{
-		send_leer_valor(mmu->dir_fisica, mmu->tamanio, fd_memoria);
-		char* valor_leido_en_memoria = recv_valor_leido(fd_memoria);
+		send_leer_valor_cpu(mmu->dir_fisica, tamanio_a_leer, fd_memoria);
+		char* valor_leido_en_memoria = recv_valor_leido_cpu(fd_memoria);
 		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_leido_en_memoria);
 		set_valor_registro(registro, valor_leido_en_memoria);
 	}
@@ -394,14 +394,14 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* contexto){
 
 	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
-	int tamanio_a_escribir = obtener_tamanio_registro(registro);
+	int tamanio_a_escribir = obtener_tamanio_registro(registro) + 1;
 
 	if(tamanio_a_escribir + mmu->desplazamiento_segmento > mmu->tamanio){
 		manejar_seg_fault(contexto, mmu, tamanio_a_escribir);
 	}else{
 		char* valor_escrito_en_memoria = leer_valor_registro(registro);
 		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_escrito_en_memoria);
-		send_escribir_valor(valor_escrito_en_memoria, mmu->dir_fisica, fd_memoria);
+		send_escribir_valor_cpu(valor_escrito_en_memoria, mmu->dir_fisica, fd_memoria);
 	}
 }
 
