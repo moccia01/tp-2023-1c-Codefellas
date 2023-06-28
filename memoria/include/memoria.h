@@ -40,6 +40,9 @@ t_log* logger;
 t_log* logger_obligatorio;
 t_config* config;
 int fd_memoria;
+int fd_kernel;
+int fd_cpu;
+int fd_filesystem;
 char* server_name;
 void *espacio_usuario;
 t_segmento* segmento_0;
@@ -59,7 +62,7 @@ void terminar_programa();
 // --------------------- COMUNICACION ---------------------
 static void procesar_conexion(void *void_args);
 void iterator(char *value);
-int server_escuchar(int server_socket);
+int server_escuchar();
 
 t_segment_response verificar_espacio_memoria(int tamanio);
 t_list* inicializar_proceso(int id_proceso);

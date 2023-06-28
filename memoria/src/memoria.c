@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 		log_destroy(logger);
 		exit(1);
 	}
-	logger = log_create("memoria_obligatorio.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("memoria_obligatorio.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
 	leer_config();
 
 	inicializar_memoria();
@@ -119,7 +119,6 @@ static void procesar_conexion(void *void_args) {
 			t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
 			int* id_segmento = list_get(delete_sgm_params, 0);
 			int* pid_ds = list_get(delete_sgm_params, 1);
-			log_info(logger_obligatorio, "PID: %d - Eliminar Segmento: <ID SEGMENTO> - Base: <DIRECCIÓN BASE> - TAMAÑO: <TAMAÑO>");
 			t_list* tabla_segmentos_actualizada = deletear_segmento(*id_segmento, *pid_ds);
 			log_info(logger, "mando tabla actualizada de tamaño %d", list_size(tabla_segmentos_actualizada));
 			send_tabla_segmentos(tabla_segmentos_actualizada, cliente_socket);
@@ -169,9 +168,9 @@ void iterator(char *value) {
 	log_info(logger, "%s", value);
 }
 
-int server_escuchar(int server_socket) {
+int server_escuchar() {
 	server_name = "Memoria";
-	int cliente_socket = esperar_cliente(logger, server_name, server_socket);
+	int cliente_socket = esperar_cliente(logger, server_name, fd_memoria);
 
 	if (cliente_socket != -1) {
 		pthread_t hilo;
@@ -181,6 +180,7 @@ int server_escuchar(int server_socket) {
 		pthread_detach(hilo);
 		return 1;
 	}
+
 	return 0;
 }
 
