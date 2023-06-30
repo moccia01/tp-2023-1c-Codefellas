@@ -41,6 +41,7 @@ void leer_config(){
 	PATH_BLOQUES = config_get_string_value(config, "PATH_BLOQUES");
 	PATH_FCB = config_get_string_value(config, "PATH_FCB");
 	RETARDO_ACCESO_BLOQUE = config_get_string_value(config, "RETARDO_ACCESO_BLOQUE");
+	RETARDO_ACCESO_BLOQUE_NUMERO = atoi(RETARDO_ACCESO_BLOQUE);
 }
 
 // ------------------ INIT --------------------------
@@ -243,7 +244,6 @@ void server_escuchar() {
 void manejar_peticion(t_peticion* peticion){
 	t_operacion_fs cop = peticion->operacion;
 
-	//TODO: agregar los retardos de acceso a bloque (usleep) todas las veces que se acceda a un bloque (datos o punteros)
 	switch (cop) {
 	case OPEN:
 		log_info(logger,"Se esta ejecutando un F_OPEN");
@@ -356,7 +356,9 @@ void manejar_f_create(char* nombre_archivo){
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	nuevo_fcb->puntero_directo = buscar_bloque_libre();
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	nuevo_fcb->puntero_indirecto = buscar_bloque_libre();
 	char* text_tamanio_archivo = malloc(10);
 	char* text_puntero_directo = malloc(10);
@@ -386,6 +388,7 @@ void manejar_f_create(char* nombre_archivo){
 int obtener_cantidad_punteros(uint32_t* array_punteros){
 	uint32_t* cant_punteros_bloque = malloc(sizeof(uint32_t));
 
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(cant_punteros_bloque, array_punteros, sizeof(uint32_t));
 
 	return *cant_punteros_bloque;
@@ -395,6 +398,7 @@ void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punter
 	uint32_t* nuevo_valor_puntero = malloc(sizeof(uint32_t));
 	*nuevo_valor_puntero = 0;
 
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	//poner el ultimo puntero en 0
 	memcpy(array_bloque_de_punteros + posicion_ultimo_bloque, nuevo_valor_puntero,sizeof(uint32_t));
 }
@@ -416,6 +420,8 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 
 	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
 	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
@@ -425,10 +431,12 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 	int pos_nuevo_bloque = (cant_punteros_bloque + 1)*sizeof(uint32_t);
 
 	for(int i = cant_bloques; i > 0; i--){
+		usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 		uint32_t puntero_a_bloque = buscar_bloque_libre();
 
 		log_info(logger, "El nuevo bloque asignado es %d", puntero_a_bloque);
 
+		usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 		memcpy(buffer_bloques+pos_bloque_punteros+pos_nuevo_bloque, &puntero_a_bloque, sizeof(uint32_t));
 		pos_nuevo_bloque += sizeof(uint32_t);
 		cant_punteros_bloque++;
@@ -436,7 +444,9 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 
 	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
 
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 }
 
@@ -445,8 +455,10 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 
 	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
 	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
 	int pos_ultimo_puntero = (cant_punteros_bloque)*sizeof(uint32_t);
 
@@ -455,11 +467,14 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 	int pos_bitmap_ultimo_bloque;
 
 	for(int i = cant_bloques; i > 0; i--){
+		usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 		liberar_bloque(pos_ultimo_puntero, array_bloque_de_punteros);
 
 		log_info(logger, "El bloque eliminado es %d", pos_ultimo_puntero);
 
+		usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 		memcpy(&pos_bitmap_ultimo_bloque, array_bloque_de_punteros + pos_ultimo_puntero, sizeof(uint32_t));
+		usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 		bitarray_clean_bit(bitmap, pos_bitmap_ultimo_bloque);
 		pos_ultimo_puntero -= sizeof(uint32_t);
 		cant_punteros_bloque--;
@@ -467,7 +482,9 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 
 	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
 
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
+	usleep(RETARDO_ACCESO_BLOQUE_NUMERO);
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 
 }
