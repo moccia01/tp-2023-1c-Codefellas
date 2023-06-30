@@ -59,8 +59,8 @@ char* PATH_SUPERBLOQUE;
 char* PATH_BITMAP;
 char* PATH_BLOQUES;
 char* PATH_FCB;
-char* RETARDO_ACCESO_BLOQUE;
-unsigned int RETARDO_ACCESO_BLOQUE_NUMERO;
+int RETARDO_ACCESO_BLOQUE;
+
 
 // Variables de conexion
 int fd_filesystem;
