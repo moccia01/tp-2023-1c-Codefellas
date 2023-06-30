@@ -116,19 +116,9 @@ void crear_bitmap(){
 	buffer_bitmap = mmap(NULL, tamanio_bitmap, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	bitmap = bitarray_create_with_mode(buffer_bitmap, tamanio_bitmap, LSB_FIRST);
 
-	// Esta parte puede que ni vaya por el momento
-    // Copia los bits del bitarray al mapeo en memoria
-//    memcpy(mmap_funciono, bitmap->bitarray, tamanio_bitmap);
-//	//free(bitarray_p);
-//
-//    // Liberar recursos
-//    munmap(mmap_funciono, tamanio_bitmap);
-//    bitarray_destroy(bitmap);
-
 	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre?
 	// Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
 	close(fd);
-
 }
 
 void crear_archivo_de_bloques(){
@@ -179,11 +169,6 @@ static void procesar_conexion() {
 			agrego_a_pendientes(peticion_open);
 			sem_post(&contador_peticiones);
 			break;
-//		case MANEJAR_F_CREATE:
-//			nombre_archivo = recv_manejo_f_open(socket_cliente);
-//			log_info(logger,"Se esta ejecutando un MANEJAR_F_CREATE");
-//			manejar_f_create(nombre_archivo);
-//			break;
 		case MANEJAR_F_TRUNCATE:
 			t_list* parametros_truncate = recv_manejo_f_truncate(socket_cliente);
 			char* nombre_archivo_truncate = list_get(parametros_truncate, 0);
@@ -289,7 +274,7 @@ void agrego_a_pendientes(t_peticion* peticion){
 	list_add(peticiones_pendientes, peticion);
 	pthread_mutex_unlock(&mutex_peticiones_pendientes);
 }
-RETARDO_ACCESO_BLOQUE_NUMERO;
+
 t_peticion* saco_de_pendientes(){
 	pthread_mutex_lock(&mutex_peticiones_pendientes);
 	t_peticion* peticion = list_remove(peticiones_pendientes, 0);
@@ -517,11 +502,60 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	}
 }
 
+int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
+
+	if(bloque_a_buscar == 0){
+		int puntero_directo = config_get_int_value(archivo_fcb, "PUNTERO DIRECTO");
+		return puntero_directo*BLOCK_SIZE;
+	}
+	else{
+		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO INDIRECTO");
+
+		uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
+		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+
+		usleep(RETARDO_ACCESO_BLOQUE);
+		memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
+
+		uint32_t* puntero_a_bloque_a_buscar = malloc(sizeof(uint32_t));
+
+		int posicion_puntero_bloque_a_buscar = bloque_a_buscar*BLOCK_SIZE;
+
+		memcpy(puntero_a_bloque_a_buscar, array_bloque_de_punteros+posicion_puntero_bloque_a_buscar, sizeof(uint32_t));
+
+		return (*puntero_a_bloque_a_buscar)*BLOCK_SIZE;
+	}
+
+}
+
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
-	return NULL;
+
+	int bloque_a_buscar = floor(posicion_a_leer/BLOCK_SIZE);
+	int offset_bloque = div(posicion_a_leer/BLOCK_SIZE);
+
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque);
+
+	char* datos_leidos = malloc(tamanio);
+
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
+
+	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, tamanio);
+
+	log_info(logger, "los datos leidos son: %s", datos_leidos);
+
+	return datos_leidos;
 }
 
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir){
+
+	int bloque_a_buscar = floor(posicion_a_escribir/BLOCK_SIZE);
+	int offset_bloque = div(posicion_a_escribir/BLOCK_SIZE);
+
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque);
+
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
+
+	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, datos_a_escribir, strlen(datos_a_escribir));
 
 }
 

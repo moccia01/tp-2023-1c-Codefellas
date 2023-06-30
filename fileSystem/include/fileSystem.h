@@ -61,7 +61,6 @@ char* PATH_BLOQUES;
 char* PATH_FCB;
 int RETARDO_ACCESO_BLOQUE;
 
-
 // Variables de conexion
 int fd_filesystem;
 int fd_memoria;
