@@ -80,6 +80,19 @@ int TAMANIO_ARCHIVO_BLOQUES;
 void* buffer_bitmap;
 void* buffer_bloques;
 
+// Estructuras
+typedef struct{
+	char* nombre_archivo;
+	int tamanio_archivo;
+	uint32_t puntero_directo;
+	uint32_t puntero_indirecto;
+}t_fcb;
+
+typedef struct{
+	char* nombre_archivo;
+	t_config* archivo_fcb;
+}t_archivo;
+
 // Funciones
 void leer_config();
 void levantar_archivos();
@@ -93,6 +106,8 @@ void iniciar_atencion_peticiones();
 void atender_peticiones();
 void agrego_a_pendientes(t_peticion* peticion);
 t_peticion* saco_de_pendientes();
+void destruir_lista_fcbs();
+void archivo_destroy(t_archivo* archivo_fcb);
 
 // Comunicacion
 static void procesar_conexion();
@@ -119,18 +134,5 @@ void sacar_bloques(int cant_bloques, t_config* archivo);
 //Funciones auxiliares de f_read y f_write
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio);
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir);
-
-// Estructuras
-typedef struct{
-	char* nombre_archivo;
-	int tamanio_archivo;
-	uint32_t puntero_directo;
-	uint32_t puntero_indirecto;
-}t_fcb;
-
-typedef struct{
-	char* nombre_archivo;
-	t_config* archivo_fcb;
-}t_archivo;
 
 #endif /* FILESYSTEM_H_ */

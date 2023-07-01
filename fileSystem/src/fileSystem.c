@@ -136,6 +136,16 @@ void crear_archivo_de_bloques(){
 	close(fd);
 }
 
+void destruir_lista_fcbs(){
+	list_destroy_and_destroy_elements(lista_fcbs, (void*) archivo_destroy);
+	//list_destroy();
+}
+
+void archivo_destroy(t_archivo* archivo_fcb){
+	config_destroy(archivo_fcb->archivo_fcb);
+	free(archivo_fcb);
+	archivo_fcb = NULL;
+}
 
 void levantar_archivos(){
 	leer_superbloque();
@@ -146,6 +156,7 @@ void levantar_archivos(){
 void terminar_programa(){
 	log_destroy(logger);
 	config_destroy(config);
+	destruir_lista_fcbs();
 }
 
 // ------------------ COMUNICACION ------------------
@@ -227,7 +238,7 @@ void server_escuchar() {
 
 void manejar_peticion(t_peticion* peticion){
 	t_operacion_fs cop = peticion->operacion;
-	server_escuchar
+	//server_escuchar			//TODO: Que onda con este server_escuchar???
 	switch (cop) {
 	case OPEN:
 		log_info(logger,"Se esta ejecutando un F_OPEN");
@@ -538,16 +549,16 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 
-	int bloque_a_buscar = floor(posicion_a_leer/BLOCK_SIZE);
-	int offset_bloque = div(posicion_a_leer/BLOCK_SIZE);
+	//int bloque_a_buscar = floor(posicion_a_leer/BLOCK_SIZE);		//bloque_a_buscar.quot = bloque_a_buscar, bloque_a_buscar.rem = offset
+	div_t bloque_a_buscar = div(posicion_a_leer, BLOCK_SIZE);		//bloque_a_buscar.quot = cociente, bloque_a_buscar.rem = resto
 
-	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque);
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar.quot, bloque_a_buscar.rem);
 
 	char* datos_leidos = malloc(tamanio);
 
-	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar.quot);
 
-	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, tamanio);
+	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+bloque_a_buscar.rem, tamanio);
 
 	log_info(logger, "los datos leidos son: %s", datos_leidos);
 
@@ -557,13 +568,13 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir){
 
 	int bloque_a_buscar = floor(posicion_a_escribir/BLOCK_SIZE);
-	int offset_bloque = div(posicion_a_escribir/BLOCK_SIZE);
+	div_t offset_bloque = div(posicion_a_escribir, BLOCK_SIZE);
 
-	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque);
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque.rem);
 
 	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
 
-	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, datos_a_escribir, strlen(datos_a_escribir));
+	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque.rem, datos_a_escribir, strlen(datos_a_escribir));
 
 }
 
@@ -571,7 +582,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 	//Leer la información correspondiente de los bloques a partir del puntero y el tamaño recibidos
 	log_info(logger_obligatorio, "Leer Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_leer, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
-	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);	//TODO: Implementar leer_datos()
+	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
 	send_escribir_valor_fs(datos_leidos, dir_fisica, fd_memoria);
@@ -587,6 +598,6 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 	char* datos_a_escribir = recv_valor_leido_fs(fd_memoria);
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
-	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);		//TODO: Implementar escribir_datos()
+	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);
 
 }
