@@ -210,11 +210,10 @@ int server_escuchar() {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
-	log_info(logger,"Memoria restante principal Tamaño: %d",tamanio);
 	tamanio_total=0;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
-		log_info(logger,"Memoria huecos libres Tamaño: %d", hueco_libre->tamanio);
+		log_info(logger,"Memoria hueco libre Tamaño: %d", hueco_libre->tamanio);
 		if(hueco_libre->tamanio >= tamanio){
 			return SEGMENT_CREATED;
 		}
@@ -383,6 +382,7 @@ t_list* deletear_segmento(int id_segmento, int pid){
 					base = segmento->base;
 					tamanio = segmento->tamanio;
 					list_remove(ts_proceso->tabla_de_segmentos, j);
+					list_remove_element(segmentos_en_memoria,segmento);
 					log_info(logger_obligatorio, "PID: %d - Eliminar Segmento: %d - Base: %d - TAMAÑO: %d", pid, id_segmento, base, tamanio);
 				}
 			}
@@ -436,15 +436,19 @@ void compactar(){
 	int base_segmento=0;
 	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
 		t_segmento* segmento_actual = list_get(segmentos_en_memoria, i);
+		log_info(logger,"segmento OLD base: %d", segmento_actual->base);
 		segmento_actual->base=base_segmento+tam_segmento;
+		log_info(logger,"segmento NEW base: %d", segmento_actual->base);
 		base_segmento=segmento_actual->base;
 		tam_segmento=segmento_actual->tamanio;
 		actualizar_segmento(segmento_actual);
 	}
-	list_clean(huecos_libres);
-	t_segmento* hueco_nuevo = malloc(sizeof(t_segmento));
+	for(int i = 0; i < list_size(huecos_libres); i++)
+		list_remove(huecos_libres,i);
+	t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
 	hueco_nuevo -> base = base_segmento+tam_segmento;
 	hueco_nuevo -> tamanio = tamanio_total;
+	log_info(logger,"tam: %d", tamanio_total);
 	list_add(huecos_libres,hueco_nuevo);
 	return;
 }
