@@ -227,7 +227,7 @@ void server_escuchar() {
 
 void manejar_peticion(t_peticion* peticion){
 	t_operacion_fs cop = peticion->operacion;
-
+	server_escuchar
 	switch (cop) {
 	case OPEN:
 		log_info(logger,"Se esta ejecutando un F_OPEN");
@@ -391,6 +391,7 @@ uint32_t buscar_bloque_libre(){ //busca un bloque libre y lo ocupa
 	for(int i = 0; i < tamanio_bitmap; i++){
 		if(!bitarray_test_bit(bitmap, i)){
 			bitarray_set_bit(bitmap, i);
+			log_info(logger_obligatorio, "Acceso a Bitmap - Bloque: %d - Estado: 1", i);
 			return i;
 		}
 	}
@@ -424,6 +425,7 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 		memcpy(buffer_bloques+pos_bloque_punteros+pos_nuevo_bloque, &puntero_a_bloque, sizeof(uint32_t));
 		pos_nuevo_bloque += sizeof(uint32_t);
 		cant_punteros_bloque++;
+
 	}
 
 	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
@@ -459,7 +461,13 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 		usleep(RETARDO_ACCESO_BLOQUE);
 		memcpy(&pos_bitmap_ultimo_bloque, array_bloque_de_punteros + pos_ultimo_puntero, sizeof(uint32_t));
 		usleep(RETARDO_ACCESO_BLOQUE);
+
+		//log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: <NUMERO BLOQUE ARCHIVO> - Bloque File System <NUMERO BLOQUE FS>", );
+
 		bitarray_clean_bit(bitmap, pos_bitmap_ultimo_bloque);
+
+
+
 		pos_ultimo_puntero -= sizeof(uint32_t);
 		cant_punteros_bloque--;
 	}
