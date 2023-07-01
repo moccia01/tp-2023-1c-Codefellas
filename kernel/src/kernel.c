@@ -128,7 +128,7 @@ void inicializar_variables() {
 	sem_init(&sem_exec, 0, 1);
 	sem_init(&sem_exit, 0, 0);
 	sem_init(&sem_block_return, 0, 0);
-	sem_init(&ongoing_fs_mem_op, 0, 0);
+	sem_init(&ongoing_fs_mem_op, 0, 1);
 
 }
 

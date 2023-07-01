@@ -210,14 +210,17 @@ int server_escuchar() {
 }
 
 t_segment_response verificar_espacio_memoria(int tamanio){
+	log_info(logger,"Memoria restante principal Tamaño: %d",tamanio);
 	tamanio_total=0;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
+		log_info(logger,"Memoria huecos libres Tamaño: %d", hueco_libre->tamanio);
 		if(hueco_libre->tamanio >= tamanio){
 			return SEGMENT_CREATED;
 		}
 		tamanio_total+=hueco_libre->tamanio;
 	}
+	log_info(logger,"Memoria restante es Tamaño: %d",tamanio_total);
 	if(tamanio_total>=tamanio)
 		return COMPACT;
 	return OUT_OF_MEM;
@@ -285,7 +288,7 @@ int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 		break;
 	default: break;
 	}
-	t_segmento* nuevo_segmento = crear_segmento(pid, id, tamanio, hueco->base);
+	t_segmento* nuevo_segmento = crear_segmento(pid, id, hueco->base, tamanio);
 	actualizar_hueco_libre(nuevo_segmento, hueco);
 	return nuevo_segmento->base;
 }
