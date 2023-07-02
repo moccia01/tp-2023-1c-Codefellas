@@ -1,7 +1,6 @@
 #ifndef FILESYSTEM_H_
 #define FILESYSTEM_H_
 
-//#include <bits/mman-linux.h>
 #include <commons/bitarray.h>
 #include <commons/collections/list.h>
 #include <commons/config.h>
@@ -76,7 +75,6 @@ int tamanio_bitmap;
 
 // Variable de archivo de bloques
 int TAMANIO_ARCHIVO_BLOQUES;
-//char* ARRAY_BLOQUES;
 void* buffer_bitmap;
 void* buffer_bloques;
 

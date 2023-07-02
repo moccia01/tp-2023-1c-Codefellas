@@ -11,13 +11,12 @@ int main(int argc, char **argv) {
 		log_error(logger, "No se encontró el archivo :(");
 		exit(1);
 	}
-
 	inicializar_variables();
 	iniciar_atencion_peticiones();
 
 	// Conecto CPU con memoria
 	fd_memoria = crear_conexion(IP_MEMORIA, PUERTO_MEMORIA);
-	enviar_mensaje("Hola, soy Filesystem.", fd_memoria);
+	enviar_mensaje("Hola, soy Filesystem!", fd_memoria);
 
 	// Inicio de servidor
 	fd_filesystem = iniciar_servidor(logger, IP, PUERTO);
@@ -56,7 +55,6 @@ void inicializar_variables(){
 }
 
 void inicializar_fcbs(){
-
 	DIR *directorio_archivos = opendir(PATH_FCB);
 	struct dirent *fcb;
 
@@ -84,7 +82,6 @@ void inicializar_fcbs(){
 	}
 
 	closedir(directorio_archivos);
-
 }
 
 void leer_superbloque(){
@@ -99,8 +96,6 @@ void leer_superbloque(){
 	BLOCK_COUNT = config_get_int_value(superbloque, "BLOCK_COUNT");
 
 	config_destroy(superbloque);
-
-	// TODO comment de tomy: acuerdense de hacerle un config_destroy a superbloque si no lo usan mas
 }
 
 void crear_bitmap(){
@@ -117,7 +112,6 @@ void crear_bitmap(){
 	bitmap = bitarray_create_with_mode(buffer_bitmap, tamanio_bitmap, LSB_FIRST);
 
 	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre?
-	// Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
 	close(fd);
 }
 
@@ -478,7 +472,6 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 		bitarray_clean_bit(bitmap, pos_bitmap_ultimo_bloque);
 
 
-
 		pos_ultimo_puntero -= sizeof(uint32_t);
 		cant_punteros_bloque--;
 	}
@@ -489,7 +482,6 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
 	usleep(RETARDO_ACCESO_BLOQUE);
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
-
 }
 
 void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
@@ -544,7 +536,6 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 
 		return (*puntero_a_bloque_a_buscar)*BLOCK_SIZE;
 	}
-
 }
 
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
@@ -566,7 +557,6 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 }
 
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir){
-
 	int bloque_a_buscar = floor(posicion_a_escribir/BLOCK_SIZE);
 	div_t offset_bloque = div(posicion_a_escribir, BLOCK_SIZE);
 
@@ -575,7 +565,6 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
 
 	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque.rem, datos_a_escribir, strlen(datos_a_escribir));
-
 }
 
 void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer){
@@ -599,5 +588,4 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
 	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);
-
 }
