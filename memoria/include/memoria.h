@@ -85,5 +85,6 @@ bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos);
 void compactar_version_tomy();
 bool comparador_de_base(t_segmento *, t_segmento *);
 void log_resultado_compactacion();
+void log_valor_espacio_usuario(char* valor);
 
 #endif /* MEMORIA_H_ */

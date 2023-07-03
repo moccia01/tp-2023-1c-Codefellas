@@ -380,7 +380,7 @@ void ejecutar_set(char* registro, char* valor, t_registros* registros_contexto){
 void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* contexto){
 
 	t_traduccion_mmu* mmu = traducir_direccion(dir_logica, contexto);
-	int tamanio_a_leer = obtener_tamanio_registro(registro) + 1;
+	int tamanio_a_leer = obtener_tamanio_registro(registro);
 
 	if(tamanio_a_leer + mmu->desplazamiento_segmento > mmu->tamanio){
 		manejar_seg_fault(contexto, mmu, tamanio_a_leer);

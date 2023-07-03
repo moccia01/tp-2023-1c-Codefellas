@@ -658,16 +658,16 @@ char* recv_valor_leido_fs(int fd_modulo){
 	return valor;
 }
 
-void send_valor_leido_cpu(char* valor, int fd_modulo){
+void send_valor_leido_cpu(char* valor, int tamanio, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
-	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
+	agregar_a_paquete(paquete, valor, tamanio);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
-void send_valor_leido_fs(char* valor, int fd_modulo){
+void send_valor_leido_fs(char* valor, int tamanio, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_FS);
-	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
+	agregar_a_paquete(paquete, valor, tamanio);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
@@ -676,7 +676,7 @@ void send_valor_leido_fs(char* valor, int fd_modulo){
 //TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
 void send_escribir_valor_cpu(char* valor, int dir_fisica, int tamanio, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_CPU);
-	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
+	agregar_a_paquete(paquete, valor, tamanio);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
@@ -686,7 +686,7 @@ void send_escribir_valor_cpu(char* valor, int dir_fisica, int tamanio, int pid, 
 //TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
 void send_escribir_valor_fs(char* valor, int dir_fisica, int tamanio, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_FS);
-	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
+	agregar_a_paquete(paquete, valor, tamanio);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));

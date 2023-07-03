@@ -119,8 +119,8 @@ void send_fin_f_read(int fd_modulo);
 void send_fin_f_write(int fd_modulo);
 void send_iniciar_compactacion(int fd_modulo);
 void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
-void send_valor_leido_cpu(char* valor, int fd_modulo);
-void send_valor_leido_fs(char* valor, int fd_modulo);
+void send_valor_leido_cpu(char* valor, int tamanio, int fd_modulo);
+void send_valor_leido_fs(char* valor, int tamanio, int fd_modulo);
 
 //Recvs
 t_list* recv_instrucciones(t_log* logger, int fd_modulo);

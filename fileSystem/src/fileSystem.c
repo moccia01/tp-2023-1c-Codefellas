@@ -555,18 +555,23 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 		tamanio_lectura_primer_bloque = tamanio;
 	}
 
-	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_leer, offset_bloque);
+	log_info(logger, "el primer bloque a buscar es %d y el offset en el mismo es %d", bloque_a_leer, offset_bloque);
 
 	char* datos_leidos = malloc(tamanio);
 
 	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_leer);
+	log_info(logger, "la posicion del bloque en el fs es: %d", posicion_array_bloques_bloque_a_buscar);
 
 	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, tamanio_lectura_primer_bloque);
 
 	if(excedente_lectura > 0){
+		log_info(logger, "el excedente lectura es %d", excedente_lectura);
 		div_t bloques_a_leer = div(excedente_lectura, BLOCK_SIZE);
 		int bloques_a_leer_completos = bloques_a_leer.quot;
 		int offset_ultimo_bloque = bloques_a_leer.rem;
+
+		log_info(logger, "hay que leer %d bloques completos", bloques_a_leer_completos);
+		log_info(logger, "el offset del ultimo bloque es %d", offset_ultimo_bloque);
 
 		int bloques_extra;
 		int desplazamiento_datos_leidos = restante_bloque_comienzo;
@@ -578,8 +583,6 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra);
 		memcpy(datos_leidos + desplazamiento_datos_leidos, buffer_bloques + pos_ultimo_bloque, offset_ultimo_bloque);
 	}
-
-	log_info(logger, "los datos leidos son: %s", datos_leidos);
 
 	return datos_leidos;
 }
@@ -605,12 +608,15 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 	log_info(logger, "la posicion del bloque en el fs es: %d", posicion_array_bloques_bloque_a_buscar);
 
 	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar + offset_bloque, datos_a_escribir, tamanio_escritura_primer_bloque);
-	log_info(logger, "el excedente escritura es %d", excedente_escritura);
 
 	if(excedente_escritura > 0){
+		log_info(logger, "el excedente escritura es %d", excedente_escritura);
 		div_t bloques_a_escribir = div(excedente_escritura, BLOCK_SIZE);
 		int bloques_a_escribir_completos = bloques_a_escribir.quot;
 		int offset_ultimo_bloque = bloques_a_escribir.rem;
+
+		log_info(logger, "hay que escribir %d bloques completos", bloques_a_escribir_completos);
+		log_info(logger, "el offset del ultimo bloque es %d", offset_ultimo_bloque);
 
 		int bloques_extra;
 		int desplazamiento_datos_a_escribir = restante_bloque_comienzo;
@@ -629,6 +635,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 	log_info(logger_obligatorio, "Leer Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_leer, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);
+	log_valor_fs(datos_leidos);
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
 	send_escribir_valor_fs(datos_leidos, dir_fisica, tamanio, pid, fd_memoria);
@@ -645,5 +652,10 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
 	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir, tamanio);
-	log_info(logger, "se escribio en el fs %s", datos_a_escribir);
+	log_valor_fs(datos_a_escribir);
+}
+
+void log_valor_fs(char* valor){
+	strcat(valor, "\0");
+	log_info(logger, "se leyo/escribio %s en el fs", valor);
 }
