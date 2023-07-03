@@ -635,7 +635,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 	log_info(logger_obligatorio, "Leer Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_leer, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);
-	log_valor_fs(datos_leidos);
+	log_valor_fs(datos_leidos, tamanio);
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
 	send_escribir_valor_fs(datos_leidos, dir_fisica, tamanio, pid, fd_memoria);
@@ -652,10 +652,13 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
 	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir, tamanio);
-	log_valor_fs(datos_a_escribir);
+	log_valor_fs(datos_a_escribir, tamanio);
 }
 
-void log_valor_fs(char* valor){
-	strcat(valor, "\0");
-	log_info(logger, "se leyo/escribio %s en el fs", valor);
+void log_valor_fs(char* valor, int tamanio){
+	char* valor_log = malloc(tamanio);
+	memcpy(valor_log, valor, tamanio);
+	memcpy(valor_log + tamanio, "\0", 1);
+	int tamanio_valor = strlen(valor_log);
+	log_info(logger, "se leyo/escribio %s de tamaño %d en el espacio de usuario", valor_log, tamanio_valor);
 }

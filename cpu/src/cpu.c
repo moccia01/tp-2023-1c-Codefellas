@@ -331,31 +331,56 @@ int obtener_tamanio_registro(char* registro){
 }
 
 char* leer_valor_registro(char* registro){
+	char* valor;
 
 	if(strcmp(registro, "AX") == 0){
-		return registros->ax;
+		valor = malloc(4);
+		memcpy(valor, registros->ax, 4);
+		return valor;
 	}else if(strcmp(registro, "BX") == 0){
-		return registros->bx;
+		valor = malloc(4);
+		memcpy(valor, registros->bx, 4);
+		return valor;
 	}else if(strcmp(registro, "CX") == 0){
-		return registros->cx;
+		valor = malloc(4);
+		memcpy(valor, registros->cx, 4);
+		return valor;
 	}else if(strcmp(registro, "DX") == 0){
-		return registros->dx;
+		valor = malloc(4);
+		memcpy(valor, registros->dx, 4);
+		return valor;
 	}else if(strcmp(registro, "EAX") == 0){
-		return registros->eax;
+		valor = malloc(8);
+		memcpy(valor, registros->eax, 8);
+		return valor;
 	}else if(strcmp(registro, "EBX") == 0){
-		return registros->ebx;
+		valor = malloc(8);
+		memcpy(valor, registros->ebx, 8);
+		return valor;
 	}else if(strcmp(registro, "ECX") == 0){
-		return registros->ecx;
+		valor = malloc(8);
+		memcpy(valor, registros->ecx, 8);
+		return valor;
 	}else if(strcmp(registro, "EDX") == 0){
-		return registros->edx;
+		valor = malloc(8);
+		memcpy(valor, registros->edx, 8);
+		return valor;
 	}else if(strcmp(registro, "RAX") == 0){
-		return registros->rax;
+		valor = malloc(16);
+		memcpy(valor, registros->rax, 16);
+		return valor;
 	}else if(strcmp(registro, "RBX") == 0){
-		return registros->rbx;
+		valor = malloc(16);
+		memcpy(valor, registros->rbx, 16);
+		return valor;
 	}else if(strcmp(registro, "RCX") == 0){
-		return registros->rcx;
+		valor = malloc(16);
+		memcpy(valor, registros->rcx, 16);
+		return valor;
 	}else if(strcmp(registro, "RDX") == 0){
-		return registros->rdx;
+		valor = malloc(16);
+		memcpy(valor, registros->rdx, 16);
+		return valor;
 	}else{
 		log_info(logger, "No es encontró el registro pasado: %s", registro);
 		return NULL;
@@ -387,8 +412,11 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 	}else{
 		send_leer_valor_cpu(mmu->dir_fisica, tamanio_a_leer, contexto->pid, fd_memoria);
 		char* valor_leido_en_memoria = recv_valor_leido_cpu(fd_memoria);
-		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_leido_en_memoria);
-		set_valor_registro(registro, valor_leido_en_memoria);
+		char* valor_log = malloc(tamanio_a_leer + 1);
+		memcpy(valor_log, valor_leido_en_memoria, tamanio_a_leer);
+		memcpy(valor_log + tamanio_a_leer, "\0", 1);
+		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_log);
+		set_valor_registro(registro, valor_log);
 	}
 }
 
@@ -401,7 +429,10 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 		manejar_seg_fault(contexto, mmu, tamanio_a_escribir);
 	}else{
 		char* valor_escrito_en_memoria = leer_valor_registro(registro);
-		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_escrito_en_memoria);
+		char* valor_log = malloc(tamanio_a_escribir + 1);
+		memcpy(valor_log, valor_escrito_en_memoria, tamanio_a_escribir);
+		memcpy(valor_log + tamanio_a_escribir, "\0", 1);
+		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_log);
 		send_escribir_valor_cpu(valor_escrito_en_memoria, mmu->dir_fisica, tamanio_a_escribir, contexto->pid, fd_memoria);
 	}
 }

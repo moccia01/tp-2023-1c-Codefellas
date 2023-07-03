@@ -51,7 +51,6 @@ int tamanio_total;
 // esto lo hice yo (tomy) para la actualizacion de tablas de segmentos post compactacion
 t_list* lista_ts_wrappers; // lista de tablas de segmentos por proceso
 t_list* huecos_libres; // lista de huecos libres para manejo segmentacion
-t_list* huecos_escritos; // lista de lo que van escribiendo los procesos
 t_list* segmentos_en_memoria;
 
 // --------------------- INIT ---------------------
@@ -85,6 +84,6 @@ bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos);
 void compactar_version_tomy();
 bool comparador_de_base(t_segmento *, t_segmento *);
 void log_resultado_compactacion();
-void log_valor_espacio_usuario(char* valor);
+void log_valor_espacio_usuario(char* valor, int tamanio);
 
 #endif /* MEMORIA_H_ */

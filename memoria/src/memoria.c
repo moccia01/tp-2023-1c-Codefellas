@@ -142,7 +142,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lectura_cpu, *tamanio_lectura_cpu);
 			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: CPU",*pid_lectura_cpu, *posicion_lectura_cpu, *tamanio_lectura_cpu);
-			log_valor_espacio_usuario(valor_leido_cpu);
+			log_valor_espacio_usuario(valor_leido_cpu, *tamanio_lectura_cpu);
 			send_valor_leido_cpu(valor_leido_cpu, *tamanio_lectura_cpu, cliente_socket);
 			break;
 		case PEDIDO_LECTURA_FS:
@@ -154,7 +154,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_fs, espacio_usuario + *posicion_lectura_fs, *tamanio_lectura_fs);
 			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_lectura_fs, *posicion_lectura_fs, *tamanio_lectura_fs);
-			log_valor_espacio_usuario(valor_leido_fs);
+			log_valor_espacio_usuario(valor_leido_fs, *tamanio_lectura_fs);
 			send_valor_leido_fs(valor_leido_fs, *tamanio_lectura_fs, cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA_CPU:
@@ -168,7 +168,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, *tam_esc_cpu);
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *pid_escritura_cpu, *posicion_escritura_cpu, *tam_esc_cpu);
-			log_valor_espacio_usuario(valor_a_escribir_cpu);
+			log_valor_espacio_usuario(valor_a_escribir_cpu, *tam_esc_cpu);
 			break;
 		case PEDIDO_ESCRITURA_FS:
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
@@ -181,7 +181,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(espacio_usuario + *posicion_escritura_fs, valor_a_escribir_fs, *tam_esc_fs);
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_escritura_fs, *posicion_escritura_fs, *tam_esc_fs);
-			log_valor_espacio_usuario(valor_a_escribir_fs);
+			log_valor_espacio_usuario(valor_a_escribir_fs, *tam_esc_fs);
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -487,8 +487,10 @@ void log_resultado_compactacion(){
 	// “PID: <PID> - Segmento: <ID SEGMENTO> - Base: <BASE> - Tamaño <TAMAÑO>”
 }
 
-void log_valor_espacio_usuario(char* valor){
-	strcat(valor, "\0");
-	int tamanio_valor = strlen(valor);
-	log_info(logger, "se leyo/escribio %s de tamaño %d en el espacio de usuario", valor, tamanio_valor);
+void log_valor_espacio_usuario(char* valor, int tamanio){
+	char* valor_log = malloc(tamanio);
+	memcpy(valor_log, valor, tamanio);
+	memcpy(valor_log + tamanio, "\0", 1);
+	int tamanio_valor = strlen(valor_log);
+	log_info(logger, "se leyo/escribio %s de tamaño %d en el espacio de usuario", valor_log, tamanio_valor);
 }

@@ -133,6 +133,6 @@ void sacar_bloques(int cant_bloques, t_config* archivo);
 //Funciones auxiliares de f_read y f_write
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio);
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir, int tamanio_a_escribir);
-void log_valor_fs(char* valor);
+void log_valor_fs(char* valor, int tamanio);
 
 #endif /* FILESYSTEM_H_ */
