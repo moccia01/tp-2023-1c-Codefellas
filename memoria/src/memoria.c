@@ -139,6 +139,7 @@ static void procesar_conexion(void *void_args) {
 			t_list* parametros_lectura_cpu= recv_leer_valor(cliente_socket);
 			int* posicion_lectura_cpu = list_get(parametros_lectura_cpu, 0);
 			int* tamanio_lectura_cpu = list_get(parametros_lectura_cpu, 1);
+			int* pid_lectura_cpu = list_get(parametros_lectura_cpu, 2);
 			char* valor_leido_cpu = malloc(*tamanio_lectura_cpu);
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lectura_cpu, *tamanio_lectura_cpu);
@@ -150,6 +151,7 @@ static void procesar_conexion(void *void_args) {
 			t_list* parametros_lectura_fs = recv_leer_valor(cliente_socket);
 			int* posicion_lectura_fs = list_get(parametros_lectura_fs, 0);
 			int* tamanio_lectura_fs = list_get(parametros_lectura_fs, 1);
+			int* pid_lectura_fs = list_get(parametros_lectura_fs, 2);
 			char* valor_leido_fs = malloc(*tamanio_lectura_fs);
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_fs, espacio_usuario + *posicion_lectura_fs, *tamanio_lectura_fs);
@@ -161,6 +163,7 @@ static void procesar_conexion(void *void_args) {
 			t_list* parametros_escritura_cpu = recv_escribir_valor(cliente_socket);
 			char* valor_a_escribir_cpu = list_get(parametros_escritura_cpu, 0);
 			int* posicion_escritura_cpu = list_get(parametros_escritura_cpu, 1);
+			int* pid_escritura_cpu = list_get(parametros_escritura_cpu, 2);
 			int tam_esc_cpu = strlen(valor_a_escribir_cpu) + 1;
 			log_info(logger, "el tamaño del valor a escribir es: %d", tam_esc_cpu);
 			usleep(RETARDO_MEMORIA * 1000);
@@ -172,6 +175,7 @@ static void procesar_conexion(void *void_args) {
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
 			char* valor_a_escribir_fs = list_get(parametros_escritura_fs, 0);
 			int* posicion_escritura_fs = list_get(parametros_escritura_fs, 1);
+			int* pid_escritura_fs = list_get(parametros_escritura_cpu, 2);
 			int tam_esc_fs = strlen(valor_a_escribir_fs) + 1;
 			log_info(logger, "el tamaño del valor a escribir es: %d", tam_esc_fs);
 			usleep(RETARDO_MEMORIA * 1000);

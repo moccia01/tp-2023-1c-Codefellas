@@ -47,6 +47,7 @@ typedef struct{
 	int tamanio;
 	int dir_fisica;
 	int puntero;
+	int pid;
 }t_peticion;
 
 // Variables del config
@@ -112,15 +113,15 @@ static void procesar_conexion();
 void server_escuchar();
 
 // Operaciones
-t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica, int puntero);
+t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica, int puntero, int pid);
 void manejar_peticion(t_peticion* peticion);
 bool existe_fcb(char* nombre_archivo);
 t_config* obtener_archivo(char* nombre_archivo);
 void manejar_f_open(char* nombre_archivo);
 void manejar_f_create(char* nombre_archivo);
 void manejar_f_truncate(char* nombre_archivo, int tamanio);
-void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer);
-void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir);
+void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer, int pid);
+void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir, int pid);
 
 //Funciones auxiliares de f_truncate
 int obtener_cantidad_punteros(uint32_t* array_punteros);

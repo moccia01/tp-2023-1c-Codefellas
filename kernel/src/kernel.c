@@ -280,7 +280,7 @@ void procesar_conexion(void* void_args) {
 				// manejo f_read
 				t_archivo* archivo_read = get_archivo_global(nombre_archivo_read);
 				log_info(logger_obligatorio, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_read, archivo_read->puntero, *dir_fisica_read, *cant_bytes_read);
-				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, fd_filesystem);
+				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				sem_post(&sem_exec);
 				break;
@@ -299,7 +299,7 @@ void procesar_conexion(void* void_args) {
 				// manejo f_write
 				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
 				log_info(logger_obligatorio, "PID: %d - Escribir Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_write, archivo_write->puntero, *dir_fisica_write, *cant_bytes_write);
-				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, fd_filesystem);
+				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				sem_post(&sem_exec);
 				break;

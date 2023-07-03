@@ -527,12 +527,13 @@ void send_manejar_f_read(char* nombre_archivo, int dir_fisica, int cantidad_byte
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_manejar_f_read_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int fd_modulo){
+void send_manejar_f_read_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_READ);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	agregar_a_paquete(paquete, &(puntero), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -544,12 +545,13 @@ void send_manejar_f_write(char* nombre_archivo, int dir_fisica, int cantidad_byt
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_manejar_f_write_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int fd_modulo){
+void send_manejar_f_write_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_WRITE);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	agregar_a_paquete(paquete, &(puntero), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -616,17 +618,19 @@ t_list* recv_tabla_segmentos(int fd_modulo){
 	return tabla_segmentos;
 }
 
-void send_leer_valor_cpu(int dir_fisica, int tamanio_a_leer, int fd_modulo){
+void send_leer_valor_cpu(int dir_fisica, int tamanio_a_leer, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_CPU);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
-void send_leer_valor_fs(int dir_fisica, int tamanio_a_leer, int fd_modulo){
+void send_leer_valor_fs(int dir_fisica, int tamanio_a_leer, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_LECTURA_FS);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
@@ -670,18 +674,22 @@ void send_valor_leido_fs(char* valor, int fd_modulo){
 
 
 //TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
-void send_escribir_valor_cpu(char* valor, int dir_fisica, int fd_modulo){
+void send_escribir_valor_cpu(char* valor, int dir_fisica, int tamanio, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_CPU);
 	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 
 //TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
-void send_escribir_valor_fs(char* valor, int dir_fisica, int fd_modulo){
+void send_escribir_valor_fs(char* valor, int dir_fisica, int tamanio, int pid, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_FS);
 	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
+	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
+	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
 }
 

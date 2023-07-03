@@ -170,7 +170,7 @@ static void procesar_conexion() {
 		case MANEJAR_F_OPEN:
 			char* nombre_archivo_open = recv_manejo_f_open(socket_cliente);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_OPEN");
-			t_peticion* peticion_open = crear_peticion(OPEN,nombre_archivo_open, 0, 0, 0);
+			t_peticion* peticion_open = crear_peticion(OPEN,nombre_archivo_open, 0, 0, 0, 0);
 			agrego_a_pendientes(peticion_open);
 			sem_post(&contador_peticiones);
 			break;
@@ -179,7 +179,7 @@ static void procesar_conexion() {
 			char* nombre_archivo_truncate = list_get(parametros_truncate, 0);
 			int* tamanio_truncate = list_get(parametros_truncate, 1);
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_TRUNCATE");
-			t_peticion* peticion_truncate = crear_peticion(TRUNCATE, nombre_archivo_truncate, *tamanio_truncate, 0, 0);
+			t_peticion* peticion_truncate = crear_peticion(TRUNCATE, nombre_archivo_truncate, *tamanio_truncate, 0, 0, 0);
 			agrego_a_pendientes(peticion_truncate);
 			sem_post(&contador_peticiones);
 			break;
@@ -189,9 +189,10 @@ static void procesar_conexion() {
 			int* dir_fisica_read = list_get(parametros_read, 1);
 			int* tamanio_read = list_get(parametros_read, 2);
 			int* posicion_a_leer = list_get(parametros_read, 3);
+			int* pid_read = list_get(parametros_read, 4);
 
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_READ");
-			t_peticion* peticion_read = crear_peticion(READ, nombre_archivo_read, *tamanio_read, *dir_fisica_read, *posicion_a_leer);
+			t_peticion* peticion_read = crear_peticion(READ, nombre_archivo_read, *tamanio_read, *dir_fisica_read, *posicion_a_leer, *pid_read);
 			agrego_a_pendientes(peticion_read);
 			sem_post(&contador_peticiones);
 			break;
@@ -201,9 +202,10 @@ static void procesar_conexion() {
 			int* dir_fisica_write = list_get(parametros_write, 1);
 			int* tamanio_write = list_get(parametros_write, 2);
 			int* posicion_a_escribir = list_get(parametros_write, 3);
+			int* pid_write = list_get(parametros_write, 4);
 
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_WRITE");
-			t_peticion* peticion_write = crear_peticion(WRITE, nombre_archivo_write, *tamanio_write, *dir_fisica_write, *posicion_a_escribir);
+			t_peticion* peticion_write = crear_peticion(WRITE, nombre_archivo_write, *tamanio_write, *dir_fisica_write, *posicion_a_escribir, *pid_write);
 			agrego_a_pendientes(peticion_write);
 			sem_post(&contador_peticiones);
 			break;
@@ -247,12 +249,12 @@ void manejar_peticion(t_peticion* peticion){
 		break;
 	case READ:
 		log_info(logger,"Se esta ejecutando un F_READ");
-		manejar_f_read(peticion->nombre, peticion->dir_fisica, peticion->tamanio, peticion->puntero);
+		manejar_f_read(peticion->nombre, peticion->dir_fisica, peticion->tamanio, peticion->puntero, peticion->pid);
 		send_fin_f_read(socket_cliente);
 		break;
 	case WRITE:
 		log_info(logger,"Se esta ejecutando un F_WRITE");
-		manejar_f_write(peticion->nombre, peticion->dir_fisica, peticion->tamanio, peticion->puntero);
+		manejar_f_write(peticion->nombre, peticion->dir_fisica, peticion->tamanio, peticion->puntero, peticion->pid);
 		send_fin_f_write(socket_cliente);
 		break;
 	default:
@@ -261,7 +263,7 @@ void manejar_peticion(t_peticion* peticion){
 	}
 }
 
-t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica, int puntero){
+t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, int dir_fisica, int puntero, int pid){
 	t_peticion* peticion = malloc(sizeof(t_peticion));
 	peticion->nombre = malloc(strlen(nombre) + 1);
 
@@ -270,6 +272,7 @@ t_peticion* crear_peticion(t_operacion_fs operacion, char* nombre, int tamanio, 
 	peticion->tamanio = tamanio;
 	peticion->dir_fisica = dir_fisica;
 	peticion->puntero = puntero;
+	peticion->pid = pid;
 
 	return peticion;
 }
@@ -621,23 +624,23 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 	}
 }
 
-void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer){
+void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer, int pid){
 	//Leer la información correspondiente de los bloques a partir del puntero y el tamaño recibidos
 	log_info(logger_obligatorio, "Leer Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_leer, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 	char* datos_leidos = leer_datos(archivo_fcb, posicion_a_leer, tamanio);
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
-	send_escribir_valor_fs(datos_leidos, dir_fisica, fd_memoria);
+	send_escribir_valor_fs(datos_leidos, dir_fisica, tamanio, pid, fd_memoria);
 
 }
 
-void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir){
+void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir, int pid){
 	log_info(logger_obligatorio, "Escribir Archivo: %s - Puntero: %d - Memoria: %d - Tamaño: %d", nombre_archivo, posicion_a_escribir, dir_fisica, tamanio);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
 
 	//Solicitar a Memoria la información que se encuentra a partir de la dirección física
-	send_leer_valor_fs(dir_fisica, tamanio, fd_memoria);			//Creo que con esta funcion solicito la info
+	send_leer_valor_fs(dir_fisica, tamanio, pid,fd_memoria);			//Creo que con esta funcion solicito la info
 	char* datos_a_escribir = recv_valor_leido_fs(fd_memoria);
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
