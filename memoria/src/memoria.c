@@ -143,7 +143,7 @@ static void procesar_conexion(void *void_args) {
 			char* valor_leido_cpu = malloc(*tamanio_lectura_cpu);
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lectura_cpu, *tamanio_lectura_cpu);
-			log_info(logger_obligatorio, "PID: <PID>- Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: CPU", *posicion_lectura_cpu, *tamanio_lectura_cpu);
+			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: CPU",*pid_lectura_cpu, *posicion_lectura_cpu, *tamanio_lectura_cpu);
 			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido_cpu);
 			send_valor_leido_cpu(valor_leido_cpu, cliente_socket);
 			break;
@@ -155,7 +155,7 @@ static void procesar_conexion(void *void_args) {
 			char* valor_leido_fs = malloc(*tamanio_lectura_fs);
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_fs, espacio_usuario + *posicion_lectura_fs, *tamanio_lectura_fs);
-			log_info(logger_obligatorio, "PID: <PID>- Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: FS", *posicion_lectura_fs, *tamanio_lectura_fs);
+			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_lectura_fs, *posicion_lectura_fs, *tamanio_lectura_fs);
 			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido_fs);
 			send_valor_leido_fs(valor_leido_fs, cliente_socket);
 			break;
@@ -169,7 +169,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, tam_esc_cpu);
 			log_info(logger, "se escribio el valor: %s,  en la posicion %d de espacio_usuario", valor_a_escribir_cpu, *posicion_escritura_cpu);
-			log_info(logger_obligatorio, "PID: <PID>- Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *posicion_escritura_cpu, tam_esc_cpu);
+			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *pid_escritura_cpu, *posicion_escritura_cpu, tam_esc_cpu);
 			break;
 		case PEDIDO_ESCRITURA_FS:
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
@@ -181,7 +181,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(espacio_usuario + *posicion_escritura_fs, valor_a_escribir_fs, tam_esc_fs);
 			log_info(logger, "se escribio el valor: %s,  en la posicion %d de espacio_usuario", valor_a_escribir_fs, *posicion_escritura_fs);
-			log_info(logger_obligatorio, "PID: <PID>- Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: FS", *posicion_escritura_fs, tam_esc_fs);
+			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_escritura_fs, *posicion_escritura_fs, tam_esc_fs);
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);

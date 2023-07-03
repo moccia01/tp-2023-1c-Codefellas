@@ -275,11 +275,12 @@ void procesar_conexion(void* void_args) {
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
-				log_info(logger, "bloqueo al proceso %d por f_read,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
 
 				// manejo f_read
 				t_archivo* archivo_read = get_archivo_global(nombre_archivo_read);
 				log_info(logger_obligatorio, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_read, archivo_read->puntero, *dir_fisica_read, *cant_bytes_read);
+				log_info(logger, "bloqueo al proceso %d por f_read,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+
 				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				sem_post(&sem_exec);
@@ -294,11 +295,12 @@ void procesar_conexion(void* void_args) {
 					sem_wait(&ongoing_fs_mem_op);
 				}
 				fs_mem_op_count++;
-				log_info(logger, "bloqueo al proceso %d por f_write,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
 
 				// manejo f_write
 				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
 				log_info(logger_obligatorio, "PID: %d - Escribir Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_write, archivo_write->puntero, *dir_fisica_write, *cant_bytes_write);
+				log_info(logger, "bloqueo al proceso %d por f_write,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
+				log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_write);
 				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 				sem_post(&sem_exec);
@@ -354,6 +356,7 @@ void procesar_conexion(void* void_args) {
 				char* nombre_archivo_truncate = list_get(f_truncate_params, 0);
 				int* tamanio_truncate = list_get(f_truncate_params, 1);
 				log_info(logger_obligatorio, "PID: %d - Truncar Archivo: %s - Tamaño: %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_truncate, *tamanio_truncate);
+				log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_truncate);
 				send_manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate, fd_filesystem);
 				sem_post(&sem_exec);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
