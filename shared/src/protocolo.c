@@ -668,6 +668,8 @@ void send_valor_leido_fs(char* valor, int fd_modulo){
 	eliminar_paquete(paquete);
 }
 
+
+//TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
 void send_escribir_valor_cpu(char* valor, int dir_fisica, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_CPU);
 	agregar_a_paquete(paquete, valor, strlen(valor) + 1);
@@ -675,6 +677,7 @@ void send_escribir_valor_cpu(char* valor, int dir_fisica, int fd_modulo){
 	enviar_paquete(paquete, fd_modulo);
 }
 
+//TODO mandar el tamanio tambien porque cuando no hay \0 falla strlen
 void send_escribir_valor_fs(char* valor, int dir_fisica, int fd_modulo){
 	t_paquete* paquete = crear_paquete(PEDIDO_ESCRITURA_FS);
 	agregar_a_paquete(paquete, valor, strlen(valor) + 1);

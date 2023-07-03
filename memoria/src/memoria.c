@@ -143,7 +143,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_cpu, espacio_usuario + *posicion_lectura_cpu, *tamanio_lectura_cpu);
 			log_info(logger_obligatorio, "PID: <PID>- Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: CPU", *posicion_lectura_cpu, *tamanio_lectura_cpu);
-			log_info(logger_obligatorio, "se leyo del espacio de usuario el valor: %s", valor_leido_cpu);
+			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido_cpu);
 			send_valor_leido_cpu(valor_leido_cpu, cliente_socket);
 			break;
 		case PEDIDO_LECTURA_FS:
@@ -154,7 +154,7 @@ static void procesar_conexion(void *void_args) {
 			usleep(RETARDO_MEMORIA * 1000);
 			memcpy(valor_leido_fs, espacio_usuario + *posicion_lectura_fs, *tamanio_lectura_fs);
 			log_info(logger_obligatorio, "PID: <PID>- Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: FS", *posicion_lectura_fs, *tamanio_lectura_fs);
-			log_info(logger_obligatorio, "se leyo del espacio de usuario el valor: %s", valor_leido_fs);
+			log_info(logger, "se leyo del espacio de usuario el valor: %s", valor_leido_fs);
 			send_valor_leido_fs(valor_leido_fs, cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA_CPU:

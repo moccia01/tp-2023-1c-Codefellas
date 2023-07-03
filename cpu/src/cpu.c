@@ -255,6 +255,7 @@ t_traduccion_mmu* traducir_direccion(int dir_logica, t_contexto_ejecucion* conte
 	t_segmento* segmento_buscado = obtener_segmento_de_tabla(contexto->tabla_de_segmentos, mmu->num_segmento);
 	mmu->tamanio = segmento_buscado->tamanio;
 	mmu->dir_fisica = segmento_buscado->base + mmu->desplazamiento_segmento;
+	log_info(logger, "la direccion fisica es %d = %d + %d", mmu->dir_fisica, segmento_buscado->base, mmu->desplazamiento_segmento);
 
 	return mmu;
 }

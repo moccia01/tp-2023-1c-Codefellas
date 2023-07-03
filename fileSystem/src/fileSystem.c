@@ -186,8 +186,8 @@ static void procesar_conexion() {
 		case MANEJAR_F_READ:
 			t_list* parametros_read = recv_manejo_f_read_fs(socket_cliente);
 			char* nombre_archivo_read = list_get(parametros_read, 0);
-			int* tamanio_read = list_get(parametros_read, 1);
-			int* dir_fisica_read = list_get(parametros_read, 2);
+			int* dir_fisica_read = list_get(parametros_read, 1);
+			int* tamanio_read = list_get(parametros_read, 2);
 			int* posicion_a_leer = list_get(parametros_read, 3);
 
 			log_info(logger,"Se esta ejecutando un MANEJAR_F_READ");
@@ -516,11 +516,11 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 
 	if(bloque_a_buscar == 0){
-		int puntero_directo = config_get_int_value(archivo_fcb, "PUNTERO DIRECTO");
+		int puntero_directo = config_get_int_value(archivo_fcb, "PUNTERO_DIRECTO");
 		return puntero_directo*BLOCK_SIZE;
 	}
 	else{
-		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO INDIRECTO");
+		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO_INDIRECTO");
 
 		uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
 		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
@@ -539,32 +539,86 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 }
 
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
+	div_t cuenta_comienzo_lectura = div(posicion_a_leer, BLOCK_SIZE);
 
-	//int bloque_a_buscar = floor(posicion_a_leer/BLOCK_SIZE);		//bloque_a_buscar.quot = bloque_a_buscar, bloque_a_buscar.rem = offset
-	div_t bloque_a_buscar = div(posicion_a_leer, BLOCK_SIZE);		//bloque_a_buscar.quot = cociente, bloque_a_buscar.rem = resto
+	int bloque_a_leer = cuenta_comienzo_lectura.quot;
+	int offset_bloque = cuenta_comienzo_lectura.rem;
 
-	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar.quot, bloque_a_buscar.rem);
+	int restante_bloque_comienzo = BLOCK_SIZE - offset_bloque;
+	int excedente_lectura = tamanio - restante_bloque_comienzo;
+
+	int tamanio_lectura_primer_bloque = restante_bloque_comienzo;
+	if(tamanio < restante_bloque_comienzo){
+		tamanio_lectura_primer_bloque = tamanio;
+	}
+
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_leer, offset_bloque);
 
 	char* datos_leidos = malloc(tamanio);
 
-	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar.quot);
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_leer);
 
-	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+bloque_a_buscar.rem, tamanio);
+	memcpy(datos_leidos, buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque, tamanio_lectura_primer_bloque);
+
+	if(excedente_lectura > 0){
+		div_t bloques_a_leer = div(excedente_lectura, BLOCK_SIZE);
+		int bloques_a_leer_completos = bloques_a_leer.quot;
+		int offset_ultimo_bloque = bloques_a_leer.rem;
+
+		int bloques_extra;
+		int desplazamiento_datos_leidos = restante_bloque_comienzo;
+		for(bloques_extra = 1; bloques_extra < bloques_a_leer_completos + 1; bloques_extra++){
+			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra);
+			memcpy(datos_leidos + desplazamiento_datos_leidos, buffer_bloques + pos_bloque_actual, BLOCK_SIZE);
+			desplazamiento_datos_leidos += BLOCK_SIZE;
+		}
+		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra);
+		memcpy(datos_leidos + desplazamiento_datos_leidos, buffer_bloques + pos_ultimo_bloque, offset_ultimo_bloque);
+	}
 
 	log_info(logger, "los datos leidos son: %s", datos_leidos);
 
 	return datos_leidos;
 }
 
-void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir){
-	int bloque_a_buscar = floor(posicion_a_escribir/BLOCK_SIZE);
-	div_t offset_bloque = div(posicion_a_escribir, BLOCK_SIZE);
+void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir, int tamanio_a_escribir){
+//	int bloque_a_buscar = floor(posicion_a_escribir/BLOCK_SIZE);
 
-	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_buscar, offset_bloque.rem);
+	div_t cuenta_comienzo_escritura = div(posicion_a_escribir, BLOCK_SIZE);
+	int bloque_a_escribir = cuenta_comienzo_escritura.quot;
+	int offset_bloque = cuenta_comienzo_escritura.rem;
 
-	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_buscar);
+	int restante_bloque_comienzo = BLOCK_SIZE - offset_bloque;
+	int excedente_escritura = tamanio_a_escribir - restante_bloque_comienzo;
 
-	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar+offset_bloque.rem, datos_a_escribir, strlen(datos_a_escribir));
+	int tamanio_escritura_primer_bloque = restante_bloque_comienzo;
+	if(tamanio_a_escribir < restante_bloque_comienzo){
+		tamanio_escritura_primer_bloque = tamanio_a_escribir;
+	}
+
+	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_escribir, offset_bloque);
+
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_escribir);
+	log_info(logger, "la posicion del bloque en el fs es: %d", posicion_array_bloques_bloque_a_buscar);
+
+	memcpy(buffer_bloques+posicion_array_bloques_bloque_a_buscar + offset_bloque, datos_a_escribir, tamanio_escritura_primer_bloque);
+	log_info(logger, "el excedente escritura es %d", excedente_escritura);
+
+	if(excedente_escritura > 0){
+		div_t bloques_a_escribir = div(excedente_escritura, BLOCK_SIZE);
+		int bloques_a_escribir_completos = bloques_a_escribir.quot;
+		int offset_ultimo_bloque = bloques_a_escribir.rem;
+
+		int bloques_extra;
+		int desplazamiento_datos_a_escribir = restante_bloque_comienzo;
+		for(bloques_extra = 1; bloques_extra < bloques_a_escribir_completos + 1; bloques_extra++){
+			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra);
+			memcpy(buffer_bloques+pos_bloque_actual, datos_a_escribir + desplazamiento_datos_a_escribir, BLOCK_SIZE);
+			desplazamiento_datos_a_escribir += BLOCK_SIZE;
+		}
+		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra);
+		memcpy(buffer_bloques+pos_ultimo_bloque, datos_a_escribir + desplazamiento_datos_a_escribir, offset_ultimo_bloque);
+	}
 }
 
 void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_leer){
@@ -587,5 +641,6 @@ void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posi
 	char* datos_a_escribir = recv_valor_leido_fs(fd_memoria);
 
 	//Escribir los datos en los bloques correspondientes del archivo a partir del puntero recibido.
-	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir);
+	escribir_datos(archivo_fcb, posicion_a_escribir, datos_a_escribir, tamanio);
+	log_info(logger, "se escribio en el fs %s", datos_a_escribir);
 }
