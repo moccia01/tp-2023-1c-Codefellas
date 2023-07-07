@@ -20,7 +20,7 @@ char *estado_to_string(estado_proceso estado)
         return "EXIT";
         break;
     case FINISH_ERROR:
-        return "ERROR";
+        return "EXIT_ERROR";
         break;
     default:
         return "UNKNOWN";

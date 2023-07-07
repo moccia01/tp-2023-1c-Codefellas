@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 		log_destroy(logger);
 		exit(1);
 	}
-	logger_obligatorio = log_create("memoria_obligatorio.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("memoria.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
 	leer_config();
 
 	inicializar_memoria();
