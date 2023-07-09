@@ -397,40 +397,45 @@ t_list* deletear_segmento(int id_segmento, int pid){
 }
 
 void agregar_hueco_libre(int base, int tamanio){
-	t_hueco_memoria *aux = NULL;
-	int i;
-	t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
-	hueco_nuevo -> base = base;
-	hueco_nuevo -> tamanio = tamanio;
+    t_hueco_memoria *aux = NULL;
+    int i;
+    int numero = 0;
+    t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
+    hueco_nuevo -> base = base;
+    hueco_nuevo -> tamanio = tamanio;
 
-	for(i=0 ; i < list_size(huecos_libres); i++){
-		t_hueco_memoria *segmento = list_get(huecos_libres, i);
-		if(segmento->base < base){
-			aux = segmento;
-		}
-		else
-			break;
-	}
-	if(aux == NULL){
-		list_add_in_index(huecos_libres, 0, hueco_nuevo);
-		aux = hueco_nuevo;
-	}else{
-		if(aux->base + aux->tamanio == base){
-			aux->tamanio += tamanio;
-			free(hueco_nuevo);
-		}
-		else{
-			list_add_in_index(huecos_libres,i,hueco_nuevo);
-			aux = hueco_nuevo;
-		}
-	}
-	if(i + 1 < list_size(huecos_libres)){
-		t_hueco_memoria *siguiente_hueco = list_get(huecos_libres, i+1);
-		if(aux->base + aux->tamanio == siguiente_hueco->base){
-			aux->tamanio += siguiente_hueco->tamanio;
-			list_remove(huecos_libres, i+1);
-		}
-	}
+    for(i=0 ; i < list_size(huecos_libres); i++){
+        t_hueco_memoria *segmento = list_get(huecos_libres, i);
+        if(segmento->base < base){
+            aux = segmento;
+            numero = i+1;
+        }
+    }
+    if(aux == NULL){
+        list_add_in_index(huecos_libres, 0, hueco_nuevo);
+        aux = hueco_nuevo;
+    }else{
+        if(aux->base + aux->tamanio == base){
+            aux->tamanio += tamanio;
+            free(hueco_nuevo);
+        }
+        else{
+            list_add_in_index(huecos_libres,numero,hueco_nuevo);
+            aux = hueco_nuevo;
+        }
+    }
+    for(i=0; i<list_size(huecos_libres);i++){
+        t_hueco_memoria *segmento =list_get(huecos_libres,i);
+        if(aux->base< segmento->base && aux->base + aux -> tamanio == segmento->base){
+            aux->tamanio +=segmento->tamanio;
+            list_remove(huecos_libres,i);
+        }
+    }
+
+    for(i=0 ; i < list_size(huecos_libres); i++){
+        t_hueco_memoria *segmento = list_get(huecos_libres, i);
+        log_info(logger, "Hueco libre n: %d base: %d tamanio: %d\t", i , segmento->base, segmento->tamanio);
+        }
 }
 
 // TODO TESTEAR FUNCION
