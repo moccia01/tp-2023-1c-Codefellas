@@ -125,8 +125,7 @@ void crear_archivo_de_bloques(){
 		exit(1);
 	}
 
-	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre?
-	// Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
+	// TODO comment de tomy: tiene sentido cerrar el fd en la funcion que lo abre? 	Investiguen si mmap puede syncear memoria con el archivo si el fd esta cerrado
 	close(fd);
 }
 
@@ -229,12 +228,11 @@ void server_escuchar() {
 	procesar_conexion();
 }
 
-
 // ------------------ MANEJO OPERACIONES ------------------
 
 void manejar_peticion(t_peticion* peticion){
 	t_operacion_fs cop = peticion->operacion;
-	//server_escuchar			//TODO: Que onda con este server_escuchar???
+
 	switch (cop) {
 	case OPEN:
 		log_info(logger,"Se esta ejecutando un F_OPEN");
@@ -332,10 +330,8 @@ t_config* obtener_archivo(char* nombre_archivo){
 void manejar_f_open(char* nombre_archivo){
 	log_info(logger_obligatorio, "Abrir Archivo: %s", nombre_archivo);
 	if(!existe_fcb(nombre_archivo)){
-		//send_aviso_archivo_inexistente(socket_cliente);
 		manejar_f_create(nombre_archivo);
 	}
-	//send_confirmacion_archivo_abierto(socket_cliente);
 }
 
 void manejar_f_create(char* nombre_archivo){
@@ -507,11 +503,8 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	if(tamanio_nuevo > tamanio_fcb){
 		// AMPLIAR
 		int cantidad_bloques_a_agregar = floor((tamanio_nuevo - tamanio_fcb)/BLOCK_SIZE) + 1;
-
-		log_info(logger, "La cantidad de bloques a agregar en %s es %d", nombre_archivo, cantidad_bloques_a_agregar);
-
 		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
-
+		log_info(logger, "La cantidad de bloques a agregar en %s es %d", nombre_archivo, cantidad_bloques_a_agregar);
 	} else{
 		// REDUCIR
 		int cantidad_bloques_a_sacar = floor((tamanio_fcb - tamanio_nuevo)/BLOCK_SIZE);
