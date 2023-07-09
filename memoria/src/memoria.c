@@ -483,8 +483,12 @@ bool comparador_de_base(t_segmento *s1, t_segmento *s2){
 }
 
 void log_resultado_compactacion(){
-	// TODO  por cada segmento de cada proceso se debera imprimir una linea con el siguiente formato:
+	// por cada segmento de cada proceso se debera imprimir una linea con el siguiente formato:
 	// “PID: <PID> - Segmento: <ID SEGMENTO> - Base: <BASE> - Tamaño <TAMAÑO>”
+	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
+		ts_wrapper* wrapper = list_get(lista_ts_wrappers, i);
+		log_ts_de_pid(logger_obligatorio, wrapper->pid, wrapper->tabla_de_segmentos);
+	}
 }
 
 void log_valor_espacio_usuario(char* valor, int tamanio){

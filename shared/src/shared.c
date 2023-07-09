@@ -143,4 +143,10 @@ char* motivo_exit_to_string(motivo_exit motivo){
 	}
 }
 
+void log_ts_de_pid(t_log* logger, int pid, t_list* ts){
+	for(int i = 0; i < list_size(ts); i++){
+		t_segmento* segmento = list_get(ts, i);
+		log_info(logger, "PID: %d - Segmento: %d - Base: %d - Tamaño %d", pid, segmento->id, segmento->base, segmento->tamanio);
+	}
+}
 

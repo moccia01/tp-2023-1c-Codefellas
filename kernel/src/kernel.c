@@ -547,6 +547,7 @@ void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){
 }
 
 void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
+	log_info(logger, "Comienzo actualizacion de ts de pcbs");
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, lista_ready, &mutex_cola_ready);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_listos_para_ready, &mutex_cola_listos_para_ready);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_exec, &mutex_cola_exec);
@@ -565,8 +566,6 @@ void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
 		actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, archivo->cola_block_asignada, &(archivo->mutex_asignado));
 	}
 
-
-
 }
 
 void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb, pthread_mutex_t* mutex_cola){
@@ -576,6 +575,7 @@ void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb,
 		t_list* ts_actualizada = get_ts_from_pid(pcb->contexto_de_ejecucion->pid, lista_ts_wrappers);
 		// falta free de la tabla_de_segmentos vieja pero no se donde ponerlo para q no rompa ;.;
 		pcb->contexto_de_ejecucion->tabla_de_segmentos = ts_actualizada;
+		log_ts_de_pid(logger, pcb->contexto_de_ejecucion->pid, pcb->contexto_de_ejecucion->tabla_de_segmentos);
 	}
 	pthread_mutex_unlock(mutex_cola);
 }
@@ -876,7 +876,9 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 		t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
 		log_info(logger_obligatorio, "Se finalizó el proceso de compactación");
 //		- actualizar la tabla de segmentos de TODOS (!) los pcb O.o
+		safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 		actualizar_ts_de_pcbs(ts_wrappers);
+		pcb = safe_pcb_remove(cola_exec, &mutex_cola_exec);
 //		- mandarle memoria aviso de create_segment.
 		manejar_create_segment(pcb, cliente_socket, id_segmento, tamanio);
 		break;
@@ -926,80 +928,3 @@ t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// xd
