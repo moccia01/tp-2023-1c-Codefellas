@@ -587,7 +587,7 @@ t_list* get_ts_from_pid(int pid, t_list* lista_ts_wrappers){
 			return wrapper->tabla_de_segmentos;
 		}
 	}
-	log_info(logger, "no encontre el pid en la lista_ts_wrappers");
+	log_info(logger, "no encontre el pid %d en la lista_ts_wrappers", pid);
 	return NULL;
 }
 // ------------------ PLANIFICACION ------------------
