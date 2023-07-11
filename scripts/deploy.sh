@@ -20,7 +20,8 @@ cd ../../fileSystem/Debug
 make clean
 make all
 
-cd ../../
+cd ../../scripts/
 chmod u+x restart_fs.sh
 ./restart_fs.sh
+cd ../
 export LD_LIBRARY_PATH=~/tp-2023-1c-Codefellas/shared/Debug/

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd fileSystem/archivos/
+cd ../fileSystem/archivos/
 rm bitmap.dat
 rm bloques.dat
 rm -r fcb/

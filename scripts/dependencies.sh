@@ -12,5 +12,4 @@ cd tp-2023-1c-Codefellas/shared/Debug
 make clean
 make all
 
-cd ../../
-sudo cp libshared.so ../../../usr/local/lib/
+sudo cp libshared.so ../../../../../usr/local/lib/
