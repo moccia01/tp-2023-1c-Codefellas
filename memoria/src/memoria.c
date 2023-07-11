@@ -169,6 +169,7 @@ static void procesar_conexion(void *void_args) {
 			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, *tam_esc_cpu);
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *pid_escritura_cpu, *posicion_escritura_cpu, *tam_esc_cpu);
 			log_valor_espacio_usuario(valor_a_escribir_cpu, *tam_esc_cpu);
+			//TODO usar send y recv fin escrituras aca y en cpu/fs
 			break;
 		case PEDIDO_ESCRITURA_FS:
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
@@ -217,7 +218,7 @@ t_segment_response verificar_espacio_memoria(int tamanio){
 	tamanio_total=0;
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
-		log_info(logger,"Memoria hueco libre Tamaño: %d", hueco_libre->tamanio);
+		log_info(logger,"Queda un hueco libre en %d de tamaño %d", hueco_libre->base, hueco_libre->tamanio);
 		if(hueco_libre->tamanio >= tamanio){
 			return SEGMENT_CREATED;
 		}
@@ -452,8 +453,12 @@ void compactar(){
 		tam_segmento=segmento_actual->tamanio;
 		actualizar_segmento(segmento_actual);
 	}
-	for(int i = 0; i < list_size(huecos_libres); i++)
-		list_remove(huecos_libres,i);
+	int cant_huecos = list_size(huecos_libres);
+	log_info(logger, "cantidad de huecos libres que quedaron de la compactacion: %d", cant_huecos);
+	for(int i = 0; i < cant_huecos; i++) {
+		list_remove(huecos_libres, 0);
+	}
+//	log_info(logger, "se borraron todos los huecos libres y ahora quedan %d en la lista", list_size(huecos_libres));
 	t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
 	hueco_nuevo -> base = base_segmento+tam_segmento;
 	hueco_nuevo -> tamanio = tamanio_total;

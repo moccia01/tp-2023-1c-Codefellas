@@ -573,9 +573,11 @@ void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb,
 	for (int i = 0; i < list_size(lista_pcb); i++){
 		t_pcb* pcb = list_get(lista_pcb, i);
 		t_list* ts_actualizada = get_ts_from_pid(pcb->contexto_de_ejecucion->pid, lista_ts_wrappers);
-		// falta free de la tabla_de_segmentos vieja pero no se donde ponerlo para q no rompa ;.;
-		pcb->contexto_de_ejecucion->tabla_de_segmentos = ts_actualizada;
-		log_ts_de_pid(logger, pcb->contexto_de_ejecucion->pid, pcb->contexto_de_ejecucion->tabla_de_segmentos);
+		if(ts_actualizada != NULL) {
+			// falta free de la tabla_de_segmentos vieja pero no se donde ponerlo para q no rompa ;.;
+			pcb->contexto_de_ejecucion->tabla_de_segmentos = ts_actualizada;
+			log_ts_de_pid(logger, pcb->contexto_de_ejecucion->pid, pcb->contexto_de_ejecucion->tabla_de_segmentos);
+		}
 	}
 	pthread_mutex_unlock(mutex_cola);
 }
@@ -874,6 +876,7 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 		send_iniciar_compactacion(fd_memoria);
 //		- recibir de memoria las tablas de segmentos actualizadas post compact
 		t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
+		log_info(logger, "recibi la ts_wrappers actualizada de tamaño %d", list_size(ts_wrappers));
 		log_info(logger_obligatorio, "Se finalizó el proceso de compactación");
 //		- actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 		safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
