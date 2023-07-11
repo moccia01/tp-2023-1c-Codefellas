@@ -389,9 +389,9 @@ char* leer_valor_registro(char* registro){
 
 void manejar_seg_fault(t_contexto_ejecucion* contexto, t_traduccion_mmu* mmu, int tamanio){
 	contexto->motivo_exit = SEG_FAULT;
+	log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, mmu->num_segmento, mmu->desplazamiento_segmento, tamanio);
 	send_contexto_ejecucion(contexto, socket_cliente);
 	send_cambiar_estado(FINISH_ERROR, socket_cliente);
-	log_info(logger_obligatorio, "PID %d - Error SEG_FAULT - Segmento: %d - Offset: %d - Tamaño: %d", contexto->pid, mmu->num_segmento, mmu->desplazamiento_segmento, tamanio);
 	flag_execute = false;
 }
 
