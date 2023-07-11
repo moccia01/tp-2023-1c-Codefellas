@@ -281,8 +281,8 @@ void procesar_conexion(void* void_args) {
 				log_info(logger_obligatorio, "PID: %d - Leer Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_read, archivo_read->puntero, *dir_fisica_read, *cant_bytes_read);
 				log_info(logger, "bloqueo al proceso %d por f_read,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
 
-				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
+				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				sem_post(&sem_exec);
 				break;
 			case MANEJAR_F_WRITE:
@@ -298,29 +298,26 @@ void procesar_conexion(void* void_args) {
 
 				// manejo f_write
 				t_archivo* archivo_write = get_archivo_global(nombre_archivo_write);
+
 				log_info(logger_obligatorio, "PID: %d - Escribir Archivo: %s - Puntero %d - Dirección Memoria %d - Tamaño %d", pcb->contexto_de_ejecucion->pid, nombre_archivo_write, archivo_write->puntero, *dir_fisica_write, *cant_bytes_write);
 				log_info(logger, "bloqueo al proceso %d por f_write,  fs_mem_op_count: %d", pcb->contexto_de_ejecucion->pid, fs_mem_op_count);
 				log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_write);
-				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
+
 				safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
+				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				sem_post(&sem_exec);
 				break;
 			case MANEJAR_F_OPEN:
 				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
 				log_info(logger_obligatorio, "PID: %d - Abrir Archivo: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
-				t_archivo* archivo_open = archivo_create(nombre_archivo_open);
 				if(!archivo_is_opened(nombre_archivo_open)){
-					safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
-					log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", list_size(cola_block_fs));
-					log_info(logger, "aviso al fs que abra o cree el archivo");
-					send_manejar_f_open(nombre_archivo_open, fd_filesystem);
-					list_add(archivos_abiertos, archivo_open);
-					log_info(logger, "ahora hay %d archivos abiertos", list_size(archivos_abiertos));
-					list_add(pcb->archivos_abiertos, archivo_open);
-					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
+					ejecutar_f_open(nombre_archivo_open, pcb);
 				}else{
 					log_info(logger, "bloqueo al proceso %d porque el archivo %s ya estaba abierto", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
-					safe_pcb_add(archivo_open->cola_block_asignada, pcb, &(archivo_open->mutex_asignado));
+					t_archivo* archivo_open_global = get_archivo_global(nombre_archivo_open);
+					list_add(pcb->archivos_abiertos, archivo_open_global);
+					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
+					safe_pcb_add(archivo_open_global->cola_block_asignada, pcb, &(archivo_open_global->mutex_asignado));
 				}
 				break;
 			case MANEJAR_F_CLOSE:
@@ -464,11 +461,8 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 	pcb->contexto_de_ejecucion->instrucciones = instrucciones;
 	inicializar_registro(contexto);
 
-	log_info(logger, "se manda a memoria solicitud incializacion proceso");
 	send_inicializar_proceso(pid, fd_memoria);
-	log_info(logger, "hice el send");
 	t_list* tabla_segmentos = recv_proceso_inicializado(fd_memoria);
-	log_info(logger, "recibo tabla segmentos inicial de tamaño: %d", list_size(tabla_segmentos));
 	pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos;
 	pcb->contexto_de_ejecucion->estado = NEW;
 
@@ -929,6 +923,18 @@ t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb){
 	return archivo;
 }
 
+
+void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb){
+	t_archivo* archivo = archivo_create(nombre_archivo_open);
+	safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
+	log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", list_size(cola_block_fs));
+	log_info(logger, "aviso al fs que abra o cree el archivo");
+	send_manejar_f_open(archivo->nombre_archivo, fd_filesystem);
+	list_add(archivos_abiertos, archivo);
+	log_info(logger, "ahora hay %d archivos abiertos", list_size(archivos_abiertos));
+	list_add(pcb->archivos_abiertos, archivo);
+	log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
+}
 
 
 

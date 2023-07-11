@@ -160,6 +160,6 @@ t_archivo* get_archivo_pcb(char* nombre_archivo, t_pcb* pcb);
 bool archivo_is_opened(char* nombre_archivo);
 t_archivo* archivo_create(char* nombre_archivo);
 t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb);
-
+void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb);
 
 #endif /* KERNEL_H_ */
