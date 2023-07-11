@@ -645,7 +645,7 @@ void manejar_f_read(char* nombre_archivo, int dir_fisica, int tamanio, int posic
 
 	//Esta información se deberá enviar a la Memoria para ser escrita a partir de la dirección física recibida por parámetro
 	send_escribir_valor_fs(datos_leidos, dir_fisica, tamanio, pid, fd_memoria);
-
+	recv_fin_escritura(fd_memoria);
 }
 
 void manejar_f_write(char* nombre_archivo, int dir_fisica, int tamanio, int posicion_a_escribir, int pid){

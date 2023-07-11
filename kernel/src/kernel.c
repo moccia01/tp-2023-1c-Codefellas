@@ -329,8 +329,9 @@ void procesar_conexion(void* void_args) {
 				t_archivo* archivo_close = quitar_archivo_de_tabla_proceso(nombre_archivo_close, pcb);
 				pthread_mutex_lock(&(archivo_close->mutex_asignado));
 				if(!list_is_empty(archivo_close->cola_block_asignada)){
-					t_pcb* pcb_bloqueado = list_get(archivo_close->cola_block_asignada, 0);
+					t_pcb* pcb_bloqueado = list_remove(archivo_close->cola_block_asignada, 0);
 					log_info(logger, "Desbloqueo al proceso %d bloqueado por archivo %s", pcb_bloqueado->contexto_de_ejecucion->pid, nombre_archivo_close);
+					// TODO: hacerle el f open del archivo_close al pcb_bloqueado
 					safe_pcb_add(cola_block, pcb_bloqueado, &mutex_cola_block);
 					sem_post(&sem_block_return);
 				}else{

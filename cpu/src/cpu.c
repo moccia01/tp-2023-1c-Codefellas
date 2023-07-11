@@ -434,6 +434,7 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 		memcpy(valor_log + tamanio_a_escribir, "\0", 1);
 		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_log);
 		send_escribir_valor_cpu(valor_escrito_en_memoria, mmu->dir_fisica, tamanio_a_escribir, contexto->pid, fd_memoria);
+		recv_fin_escritura(fd_memoria);
 	}
 }
 

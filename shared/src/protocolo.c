@@ -872,36 +872,17 @@ void recv_iniciar_compactacion(int fd_modulo){
 	list_destroy(paquete);
 }
 
-void send_fin_escritura_cpu(int fd_modulo){
-	t_paquete* paquete = crear_paquete(FIN_ESCRITURA_CPU);
-	op_code cop = FIN_ESCRITURA_CPU;
+void send_fin_escritura(int fd_modulo){
+	t_paquete* paquete = crear_paquete(FIN_ESCRITURA);
+	op_code cop = FIN_ESCRITURA;
 	agregar_a_paquete(paquete, &cop, sizeof(op_code));
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
 }
 
-void recv_fin_escritura_cpu(int fd_modulo){
+void recv_fin_escritura(int fd_modulo){
 	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_ESCRITURA_CPU){
-		return;
-	}
-	t_list* paquete = recibir_paquete(fd_modulo);
-	op_code* cop_paquete = list_get(paquete, 0);
-	free(cop_paquete);
-	list_destroy(paquete);
-}
-
-void send_fin_escritura_fs(int fd_modulo){
-	t_paquete* paquete = crear_paquete(FIN_ESCRITURA_FS);
-	op_code cop = FIN_ESCRITURA_FS;
-	agregar_a_paquete(paquete, &cop, sizeof(op_code));
-	enviar_paquete(paquete, fd_modulo);
-	eliminar_paquete(paquete);
-}
-
-void recv_fin_escritura_fs(int fd_modulo){
-	op_code cop = recibir_operacion(fd_modulo);
-	if(cop != FIN_ESCRITURA_FS){
+	if(cop != FIN_ESCRITURA){
 		return;
 	}
 	t_list* paquete = recibir_paquete(fd_modulo);

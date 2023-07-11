@@ -40,9 +40,8 @@ typedef enum{
 	PEDIDO_LECTURA_CPU,
 	PEDIDO_LECTURA_FS,
 	PEDIDO_ESCRITURA_CPU,
-	FIN_ESCRITURA_CPU,
 	PEDIDO_ESCRITURA_FS,
-	FIN_ESCRITURA_FS,
+	FIN_ESCRITURA,
 	INICIAR_COMPACTACION,
 	TS_WRAPPERS,
 }op_code;
@@ -123,8 +122,7 @@ void send_iniciar_compactacion(int fd_modulo);
 void send_ts_wrappers(t_list* ts_wrappers, int fd_modulo);
 void send_valor_leido_cpu(char* valor, int tamanio, int fd_modulo);
 void send_valor_leido_fs(char* valor, int tamanio, int fd_modulo);
-void send_fin_escritura_cpu(int fd_modulo);
-void send_fin_escritura_fs(int fd_modulo);
+void send_fin_escritura(int fd_modulo);
 
 
 //Recvs
@@ -159,8 +157,7 @@ void recv_fin_f_open(int fd_modulo);
 void recv_fin_f_truncate(int fd_modulo);
 void recv_fin_f_read(int fd_modulo);
 void recv_fin_f_write(int fd_modulo);
-void recv_fin_escritura_cpu(int fd_modulo);
-void recv_fin_escritura_fs(int fd_modulo);
+void recv_fin_escritura(int fd_modulo);
 
 // Destroyers
 void contexto_destroyer(t_contexto_ejecucion* contexto);

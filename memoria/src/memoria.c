@@ -169,7 +169,7 @@ static void procesar_conexion(void *void_args) {
 			memcpy(espacio_usuario + *posicion_escritura_cpu, valor_a_escribir_cpu, *tam_esc_cpu);
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *pid_escritura_cpu, *posicion_escritura_cpu, *tam_esc_cpu);
 			log_valor_espacio_usuario(valor_a_escribir_cpu, *tam_esc_cpu);
-			//TODO usar send y recv fin escrituras aca y en cpu/fs
+			send_fin_escritura(cliente_socket);
 			break;
 		case PEDIDO_ESCRITURA_FS:
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
@@ -183,6 +183,7 @@ static void procesar_conexion(void *void_args) {
 			memcpy(espacio_usuario + *posicion_escritura_fs, valor_a_escribir_fs, *tam_esc_fs);
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_escritura_fs, *posicion_escritura_fs, *tam_esc_fs);
 			log_valor_espacio_usuario(valor_a_escribir_fs, *tam_esc_fs);
+			send_fin_escritura(cliente_socket);
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
