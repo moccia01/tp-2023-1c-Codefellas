@@ -7,12 +7,11 @@ if [ "$#" -ne 4 ]; then
 fi
 
 # Array con los nombres de directorio
-directorios=("kernel" "cpu" "filesystem" "memoria")
+directorios=("kernel" "cpu" "fileSystem" "memoria")
 
 # Array con los nombres de los archivos de configuración
 configs=("BASE" "DEADLOCK" "ERROR" "MEMORIA" "FS")
 
-cd ..
 
 # Recorrer los directorios
 for i in "${!directorios[@]}"; do
@@ -34,16 +33,16 @@ for i in "${!directorios[@]}"; do
           # Actualizar las líneas en el archivo de configuración
           case $dir in
             "kernel")
-              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA=$ip/; 2,4s/IP_MEMORIA=.*/IP_MEMORIA=${!4}/; 2,4s/IP_FILESYSTEM=.*/IP_FILESYSTEM=${!3}/; 2,4s/IP_CPU=.*/IP_CPU=${!2}/" "$config_file"
+              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA="$1"/; 2,4s/IP_MEMORIA=.*/IP_MEMORIA="$4"/; 2,4s/IP_FILESYSTEM=.*/IP_FILESYSTEM="$3"/; 2,4s/IP_CPU=.*/IP_CPU="$2"/" "$config_file"
               ;;
             "cpu")
-              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA=$ip/; 2s/IP_MEMORIA=.*/IP_MEMORIA=${!4}/" "$config_file"
+              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA="$2"/; 2s/IP_MEMORIA=.*/IP_MEMORIA="$4"/" "$config_file"
               ;;
-            "filesystem")
-              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA=$ip/; 2s/IP_MEMORIA=.*/IP_MEMORIA=${!4}/" "$config_file"
+            "fileSystem")
+              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA="$3"/; 2s/IP_MEMORIA=.*/IP_MEMORIA="$4"/" "$config_file"
               ;;
             "memoria")
-              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA=$ip/" "$config_file"
+              sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA="$4"/" "$config_file"
               ;;
             *)
               echo "Directorio no reconocido: $dir"
