@@ -129,10 +129,12 @@ void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punter
 uint32_t buscar_bloque_libre();
 void asignar_bloques(int cant_bloques, t_config* archivo);
 void sacar_bloques(int cant_bloques, t_config* archivo);
+void asignar_punteros_primer_truncate(t_config* archivo_fcb);
 
 //Funciones auxiliares de f_read y f_write
 char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio);
 void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_a_escribir, int tamanio_a_escribir);
 void log_valor_fs(char* valor, int tamanio);
+
 
 #endif /* FILESYSTEM_H_ */

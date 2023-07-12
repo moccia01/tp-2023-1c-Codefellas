@@ -97,6 +97,7 @@ sem_t sem_exec;
 sem_t sem_exit;
 sem_t sem_block_return;
 sem_t ongoing_fs_mem_op;
+sem_t fin_f_open;
 
 // Variables de archivos
 t_list* archivos_abiertos;

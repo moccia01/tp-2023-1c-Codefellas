@@ -129,6 +129,7 @@ void inicializar_variables() {
 	sem_init(&sem_exit, 0, 0);
 	sem_init(&sem_block_return, 0, 0);
 	sem_init(&ongoing_fs_mem_op, 0, 1);
+	sem_init(&fin_f_open, 0, 0);
 
 }
 
@@ -312,12 +313,15 @@ void procesar_conexion(void* void_args) {
 				log_info(logger_obligatorio, "PID: %d - Abrir Archivo: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 				if(!archivo_is_opened(nombre_archivo_open)){
 					ejecutar_f_open(nombre_archivo_open, pcb);
+					safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
+					send_contexto_ejecucion(pcb->contexto_de_ejecucion, cliente_socket);
 				}else{
 					log_info(logger, "bloqueo al proceso %d porque el archivo %s ya estaba abierto", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 					t_archivo* archivo_open_global = get_archivo_global(nombre_archivo_open);
 					list_add(pcb->archivos_abiertos, archivo_open_global);
 					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
 					safe_pcb_add(archivo_open_global->cola_block_asignada, pcb, &(archivo_open_global->mutex_asignado));
+					sem_post(&sem_exec);
 				}
 				break;
 			case MANEJAR_F_CLOSE:
@@ -328,13 +332,13 @@ void procesar_conexion(void* void_args) {
 				if(!list_is_empty(archivo_close->cola_block_asignada)){
 					t_pcb* pcb_bloqueado = list_remove(archivo_close->cola_block_asignada, 0);
 					log_info(logger, "Desbloqueo al proceso %d bloqueado por archivo %s", pcb_bloqueado->contexto_de_ejecucion->pid, nombre_archivo_close);
-					// TODO: hacerle el f open del archivo_close al pcb_bloqueado
 					safe_pcb_add(cola_block, pcb_bloqueado, &mutex_cola_block);
 					sem_post(&sem_block_return);
 				}else{
 					list_remove_element(archivos_abiertos, archivo_close);
 					log_info(logger, "Cierro el archivo %s, quedan %d archivos abiertos", nombre_archivo_close, list_size(archivos_abiertos));
 				}
+				list_remove_element(pcb->archivos_abiertos, archivo_close);
 				pthread_mutex_unlock(&(archivo_close->mutex_asignado));
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
@@ -407,9 +411,8 @@ void procesar_conexion_fs(void* void_args) {
 		switch(cop){
 		case FIN_F_OPEN:
 			recv_fin_f_open(cliente_socket);
-			log_info(logger, "el fs termino de abrir o crear un archivo del proceso %d", pcb_block_fs->contexto_de_ejecucion->pid);
-			safe_pcb_add(cola_exec, pcb_block_fs, &mutex_cola_exec);
-			send_contexto_ejecucion(pcb_block_fs->contexto_de_ejecucion, fd_cpu);
+			log_info(logger, "el fs termino de abrir un archivo del proceso %d", pcb_block_fs->contexto_de_ejecucion->pid);
+			sem_post(&fin_f_open);
 			break;
 		case FIN_F_READ:
 			recv_fin_f_read(cliente_socket);
@@ -928,8 +931,10 @@ void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb){
 	t_archivo* archivo = archivo_create(nombre_archivo_open);
 	safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
 	log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", list_size(cola_block_fs));
-	log_info(logger, "aviso al fs que abra o cree el archivo");
+	log_info(logger, "aviso al fs que abra el archivo %s", nombre_archivo_open);
 	send_manejar_f_open(archivo->nombre_archivo, fd_filesystem);
+	//necesito bloquear hilo conexion cpu para q se quede esperando respuesta de fs
+	sem_wait(&fin_f_open);
 	list_add(archivos_abiertos, archivo);
 	log_info(logger, "ahora hay %d archivos abiertos", list_size(archivos_abiertos));
 	list_add(pcb->archivos_abiertos, archivo);

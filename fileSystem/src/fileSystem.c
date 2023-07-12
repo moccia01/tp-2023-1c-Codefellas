@@ -344,19 +344,10 @@ void manejar_f_create(char* nombre_archivo){
 	nuevo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
 	strcpy(nuevo_fcb->nombre_archivo, nombre_archivo);
 	nuevo_fcb->tamanio_archivo = 0;
-	usleep(RETARDO_ACCESO_BLOQUE);
-	nuevo_fcb->puntero_directo = buscar_bloque_libre();
-	usleep(RETARDO_ACCESO_BLOQUE);
-	nuevo_fcb->puntero_indirecto = buscar_bloque_libre();
 	char* text_tamanio_archivo = malloc(10);
-	char* text_puntero_directo = malloc(10);
-	char* text_puntero_indirecto = malloc(10);
-
 	sprintf(text_tamanio_archivo, "%d", nuevo_fcb->tamanio_archivo);
-	sprintf(text_puntero_directo, "%d", nuevo_fcb->puntero_directo);
-	sprintf(text_puntero_indirecto, "%d", nuevo_fcb->puntero_indirecto);
 
-	FILE* f_fcb = fopen(path_archivo, "a+");
+//	FILE* f_fcb = fopen(path_archivo, "a+");
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
@@ -365,12 +356,11 @@ void manejar_f_create(char* nombre_archivo){
 
 	config_set_value(archivo_fcb->archivo_fcb, "NOMBRE_ARCHIVO", nuevo_fcb->nombre_archivo);
 	config_set_value(archivo_fcb->archivo_fcb, "TAMANIO_ARCHIVO", text_tamanio_archivo);
-	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_DIRECTO", text_puntero_directo);
-	config_set_value(archivo_fcb->archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
+
 	config_save(archivo_fcb->archivo_fcb);
 
 	list_add(lista_fcbs, archivo_fcb);
-	fclose(f_fcb);
+//	fclose(f_fcb);
 }
 
 int obtener_cantidad_punteros(uint32_t* array_punteros){
@@ -421,12 +411,14 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 
 	for(int i = cant_bloques; i > 0; i--){
 		usleep(RETARDO_ACCESO_BLOQUE);
-		uint32_t puntero_a_bloque = buscar_bloque_libre();
+		uint32_t bloque_nuevo = buscar_bloque_libre();
+		uint32_t* puntero_a_bloque = malloc(sizeof(uint32_t));
+		*puntero_a_bloque = bloque_nuevo;
 
-		log_info(logger, "El nuevo bloque asignado es %d", puntero_a_bloque);
+		log_info(logger, "El nuevo bloque asignado es %d", bloque_nuevo);
 
 		usleep(RETARDO_ACCESO_BLOQUE);
-		memcpy(array_bloque_de_punteros+pos_nuevo_bloque, &puntero_a_bloque, sizeof(uint32_t));
+		memcpy(array_bloque_de_punteros+pos_nuevo_bloque, puntero_a_bloque, sizeof(uint32_t));
 		uint32_t* puntero_leido_testamento = malloc(sizeof(uint32_t));
 		memcpy(puntero_leido_testamento, array_bloque_de_punteros+pos_nuevo_bloque, sizeof(uint32_t));
 		int log_puntero_leido_testamento = *puntero_leido_testamento;
@@ -489,27 +481,61 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 	log_info(logger_obligatorio, "Truncar Archivo: %s - Tamaño: %d", nombre_archivo, tamanio_nuevo);
 	t_config* archivo_fcb = obtener_archivo(nombre_archivo);
-	int tamanio_fcb = config_get_int_value(archivo_fcb, "TAMANIO_ARCHIVO");
+	int tamanio_viejo = config_get_int_value(archivo_fcb, "TAMANIO_ARCHIVO");
 	char* texto_tamanio_archivo = malloc(10);
 	sprintf(texto_tamanio_archivo, "%d", tamanio_nuevo);
+
+	int tamanio_restante = tamanio_nuevo;
+	if(tamanio_viejo == 0){
+		asignar_punteros_primer_truncate(archivo_fcb);
+		tamanio_restante = tamanio_nuevo - BLOCK_SIZE;
+	}
 
 	log_info(logger, "El tamanio nuevo es %s", texto_tamanio_archivo);
 
 	config_set_value(archivo_fcb, "TAMANIO_ARCHIVO", texto_tamanio_archivo);
 	config_save(archivo_fcb);
 
-	log_info(logger, "El tamanio viejo era %d", tamanio_fcb);
+	log_info(logger, "El tamanio viejo era %d", tamanio_viejo);
 
-	if(tamanio_nuevo > tamanio_fcb){
+	if(tamanio_restante > tamanio_viejo){
 		// AMPLIAR
-		int cantidad_bloques_a_agregar = floor((tamanio_nuevo - tamanio_fcb)/BLOCK_SIZE) + 1;
-		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
+		div_t cuenta_bloques_agregar = (tamanio_restante - tamanio_viejo)/BLOCK_SIZE;
+		int cantidad_bloques_a_agregar = cuenta_bloques_agregar.quot;
+		if(cuenta_bloques_agregar.rem != 0){
+			cantidad_bloques_a_agregar++;
+		}
 		log_info(logger, "La cantidad de bloques a agregar en %s es %d", nombre_archivo, cantidad_bloques_a_agregar);
+		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
 	} else{
 		// REDUCIR
-		int cantidad_bloques_a_sacar = floor((tamanio_fcb - tamanio_nuevo)/BLOCK_SIZE);
+		div_t cuenta_bloques_sacar = (tamanio_viejo - tamanio_restante)/BLOCK_SIZE;
+		int cantidad_bloques_a_sacar = cuenta_bloques_sacar.quot;
+		if(cuenta_bloques_sacar.rem != 0){
+			cantidad_bloques_a_sacar++;
+		}
+		log_info(logger, "La cantidad de bloques a sacar en %s es %d", nombre_archivo, cantidad_bloques_a_sacar);
 		sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
 	}
+}
+
+void asignar_punteros_primer_truncate(t_config* archivo_fcb){
+
+	usleep(RETARDO_ACCESO_BLOQUE);
+	int puntero_directo = buscar_bloque_libre();
+	usleep(RETARDO_ACCESO_BLOQUE);
+	int puntero_indirecto = buscar_bloque_libre();
+
+	char* text_puntero_directo = malloc(10);
+	char* text_puntero_indirecto = malloc(10);
+
+	sprintf(text_puntero_directo, "%d", puntero_directo);
+	sprintf(text_puntero_indirecto, "%d", puntero_indirecto);
+
+	config_set_value(archivo_fcb, "PUNTERO_DIRECTO", text_puntero_directo);
+	config_set_value(archivo_fcb, "PUNTERO_INDIRECTO", text_puntero_indirecto);
+	config_save(archivo_fcb);
+
 }
 
 int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){

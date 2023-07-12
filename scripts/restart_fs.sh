@@ -27,10 +27,11 @@ fi
 
 # Calculo tam_bloques
 tam_bloques=$((block_size * block_count))
+tam_bitmap=$((block_count / 8))
 
 # Truncate con los tamaños correspondientes
-truncate -s "${block_count}" bitmap.dat
+truncate -s "${tam_bitmap}" bitmap.dat
 truncate -s "${tam_bloques}" bloques.dat
 
-echo "bitmap.dat reseteado con tamaño ${block_count} Bytes"
+echo "bitmap.dat reseteado con tamaño ${tam_bitmap} Bytes"
 echo "bloques.dat reseteado con tamaño ${tam_bloques} Bytes"

@@ -15,7 +15,7 @@ F_OPEN Consoles
 F_TRUNCATE Consoles 256
 F_SEEK Consoles 128
 SIGNAL RB
-F_WRITE 32 80
+F_WRITE Consoles 32 80
 F_CLOSE Consoles
 F_OPEN Videogames
 F_TRUNCATE Videogames 64
