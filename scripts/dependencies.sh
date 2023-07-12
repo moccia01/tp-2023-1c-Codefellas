@@ -1,5 +1,10 @@
 #!/bin/bash
 
+cd scripts
+chmod u+x deploy.sh
+chmod u+x set_ips.sh
+cd ../
+
 cd ../
 git clone https://github.com/sisoputnfrba/so-commons-library.git
 cd so-commons-library
@@ -13,3 +18,6 @@ make clean
 make all
 
 sudo cp libshared.so ../../../../../usr/local/lib/
+cd ../../
+
+. ./scripts/deploy.sh
