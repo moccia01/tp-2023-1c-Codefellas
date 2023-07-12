@@ -500,7 +500,7 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 
 	if(tamanio_restante > tamanio_viejo){
 		// AMPLIAR
-		div_t cuenta_bloques_agregar = (tamanio_restante - tamanio_viejo)/BLOCK_SIZE;
+		div_t cuenta_bloques_agregar = div((tamanio_restante - tamanio_viejo), BLOCK_SIZE);
 		int cantidad_bloques_a_agregar = cuenta_bloques_agregar.quot;
 		if(cuenta_bloques_agregar.rem != 0){
 			cantidad_bloques_a_agregar++;
@@ -509,7 +509,7 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
 	} else{
 		// REDUCIR
-		div_t cuenta_bloques_sacar = (tamanio_viejo - tamanio_restante)/BLOCK_SIZE;
+		div_t cuenta_bloques_sacar = div((tamanio_viejo - tamanio_restante), BLOCK_SIZE);
 		int cantidad_bloques_a_sacar = cuenta_bloques_sacar.quot;
 		if(cuenta_bloques_sacar.rem != 0){
 			cantidad_bloques_a_sacar++;
