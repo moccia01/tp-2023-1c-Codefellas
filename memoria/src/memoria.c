@@ -448,7 +448,12 @@ void compactar(){
 	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
 		t_segmento* segmento_actual = list_get(segmentos_en_memoria, i);
 		log_info(logger,"segmento OLD base: %d", segmento_actual->base);
-		segmento_actual->base=base_segmento+tam_segmento;
+		int new_base = base_segmento+tam_segmento;
+
+		// Muevo lo que estaba escrito en espacio usuario junto con el segmento
+		memcpy(espacio_usuario + new_base, espacio_usuario + segmento_actual->base, segmento_actual->tamanio);
+
+		segmento_actual->base=new_base;
 		log_info(logger,"segmento NEW base: %d", segmento_actual->base);
 		base_segmento=segmento_actual->base;
 		tam_segmento=segmento_actual->tamanio;
@@ -463,6 +468,11 @@ void compactar(){
 	t_hueco_memoria* hueco_nuevo = malloc(sizeof(t_hueco_memoria));
 	hueco_nuevo -> base = base_segmento+tam_segmento;
 	hueco_nuevo -> tamanio = tamanio_total;
+
+//  esto se encarga de sobreescribir la basura con null
+//	char* vacio = malloc(hueco_nuevo->tamanio);
+//	memcpy(espacio_usuario + hueco_nuevo->base, vacio, hueco_nuevo->tamanio);
+
 	log_info(logger,"tam: %d", tamanio_total);
 	list_add(huecos_libres,hueco_nuevo);
 	return;
