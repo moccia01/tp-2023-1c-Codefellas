@@ -150,17 +150,24 @@ t_pcb* obtener_pcb_HRRN();
 bool maximo_HRRN(t_pcb* pcb1, t_pcb* pcb2);
 double response_ratio(t_pcb* pcb);
 void calcular_estimacion(t_pcb* pcb);
+
+// MANEJO OPERACIONES BLOQUEANTES
 void manejar_io(t_pcb* pcb,  int tiempo);
 void exec_io(void* void_arg);
 void manejar_wait(t_pcb* pcb, char* recurso);
 t_recurso* buscar_recurso(char* recurso);
 void manejar_signal(t_pcb* pcb, char* recurso);
+
+// MANEJO OPERACIONES MEMORIA
 void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int tamanio);
+
+// MANEJO OPERACIONES FS
 t_archivo* get_archivo_global(char* nombre_archivo);
 t_archivo* get_archivo_pcb(char* nombre_archivo, t_pcb* pcb);
 bool archivo_is_opened(char* nombre_archivo);
 t_archivo* archivo_create(char* nombre_archivo);
 t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb);
 void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb);
+void bloquear_pcb_por_fs(t_pcb* pcb);
 
 #endif /* KERNEL_H_ */

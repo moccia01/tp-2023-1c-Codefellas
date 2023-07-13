@@ -281,7 +281,6 @@ void eliminar_tabla_segmentos(int pid){
 int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 	t_hueco_memoria* hueco;
 	switch(ALGORITMO_ASIGNACION){
-	//TODO queda testear como funcionan cada algoritmo
 	case FIRST_FIT:
 		hueco = encontrar_hueco_first(tamanio);
 		break;
@@ -297,7 +296,7 @@ int crear_segmento_segun_algoritmo(int id, int tamanio, int pid){
 	actualizar_hueco_libre(nuevo_segmento, hueco);
 	return nuevo_segmento->base;
 }
-// TODO TESTEAR FUNCION
+
 t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	for(int i = 0; i < list_size(huecos_libres); i++){
 		t_hueco_memoria* hueco_libre = list_get(huecos_libres, i);
@@ -307,7 +306,7 @@ t_hueco_memoria* encontrar_hueco_first(int tamanio){
 	}
 	return NULL;
 }
-// TODO TESTEAR FUNCION
+
 t_hueco_memoria* encontrar_hueco_best(int tamanio){
 	t_hueco_memoria *aux=NULL;
 	for(int i = 0; i < list_size(huecos_libres); i++){
@@ -325,7 +324,7 @@ t_hueco_memoria* encontrar_hueco_best(int tamanio){
 		}
 	return aux;
 }
-// TODO TESTEAR FUNCION
+
 t_hueco_memoria* encontrar_hueco_worst(int tamanio){
 	t_hueco_memoria *aux=NULL;
 		for(int i = 0; i < list_size(huecos_libres); i++){
@@ -440,7 +439,7 @@ void agregar_hueco_libre(int base, int tamanio){
         }
 }
 
-// TODO TESTEAR FUNCION
+
 void compactar(){
 	list_sort(segmentos_en_memoria, (void*) comparador_de_base);
 	int tam_segmento=0;
