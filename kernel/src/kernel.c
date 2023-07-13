@@ -341,10 +341,8 @@ void procesar_conexion(void* void_args) {
 				t_archivo* archivo_close = quitar_archivo_de_tabla_proceso(nombre_archivo_close, pcb);
 				pthread_mutex_lock(&(archivo_close->mutex_asignado));
 				if(!list_is_empty(archivo_close->cola_block_asignada)){
-					t_pcb* pcb_bloqueado = safe_pcb_remove(archivo_close->cola_block_asignada, &(archivo_close->mutex_asignado));
-					pthread_mutex_lock(&(archivo_close->mutex_asignado));
+					t_pcb* pcb_bloqueado = list_remove(archivo_close->cola_block_asignada, 0);
 					int cant_proc_archivo_close = list_size(archivo_close->cola_block_asignada);
-					pthread_mutex_unlock(&(archivo_close->mutex_asignado));
 					log_info(logger, "el archivo %s tiene %d procesos abiertos", archivo_close->nombre_archivo, cant_proc_archivo_close);
 					log_info(logger, "Desbloqueo al proceso %d bloqueado por archivo %s", pcb_bloqueado->contexto_de_ejecucion->pid, nombre_archivo_close);
 					safe_pcb_add(cola_block, pcb_bloqueado, &mutex_cola_block);
@@ -571,8 +569,8 @@ void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_block_io, &mutex_cola_block_io);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_block, &mutex_cola_block);
 	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_exit, &mutex_cola_exit);
+	actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, cola_block_fs, &mutex_cola_block_fs);
 
-	// TODO falta testear esto
 	for(int i = 0; i < list_size(lista_recursos); i++){
 		t_recurso* recurso = list_get(lista_recursos, i);
 		actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, recurso->cola_block_asignada, &(recurso->mutex_asignado));

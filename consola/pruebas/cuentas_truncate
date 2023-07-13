@@ -1,0 +1,7 @@
+F_OPEN ArchivoRandom
+F_TRUNCATE ArchivoRandom 192
+F_TRUNCATE ArchivoRandom 100
+F_TRUNCATE ArchivoRandom 64
+F_TRUNCATE ArchivoRandom 32
+F_TRUNCATE ArchivoRandom 80
+EXIT

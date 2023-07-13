@@ -393,6 +393,7 @@ t_list* deletear_segmento(int id_segmento, int pid){
 			}
 		}
 	}
+	log_segmentos_en_memoria();
 	agregar_hueco_libre(base, tamanio);
 	return ts_actualizada;
 }
@@ -441,12 +442,15 @@ void agregar_hueco_libre(int base, int tamanio){
 
 
 void compactar(){
+	log_segmentos_en_memoria();
 	list_sort(segmentos_en_memoria, (void*) comparador_de_base);
+	log_segmentos_en_memoria();
 	int tam_segmento=0;
 	int base_segmento=0;
 	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
 		t_segmento* segmento_actual = list_get(segmentos_en_memoria, i);
-		log_info(logger,"segmento OLD base: %d", segmento_actual->base);
+		int old_base = segmento_actual->base;
+		log_info(logger,"segmento OLD base: %d", old_base);
 		int new_base = base_segmento+tam_segmento;
 
 		// Muevo lo que estaba escrito en espacio usuario junto con el segmento
@@ -456,7 +460,9 @@ void compactar(){
 		log_info(logger,"segmento NEW base: %d", segmento_actual->base);
 		base_segmento=segmento_actual->base;
 		tam_segmento=segmento_actual->tamanio;
-		actualizar_segmento(segmento_actual);
+
+		//buscar segmento por base desactualizada y no por id pq hay colision
+		//actualizar_segmento(old_base, new_base);
 	}
 	int cant_huecos = list_size(huecos_libres);
 	log_info(logger, "cantidad de huecos libres que quedaron de la compactacion: %d", cant_huecos);
@@ -477,21 +483,21 @@ void compactar(){
 	return;
 }
 
-void actualizar_segmento(t_segmento* segmento){
+void actualizar_segmento(int old_base, int new_base){
 	for(int i = 0; i < list_size(lista_ts_wrappers); i++){
 		ts_wrapper* wrapper = list_get(lista_ts_wrappers, i);
-		if(buscar_segmento_en_ts(segmento, wrapper->tabla_de_segmentos)){
+		if(buscar_segmento_en_ts(old_base, new_base, wrapper->tabla_de_segmentos)){
 			return;
 		}
 	}
-	log_info(logger, "no se encontro el segmento de id: %d para actualizar el ts wrapper", segmento->id);
+	log_info(logger, "no se encontro el segmento de old_base: %d para actualizar el ts wrapper", old_base);
 }
 
-bool buscar_segmento_en_ts(t_segmento* segmento, t_list* tabla_segmentos){
+bool buscar_segmento_en_ts(int old_base, int new_base, t_list* tabla_segmentos){
 	for(int i = 0; i < list_size(tabla_segmentos); i++){
 		t_segmento* segmento_en_ts = list_get(tabla_segmentos, i);
-		if(segmento_en_ts->id == segmento->id){
-			segmento_en_ts->base = segmento->base;
+		if(segmento_en_ts->base == old_base){
+			segmento_en_ts->base = new_base;
 			return true;
 		}
 	}
@@ -518,3 +524,14 @@ void log_valor_espacio_usuario(char* valor, int tamanio){
 	int tamanio_valor = strlen(valor_log);
 	log_info(logger, "se leyo/escribio %s de tamaño %d en el espacio de usuario", valor_log, tamanio_valor);
 }
+
+void log_segmentos_en_memoria(){
+	for(int i = 0; i < list_size(segmentos_en_memoria); i++){
+		t_segmento* segmento = list_get(segmentos_en_memoria, i);
+		log_info(logger, "Segmento en memoria: Id - %d, Base - %d, Tamaño - %d", segmento->id, segmento->base, segmento->tamanio);
+	}
+}
+
+
+
+
