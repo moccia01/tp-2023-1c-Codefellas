@@ -347,7 +347,7 @@ void manejar_f_create(char* nombre_archivo){
 	char* text_tamanio_archivo = malloc(10);
 	sprintf(text_tamanio_archivo, "%d", nuevo_fcb->tamanio_archivo);
 
-//	FILE* f_fcb = fopen(path_archivo, "a+");
+	FILE* f_fcb = fopen(path_archivo, "a+");
 
 	t_archivo *archivo_fcb = malloc(sizeof(t_archivo));
 	archivo_fcb->nombre_archivo = malloc(strlen(nombre_archivo));
@@ -360,13 +360,13 @@ void manejar_f_create(char* nombre_archivo){
 	config_save(archivo_fcb->archivo_fcb);
 
 	list_add(lista_fcbs, archivo_fcb);
-//	fclose(f_fcb);
+	fclose(f_fcb);
 }
 
 int obtener_cantidad_punteros(uint32_t* array_punteros){
 	uint32_t* cant_punteros_bloque = malloc(sizeof(uint32_t));
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(cant_punteros_bloque, array_punteros, sizeof(uint32_t));
 
 	return *cant_punteros_bloque;
@@ -376,7 +376,7 @@ void liberar_bloque(int posicion_ultimo_bloque, uint32_t* array_bloque_de_punter
 	uint32_t* nuevo_valor_puntero = malloc(sizeof(uint32_t));
 	*nuevo_valor_puntero = 0;
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	//poner el ultimo puntero en 0
 	memcpy(array_bloque_de_punteros + posicion_ultimo_bloque, nuevo_valor_puntero,sizeof(uint32_t));
 }
@@ -400,7 +400,7 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
 	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
@@ -410,14 +410,15 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 	int pos_nuevo_bloque = (cant_punteros_bloque + 1)*sizeof(uint32_t);
 
 	for(int i = cant_bloques; i > 0; i--){
-		usleep(RETARDO_ACCESO_BLOQUE);
+		//usleep(RETARDO_ACCESO_BLOQUE*1000);
 		uint32_t bloque_nuevo = buscar_bloque_libre();
 		uint32_t* puntero_a_bloque = malloc(sizeof(uint32_t));
 		*puntero_a_bloque = bloque_nuevo;
 
 		log_info(logger, "El nuevo bloque asignado es %d", bloque_nuevo);
 
-		usleep(RETARDO_ACCESO_BLOQUE);
+		//usleep(RETARDO_ACCESO_BLOQUE*1000);
+		log_info(logger, "la posicion del nuevo puntero en el bloque de punteros es: %d", pos_nuevo_bloque);
 		memcpy(array_bloque_de_punteros+pos_nuevo_bloque, puntero_a_bloque, sizeof(uint32_t));
 		uint32_t* puntero_leido_testamento = malloc(sizeof(uint32_t));
 		memcpy(puntero_leido_testamento, array_bloque_de_punteros+pos_nuevo_bloque, sizeof(uint32_t));
@@ -429,9 +430,9 @@ void asignar_bloques(int cant_bloques, t_config* archivo){
 
 	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
-	usleep(RETARDO_ACCESO_BLOQUE);
+	usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 }
 
@@ -440,10 +441,10 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 
 	uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
 	int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
-	usleep(RETARDO_ACCESO_BLOQUE);
+	usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	int cant_punteros_bloque = obtener_cantidad_punteros(array_bloque_de_punteros);
 	int pos_ultimo_puntero = (cant_punteros_bloque)*sizeof(uint32_t);
 
@@ -452,14 +453,14 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 	int pos_bitmap_ultimo_bloque;
 
 	for(int i = cant_bloques; i > 0; i--){
-		usleep(RETARDO_ACCESO_BLOQUE);
+		//usleep(RETARDO_ACCESO_BLOQUE*1000);
 		liberar_bloque(pos_ultimo_puntero, array_bloque_de_punteros);
 
 		log_info(logger, "El bloque eliminado es %d", pos_ultimo_puntero);
 
-		usleep(RETARDO_ACCESO_BLOQUE);
+		//usleep(RETARDO_ACCESO_BLOQUE*1000);
 		memcpy(&pos_bitmap_ultimo_bloque, array_bloque_de_punteros + pos_ultimo_puntero, sizeof(uint32_t));
-		usleep(RETARDO_ACCESO_BLOQUE);
+		//usleep(RETARDO_ACCESO_BLOQUE*1000);
 
 		//log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: <NUMERO BLOQUE ARCHIVO> - Bloque File System <NUMERO BLOQUE FS>", );
 
@@ -472,9 +473,9 @@ void sacar_bloques(int cant_bloques, t_config* archivo){
 
 	log_info(logger, "Ahora la cantidad de punteros del bloque es %d", cant_punteros_bloque);
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(array_bloque_de_punteros, &cant_punteros_bloque, sizeof(uint32_t));
-	usleep(RETARDO_ACCESO_BLOQUE);
+	usleep(RETARDO_ACCESO_BLOQUE*1000);
 	memcpy(buffer_bloques+pos_bloque_punteros, array_bloque_de_punteros, BLOCK_SIZE);
 }
 
@@ -507,7 +508,7 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 		}
 		log_info(logger, "La cantidad de bloques a agregar en %s es %d", nombre_archivo, cantidad_bloques_a_agregar);
 		asignar_bloques(cantidad_bloques_a_agregar, archivo_fcb);
-	} else{
+	} else if(tamanio_restante < tamanio_viejo){
 		// REDUCIR
 		div_t cuenta_bloques_sacar = div((tamanio_viejo - tamanio_restante), BLOCK_SIZE);
 		int cantidad_bloques_a_sacar = cuenta_bloques_sacar.quot;
@@ -516,14 +517,16 @@ void manejar_f_truncate(char* nombre_archivo, int tamanio_nuevo){
 		}
 		log_info(logger, "La cantidad de bloques a sacar en %s es %d", nombre_archivo, cantidad_bloques_a_sacar);
 		sacar_bloques(cantidad_bloques_a_sacar, archivo_fcb);
+	} else{
+		log_info(logger, "No hay que sacar ni agregar ningun bloque");
 	}
 }
 
 void asignar_punteros_primer_truncate(t_config* archivo_fcb){
 
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	int puntero_directo = buscar_bloque_libre();
-	usleep(RETARDO_ACCESO_BLOQUE);
+	//usleep(RETARDO_ACCESO_BLOQUE*1000);
 	int puntero_indirecto = buscar_bloque_libre();
 
 	char* text_puntero_directo = malloc(10);
@@ -543,6 +546,7 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 	log_info(logger, "El bloque a buscar pasado por parametro es: %d", bloque_a_buscar);
 	if(bloque_a_buscar == 0){
 		int puntero_directo = config_get_int_value(archivo_fcb, "PUNTERO_DIRECTO");
+		usleep(RETARDO_ACCESO_BLOQUE*1000);
 		log_info(logger, "El puntero directo es: %d", puntero_directo);
 		return puntero_directo*BLOCK_SIZE;
 	}
@@ -553,7 +557,7 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
 		log_info(logger, "La posicion del bloque de punteros es: %d", pos_bloque_punteros);
 
-		usleep(RETARDO_ACCESO_BLOQUE);
+		usleep(RETARDO_ACCESO_BLOQUE*1000);
 		memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
 
 		uint32_t* puntero_a_bloque_a_buscar = malloc(sizeof(uint32_t));
@@ -692,5 +696,5 @@ void log_valor_fs(char* valor, int tamanio){
 	memcpy(valor_log, valor, tamanio);
 	memcpy(valor_log + tamanio, "\0", 1);
 	int tamanio_valor = strlen(valor_log);
-	log_info(logger, "se leyo/escribio %s de tamaño %d en el espacio de usuario", valor_log, tamanio_valor);
+	log_info(logger, "se leyo/escribio %s de tamaño %d en el fs", valor_log, tamanio_valor);
 }

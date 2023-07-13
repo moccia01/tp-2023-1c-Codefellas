@@ -876,6 +876,7 @@ void manejar_create_segment(t_pcb* pcb, int cliente_socket, int id_segmento, int
 		t_list* ts_wrappers = recv_ts_wrappers(fd_memoria);
 		log_info(logger, "recibi la ts_wrappers actualizada de tamaño %d", list_size(ts_wrappers));
 		log_info(logger_obligatorio, "Se finalizó el proceso de compactación");
+		sem_post(&ongoing_fs_mem_op);
 //		- actualizar la tabla de segmentos de TODOS (!) los pcb O.o
 		safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 		actualizar_ts_de_pcbs(ts_wrappers);
