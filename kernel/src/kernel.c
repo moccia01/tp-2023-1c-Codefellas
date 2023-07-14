@@ -746,11 +746,9 @@ void log_cola_ready(){
 	free(lista);
 }
 
-t_list *pcb_to_pid_list(t_list *list)
-{
+t_list *pcb_to_pid_list(t_list *list){
 	t_list* lista_de_pids = list_create();
-    for (int i = 0; i < list_size(list); i++)
-    {
+    for (int i = 0; i < list_size(list); i++){
         t_pcb* pcb = list_get(list, i);
         list_add(lista_de_pids, &(pcb->contexto_de_ejecucion->pid));
     }
@@ -997,7 +995,6 @@ t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb){
 	return archivo;
 }
 
-
 void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb){
 	t_archivo* archivo = archivo_create(nombre_archivo_open);
 	safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
@@ -1024,4 +1021,3 @@ void bloquear_pcb_por_fs(t_pcb* pcb){
 	pthread_mutex_unlock(&mutex_cola_block_fs);
 	log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", cant_pcbs_block_fs);
 }
-
