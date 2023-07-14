@@ -550,8 +550,8 @@ void asignar_punteros_primer_truncate(t_config* archivo_fcb){
 
 }
 
-int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
-	char* nombre_archivo = config_get_string_value(archivo_fcb, "NOMBRE_ARCHIVO");
+int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar, uint32_t* array_bloque_de_punteros){ //--
+	//char* nombre_archivo = config_get_string_value(archivo_fcb, "NOMBRE_ARCHIVO");
 
 	log_info(logger, "El bloque a buscar pasado por parametro es: %d", bloque_a_buscar);
 	if(bloque_a_buscar == 0){
@@ -560,15 +560,17 @@ int buscar_bloque(t_config* archivo_fcb, int bloque_a_buscar){
 		return puntero_directo*BLOCK_SIZE;
 	}
 	else{
-		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO_INDIRECTO");
+		//int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO_INDIRECTO");
 
-		uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE);
-		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
-		log_info(logger, "La posicion del bloque de punteros es: %d", pos_bloque_punteros);
+		//uint32_t* array_bloque_de_punteros = malloc(BLOCK_SIZE); //--
+		//int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+		//log_info(logger, "La posicion del bloque de punteros es: %d", pos_bloque_punteros);
 
+		/*
 		log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, 1, puntero_indirecto);
 		usleep(RETARDO_ACCESO_BLOQUE*1000);
 		memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
+		*/
 
 		uint32_t* puntero_a_bloque_a_buscar = malloc(sizeof(uint32_t));
 
@@ -604,7 +606,19 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 
 	char* datos_leidos = malloc(tamanio);
 
-	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_leer);
+	uint32_t* array_bloque_de_punteros;//--
+
+	if(bloque_a_leer != 0 || excedente_lectura > 0){
+		array_bloque_de_punteros = malloc(BLOCK_SIZE); //--
+		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO_INDIRECTO");
+		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+		log_info(logger, "La posicion del bloque de punteros es: %d", pos_bloque_punteros);
+		log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, 1, puntero_indirecto);
+		usleep(RETARDO_ACCESO_BLOQUE*1000);
+		memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
+	}
+
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_leer, array_bloque_de_punteros); //--
 	log_info(logger, "la posicion del bloque en el fs es: %d", posicion_array_bloques_bloque_a_buscar);
 
 	log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_leer, posicion_array_bloques_bloque_a_buscar / BLOCK_SIZE);
@@ -623,7 +637,7 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 		int bloques_extra;
 		int desplazamiento_datos_leidos = restante_bloque_comienzo;
 		for(bloques_extra = 1; bloques_extra < bloques_a_leer_completos + 1; bloques_extra++){
-			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra);
+			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra, array_bloque_de_punteros); //--
 
 			usleep(RETARDO_ACCESO_BLOQUE * 1000);
 			log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_leer + bloques_extra, pos_bloque_actual / BLOCK_SIZE);
@@ -631,7 +645,7 @@ char* leer_datos(t_config* archivo_fcb, int posicion_a_leer, int tamanio){
 
 			desplazamiento_datos_leidos += BLOCK_SIZE;
 		}
-		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra);
+		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_leer + bloques_extra, array_bloque_de_punteros); //--
 
 		usleep(RETARDO_ACCESO_BLOQUE * 1000);
 		log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_leer + bloques_extra, pos_ultimo_bloque / BLOCK_SIZE);
@@ -660,7 +674,19 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 
 	log_info(logger, "el bloque a buscar es %d y el offset en el mismo es %d", bloque_a_escribir, offset_bloque);
 
-	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_escribir);
+	uint32_t* array_bloque_de_punteros; //--
+
+	if(bloque_a_escribir != 0 || excedente_escritura > 0){
+		array_bloque_de_punteros = malloc(BLOCK_SIZE); //--
+		int puntero_indirecto = config_get_int_value(archivo_fcb, "PUNTERO_INDIRECTO");
+		int pos_bloque_punteros = puntero_indirecto*BLOCK_SIZE;
+		log_info(logger, "La posicion del bloque de punteros es: %d", pos_bloque_punteros);
+		log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, 1, puntero_indirecto);
+		usleep(RETARDO_ACCESO_BLOQUE*1000);
+		memcpy(array_bloque_de_punteros, buffer_bloques + pos_bloque_punteros, BLOCK_SIZE);
+	}
+
+	int posicion_array_bloques_bloque_a_buscar = buscar_bloque(archivo_fcb, bloque_a_escribir, array_bloque_de_punteros); //--
 	log_info(logger, "la posicion del bloque en el fs es: %d", posicion_array_bloques_bloque_a_buscar);
 
 	log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_escribir, posicion_array_bloques_bloque_a_buscar / BLOCK_SIZE);
@@ -679,7 +705,7 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 		int bloques_extra;
 		int desplazamiento_datos_a_escribir = restante_bloque_comienzo;
 		for(bloques_extra = 1; bloques_extra < bloques_a_escribir_completos + 1; bloques_extra++){
-			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra);
+			int pos_bloque_actual = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra, array_bloque_de_punteros);
 
 			log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_escribir + bloques_extra, pos_bloque_actual / BLOCK_SIZE);
 			usleep(RETARDO_ACCESO_BLOQUE * 1000);
@@ -687,7 +713,7 @@ void escribir_datos(t_config* archivo_fcb, int posicion_a_escribir, char* datos_
 
 			desplazamiento_datos_a_escribir += BLOCK_SIZE;
 		}
-		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra);
+		int pos_ultimo_bloque = buscar_bloque(archivo_fcb, bloque_a_escribir + bloques_extra, array_bloque_de_punteros); //--
 
 		log_info(logger_obligatorio, "Acceso Bloque - Archivo: %s - Bloque Archivo: %d - Bloque File System %d", nombre_archivo, bloque_a_escribir + bloques_extra, pos_ultimo_bloque / BLOCK_SIZE);
 		usleep(RETARDO_ACCESO_BLOQUE * 1000);
