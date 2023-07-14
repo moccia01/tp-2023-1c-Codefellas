@@ -165,6 +165,7 @@ void registros_destroy(t_registros* registros);
 void instruccion_destroyer(t_instruccion* instruccion);
 void segmento_destroy(t_segmento* segmento);
 void lista_instrucciones_destroy(t_list* lista);
+void ts_wrapper_destroy(ts_wrapper* tabla_segmento);
 
 #endif /* PROTOCOLO_H_ */
 

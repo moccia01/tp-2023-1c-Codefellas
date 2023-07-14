@@ -732,6 +732,7 @@ void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo){
 	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
+	list_destroy(tabla_segmentos);
 }
 
 t_list* recv_proceso_inicializado(int fd_modulo){
@@ -757,6 +758,7 @@ int recv_terminar_proceso(int fd_modulo){
 	int* pid = list_get(paquete, 0);
 	int ret = *pid;
 	list_destroy(paquete);
+	free(pid);
 	return ret;
 }
 
@@ -959,4 +961,10 @@ t_list* desempaquetar_ts_wrappers(t_list* paquete, int comienzo){
 	}
 	free(cantidad_wrappers);
 	return lista_ts_wrappers;
+}
+
+void ts_wrapper_destroy(ts_wrapper* tabla_segmento){
+	//TODO Chequear ts_wrapper_destroy
+	//list_destroy(tabla_segmento->tabla_de_segmentos);
+	//free(tabla_segmento);
 }
