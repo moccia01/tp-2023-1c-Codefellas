@@ -2,9 +2,9 @@ CREATE_SEGMENT 1 64
 CREATE_SEGMENT 2 64
 CREATE_SEGMENT 3 64
 DELETE_SEGMENT 2
-F_OPEN FedePromocionaCiber
-F_TRUNCATE FedePromocionaCiber 64
-F_SEEK FedePromocionaCiber 32
+F_OPEN FedeAproboCiber
+F_TRUNCATE FedeAproboCiber 64
+F_SEEK FedeAproboCiber 32
 WAIT RB
-F_CLOSE FedePromocionaCiber
+F_CLOSE FedeAproboCiber
 EXIT

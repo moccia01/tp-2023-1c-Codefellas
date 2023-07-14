@@ -2,6 +2,6 @@ CREATE_SEGMENT 1 70
 CREATE_SEGMENT 2 10
 CREATE_SEGMENT 3 20
 DELETE_SEGMENT 2
-F_OPEN FedePromocionaCiber
-F_CLOSE FedePromocionaCiber
+F_OPEN FedeAproboCiber
+F_CLOSE FedeAproboCiber
 EXIT
