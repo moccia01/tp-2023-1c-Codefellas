@@ -106,18 +106,54 @@ t_registros* inicializar_registro(){
 	registros->rcx = malloc(sizeof(17));
 	registros->rdx = malloc(sizeof(17));
 
-	registros->ax = "";
-	registros->bx = "";
-	registros->cx = "";
-	registros->dx = "";
-	registros->eax = "";
-	registros->ebx = "";
-	registros->ecx = "";
-	registros->edx = "";
-	registros->rax = "";
-	registros->rbx = "";
-	registros->rcx = "";
-	registros->rdx = "";
+	memcpy(registros->ax, "     ", 4);
+	memcpy(registros->ax + 4, "\0", 1);
+
+	memcpy(registros->bx, "     ", 4);
+	memcpy(registros->bx + 4, "\0", 1);
+
+	memcpy(registros->cx, "     ", 4);
+	memcpy(registros->cx + 4, "\0", 1);
+
+	memcpy(registros->dx, "     ", 4);
+	memcpy(registros->dx + 4, "\0", 1);
+
+	memcpy(registros->eax, "         ", 8);
+	memcpy(registros->eax + 8, "\0", 1);
+
+	memcpy(registros->ebx, "         ", 8);
+	memcpy(registros->ebx + 8, "\0", 1);
+
+	memcpy(registros->ecx, "         ", 8);
+	memcpy(registros->ecx + 8, "\0", 1);
+
+	memcpy(registros->edx, "         ", 8);
+	memcpy(registros->edx + 8, "\0", 1);
+
+	memcpy(registros->rax, "                 ", 16);
+	memcpy(registros->rax + 16, "\0", 1);
+
+	memcpy(registros->rbx, "                 ", 16);
+	memcpy(registros->rbx + 16, "\0", 1);
+
+	memcpy(registros->rcx, "                 ", 16);
+	memcpy(registros->rcx + 16, "\0", 1);
+
+	memcpy(registros->rdx, "                 ", 16);
+	memcpy(registros->rdx + 16, "\0", 1);
+
+//	registros->ax = "";
+//	registros->bx = "";
+//	registros->cx = "";
+//	registros->dx = "";
+//	registros->eax = "";
+//	registros->ebx = "";
+//	registros->ecx = "";
+//	registros->edx = "";
+//	registros->rax = "";
+//	registros->rbx = "";
+//	registros->rcx = "";
+//	registros->rdx = "";
 
 	return registros;
 }
@@ -264,54 +300,43 @@ void set_valor_registro(char* registro, char* valor){
 	strcat(valor, "\0");
 
 	if(strcmp(registro, "AX") == 0){
-		registros->ax = malloc(5);
-		strcpy(registros->ax, valor);
+		memcpy(registros->ax, valor, 5);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ax, "AX");
 	}else if(strcmp(registro, "BX") == 0){
-		registros->bx = malloc(5);
-		strcpy(registros->bx, valor);
+		memcpy(registros->bx, valor, 5);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->bx, "BX");
 	}else if(strcmp(registro, "CX") == 0){
-		registros->cx = malloc(5);
-		strcpy(registros->cx, valor);
+		memcpy(registros->cx, valor, 5);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->cx, "CX");
 	}else if(strcmp(registro, "DX") == 0){
-		registros->dx = malloc(5);
-		strcpy(registros->dx, valor);
+		memcpy(registros->dx, valor, 5);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->dx, "DX");
 	}else if(strcmp(registro, "EAX") == 0){
-		registros->eax = malloc(9);
-		strcpy(registros->eax, valor);
+		memcpy(registros->eax, valor, 9);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->eax, "EAX");
 	}else if(strcmp(registro, "EBX") == 0){
-		registros->ebx = malloc(9);
-		strcpy(registros->ebx, valor);
+		memcpy(registros->ebx, valor, 9);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ebx, "EBX");
 	}else if(strcmp(registro, "ECX") == 0){
-		registros->ecx = malloc(9);
-		strcpy(registros->ecx, valor);
+		memcpy(registros->ecx, valor, 9);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->ecx, "ECX");
 	}else if(strcmp(registro, "EDX") == 0){
-		registros->edx = malloc(9);
-		strcpy(registros->edx, valor);
+		memcpy(registros->edx, valor, 9);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->edx, "EDX");
 	}else if(strcmp(registro, "RAX") == 0){
-		registros->rax = malloc(17);
-		strcpy(registros->rax, valor);
+		memcpy(registros->rax, valor, 17);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rax, "RAX");
 	}else if(strcmp(registro, "RBX") == 0){
-		registros->rbx = malloc(17);
-		strcpy(registros->rbx, valor);
+		memcpy(registros->rbx, valor, 17);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rbx, "RBX");
 	}else if(strcmp(registro, "RCX") == 0){
-		registros->rcx = malloc(17);
-		strcpy(registros->rcx, valor);
+		memcpy(registros->rcx, valor, 17);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rcx, "RCX");
 	}else if(strcmp(registro, "RDX") == 0){
-		registros->rdx = malloc(17);
-		strcpy(registros->rdx, valor);
+		memcpy(registros->rdx, valor, 17);
 		log_info(logger, "Se seteo el valor %s en registro %s", registros->rdx, "RDX");
 	}
+
 }
 
 int obtener_tamanio_registro(char* registro){
@@ -417,6 +442,7 @@ void ejecutar_mov_in(char* registro, int dir_logica, t_contexto_ejecucion* conte
 		memcpy(valor_log + tamanio_a_leer, "\0", 1);
 		log_info(logger_obligatorio, "PID: %d - Acción: LEER - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_log);
 		set_valor_registro(registro, valor_log);
+		// TODO free(valor_leido_memoria);
 	}
 }
 
@@ -434,6 +460,7 @@ void ejecutar_mov_out(int dir_logica, char* registro, t_contexto_ejecucion* cont
 		memcpy(valor_log + tamanio_a_escribir, "\0", 1);
 		log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Segmento: %d - Dirección Física: %d - Valor: %s", contexto->pid, mmu->num_segmento, mmu->dir_fisica, valor_log);
 		send_escribir_valor_cpu(valor_escrito_en_memoria, mmu->dir_fisica, tamanio_a_escribir, contexto->pid, fd_memoria);
+		// TODO free(valor_escrito_en_memoria);
 		recv_fin_escritura(fd_memoria);
 	}
 }

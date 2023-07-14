@@ -153,7 +153,6 @@ t_list* inicializar_recursos(){
 
 void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros = malloc(sizeof(t_registros));
-
 	contexto->registros->ax = malloc(sizeof(5));
 	contexto->registros->bx = malloc(sizeof(5));
 	contexto->registros->cx = malloc(sizeof(5));
@@ -167,18 +166,41 @@ void inicializar_registro(t_contexto_ejecucion* contexto){
 	contexto->registros->rcx = malloc(sizeof(17));
 	contexto->registros->rdx = malloc(sizeof(17));
 
-	contexto->registros->ax = "";
-	contexto->registros->bx = "";
-	contexto->registros->cx = "";
-	contexto->registros->dx = "";
-	contexto->registros->eax = "";
-	contexto->registros->ebx = "";
-	contexto->registros->ecx = "";
-	contexto->registros->edx = "";
-	contexto->registros->rax = "";
-	contexto->registros->rbx = "";
-	contexto->registros->rcx = "";
-	contexto->registros->rdx = "";
+	memcpy(contexto->registros->ax, "     ", 4);
+	memcpy(contexto->registros->ax + 4, "\0", 1);
+
+	memcpy(contexto->registros->bx, "     ", 4);
+	memcpy(contexto->registros->bx + 4, "\0", 1);
+
+	memcpy(contexto->registros->cx, "     ", 4);
+	memcpy(contexto->registros->cx + 4, "\0", 1);
+
+	memcpy(contexto->registros->dx, "     ", 4);
+	memcpy(contexto->registros->dx + 4, "\0", 1);
+
+	memcpy(contexto->registros->eax, "         ", 8);
+	memcpy(contexto->registros->eax + 8, "\0", 1);
+
+	memcpy(contexto->registros->ebx, "         ", 8);
+	memcpy(contexto->registros->ebx + 8, "\0", 1);
+
+	memcpy(contexto->registros->ecx, "         ", 8);
+	memcpy(contexto->registros->ecx + 8, "\0", 1);
+
+	memcpy(contexto->registros->edx, "         ", 8);
+	memcpy(contexto->registros->edx + 8, "\0", 1);
+
+	memcpy(contexto->registros->rax, "                 ", 16);
+	memcpy(contexto->registros->rax + 16, "\0", 1);
+
+	memcpy(contexto->registros->rbx, "                 ", 16);
+	memcpy(contexto->registros->rbx + 16, "\0", 1);
+
+	memcpy(contexto->registros->rcx, "                 ", 16);
+	memcpy(contexto->registros->rcx + 16, "\0", 1);
+
+	memcpy(contexto->registros->rdx, "                 ", 16);
+	memcpy(contexto->registros->rdx + 16, "\0", 1);
 }
 
 void terminar_programa(){
@@ -321,7 +343,7 @@ void procesar_conexion(void* void_args) {
 					log_info(logger, "bloqueo al proceso %d porque el archivo %s ya estaba abierto", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 					cambiar_estado(pcb, BLOCK);
 					calcular_estimacion(pcb);
-					log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_write);
+					log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_open);
 
 					list_add(pcb->archivos_abiertos, archivo_open_global);
 					log_info(logger, "el proceso %d tiene %d archivos abiertos", pcb->contexto_de_ejecucion->pid, list_size(pcb->archivos_abiertos));
@@ -491,6 +513,7 @@ t_pcb* pcb_create(t_list* instrucciones, int pid, int cliente_socket) {
 
 // hay que acordarse de agregar frees aca si se cambia la estructura del t_pcb !!!
 void pcb_destroy(t_pcb* pcb){
+	list_destroy(pcb->archivos_abiertos);
 	contexto_destroyer(pcb->contexto_de_ejecucion);
 	free(pcb);
 }
@@ -544,6 +567,35 @@ void armar_pcb(t_list *instrucciones, int cliente_socket) {
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto){
 	//TODO Revisar con valgrind si hay que hacer un contexto_destroyer
 	pcb->contexto_de_ejecucion = contexto;
+
+	log_registros(pcb->contexto_de_ejecucion->registros);
+}
+
+void log_registros(t_registros* registros_contexto){
+
+	log_info(logger, "Ahora el contexto tiene el valor de ax: %s", registros_contexto->ax);
+
+	log_info(logger, "Ahora el contexto tiene el valor de bx: %s", registros_contexto->bx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de cx: %s", registros_contexto->cx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de dx: %s", registros_contexto->dx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de eax: %s", registros_contexto->eax);
+
+	log_info(logger, "Ahora el contexto tiene el valor de ebx: %s", registros_contexto->ebx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de ecx: %s", registros_contexto->ecx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de edx: %s", registros_contexto->edx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de rax: %s", registros_contexto->rax);
+
+	log_info(logger, "Ahora el contexto tiene el valor de rbx: %s", registros_contexto->rbx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de rcx: %s", registros_contexto->rcx);
+
+	log_info(logger, "Ahora el contexto tiene el valor de rdx: %s", registros_contexto->rdx);
 }
 
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto){
@@ -948,7 +1000,11 @@ t_archivo* quitar_archivo_de_tabla_proceso(char* nombre_archivo, t_pcb* pcb){
 
 void ejecutar_f_open(char* nombre_archivo_open, t_pcb* pcb){
 	t_archivo* archivo = archivo_create(nombre_archivo_open);
-	bloquear_pcb_por_fs(pcb);
+	safe_pcb_add(cola_block_fs, pcb, &mutex_cola_block_fs);
+	pthread_mutex_lock(&mutex_cola_block_fs);
+	int cant_pcbs_block_fs = list_size(cola_block_fs);
+	pthread_mutex_unlock(&mutex_cola_block_fs);
+	log_info(logger, "agregue un pcb a la cola block_fs y ahora tiene %d pcbs", cant_pcbs_block_fs);
 	log_info(logger, "aviso al fs que abra el archivo %s", nombre_archivo_open);
 	send_manejar_f_open(archivo->nombre_archivo, fd_filesystem);
 	//necesito bloquear hilo conexion cpu para q se quede esperando respuesta de fs

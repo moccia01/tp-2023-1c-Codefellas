@@ -125,6 +125,7 @@ void cambiar_estado(t_pcb *pcb, estado_proceso nuevo_estado);
 void procesar_cambio_estado(t_pcb* pcb, estado_proceso estado_nuevo);
 void armar_pcb(t_list *instrucciones, int cliente_socket);
 void actualizar_contexto_pcb(t_pcb* pcb, t_contexto_ejecucion* contexto);
+void log_registros(t_registros* registros_contexto);
 void actualizar_registros(t_pcb* pcb, t_contexto_ejecucion* contexto);
 void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers);
 void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb, pthread_mutex_t* mutex_cola);
