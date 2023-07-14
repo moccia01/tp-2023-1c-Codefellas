@@ -13,7 +13,7 @@ ip_fs="$3"
 ip_memoria="$4"
 
 # Array con los nombres de directorio
-modulos=("kernel" "cpu" "fileSystem" "memoria")
+modulos=("kernel" "cpu" "fileSystem" "memoria" "consola")
 
 # Array con los nombres de los archivos de configuración
 configs=("BASE" "DEADLOCK" "ERROR" "MEMORIA" "FS")
@@ -39,6 +39,9 @@ for mod in "${modulos[@]}"; do
         ;;
       "memoria")
         sed -i "1s/IP_ESCUCHA=.*/IP_ESCUCHA="$ip_memoria"/" "$config_file"
+        ;;
+      "consola")
+        sed -i "1s/IP_KERNEL=.*/IP_KERNEL="$ip_kernel"/" "consola/configs/consola.config"
         ;;
       *)
         echo "Modulo no reconocido: $mod"
