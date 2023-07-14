@@ -275,6 +275,8 @@ void procesar_conexion(void* void_args) {
 				int* tamanio = list_get(create_sgm_params, 1);
 				log_info(logger, "manejo create_segment");
 				manejar_create_segment(pcb, cliente_socket, *id_segmento, *tamanio);
+				free(id_segmento);
+				free(tamanio);
 				list_destroy(create_sgm_params);
 				break;
 			case MANEJAR_DELETE_SEGMENT:
@@ -287,6 +289,8 @@ void procesar_conexion(void* void_args) {
 				pcb->contexto_de_ejecucion->tabla_de_segmentos = tabla_segmentos_actualizada;
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				free(id);
+				list_destroy(delete_sgm_params);
 				break;
 			case MANEJAR_F_READ:
 				t_list* f_read_params = recv_manejo_f_read(cliente_socket);
@@ -308,6 +312,10 @@ void procesar_conexion(void* void_args) {
 
 				send_manejar_f_read_fs(nombre_archivo_read, *dir_fisica_read, *cant_bytes_read, archivo_read->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				sem_post(&sem_exec);
+				free(nombre_archivo_read);
+				free(dir_fisica_read);
+				free(cant_bytes_read);
+				list_destroy(f_read_params);
 				break;
 			case MANEJAR_F_WRITE:
 				t_list* f_write_params = recv_manejo_f_write(cliente_socket);
@@ -330,6 +338,10 @@ void procesar_conexion(void* void_args) {
 
 				send_manejar_f_write_fs(nombre_archivo_write, *dir_fisica_write, *cant_bytes_write, archivo_write->puntero, pcb->contexto_de_ejecucion->pid, fd_filesystem);
 				sem_post(&sem_exec);
+				free(nombre_archivo_write);
+				free(dir_fisica_write);
+				free(cant_bytes_write);
+				list_destroy(f_write_params);
 				break;
 			case MANEJAR_F_OPEN:
 				char* nombre_archivo_open = recv_manejo_f_open(cliente_socket);
@@ -356,6 +368,7 @@ void procesar_conexion(void* void_args) {
 
 					sem_post(&sem_exec);
 				}
+				free(nombre_archivo_open);
 				break;
 			case MANEJAR_F_CLOSE:
 				char* nombre_archivo_close = recv_manejo_f_close(cliente_socket);
@@ -376,6 +389,7 @@ void procesar_conexion(void* void_args) {
 				pthread_mutex_unlock(&(archivo_close->mutex_asignado));
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				free(nombre_archivo_close);
 				break;
 			case MANEJAR_F_SEEK:
 				t_list* f_seek_params = recv_manejo_f_seek(cliente_socket);
@@ -386,6 +400,9 @@ void procesar_conexion(void* void_args) {
 				archivo_seek->puntero = *puntero_seek;
 				safe_pcb_add(cola_exec, pcb, &mutex_cola_exec);
 				send_contexto_ejecucion(pcb->contexto_de_ejecucion,cliente_socket);
+				free(nombre_archivo_seek);
+				free(puntero_seek);
+				list_destroy(f_seek_params);
 				break;
 			case MANEJAR_F_TRUNCATE:
 				t_list* f_truncate_params = recv_manejo_f_truncate(cliente_socket);
@@ -396,6 +413,9 @@ void procesar_conexion(void* void_args) {
 				log_info(logger_obligatorio, "PID: %d - Bloqueado por: %s", pcb->contexto_de_ejecucion->pid, nombre_archivo_truncate);
 				send_manejar_f_truncate(nombre_archivo_truncate, *tamanio_truncate, fd_filesystem);
 				sem_post(&sem_exec);
+				free(nombre_archivo_truncate);
+				free(tamanio_truncate);
+				list_destroy(f_truncate_params);
 				break;
 			default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
@@ -633,6 +653,7 @@ void actualizar_ts_de_pcbs(t_list* lista_ts_wrappers){
 		actualizar_ts_de_pcbs_de_cola(lista_ts_wrappers, archivo->cola_block_asignada, &(archivo->mutex_asignado));
 	}
 
+	//TODO eliminar la lista_ts_wrappers
 }
 
 void actualizar_ts_de_pcbs_de_cola(t_list* lista_ts_wrappers, t_list* lista_pcb, pthread_mutex_t* mutex_cola){
