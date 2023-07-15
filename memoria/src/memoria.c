@@ -113,10 +113,10 @@ static void procesar_conexion(void *void_args) {
 				send_ts_wrappers(lista_ts_wrappers, cliente_socket);
 				break;
 			}
-			free(id);
-			free(tamanio);
-			free(pid_cs);
-			list_destroy(create_sgm_params);
+//			free(id);
+//			free(tamanio);
+//			free(pid_cs);
+//			list_destroy(create_sgm_params);
 			break;
 		case MANEJAR_DELETE_SEGMENT:
 			t_list* delete_sgm_params = recv_delete_segment(cliente_socket);
@@ -125,9 +125,9 @@ static void procesar_conexion(void *void_args) {
 			t_list* tabla_segmentos_actualizada = deletear_segmento(*id_segmento, *pid_ds);
 			log_info(logger, "mando tabla actualizada de tamaño %d", list_size(tabla_segmentos_actualizada));
 			send_tabla_segmentos(tabla_segmentos_actualizada, cliente_socket);
-			free(id_segmento);
-			free(pid_ds);
-			list_destroy(delete_sgm_params);
+//			free(id_segmento);
+//			free(pid_ds);
+//			list_destroy(delete_sgm_params);
 			break;
 		case INICIALIZAR_PROCESO:
 			int pid_init = recv_inicializar_proceso(cliente_socket);
@@ -151,11 +151,11 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: CPU",*pid_lectura_cpu, *posicion_lectura_cpu, *tamanio_lectura_cpu);
 			log_valor_espacio_usuario(valor_leido_cpu, *tamanio_lectura_cpu);
 			send_valor_leido_cpu(valor_leido_cpu, *tamanio_lectura_cpu, cliente_socket);
-			free(posicion_lectura_cpu);
-			free(tamanio_lectura_cpu);
-			free(pid_lectura_cpu);
-			free(valor_leido_cpu);
-			list_destroy(parametros_lectura_cpu);
+//			free(posicion_lectura_cpu);
+//			free(tamanio_lectura_cpu);
+//			free(pid_lectura_cpu);
+//			free(valor_leido_cpu);
+//			list_destroy(parametros_lectura_cpu);
 			break;
 		case PEDIDO_LECTURA_FS:
 			t_list* parametros_lectura_fs = recv_leer_valor(cliente_socket);
@@ -168,11 +168,11 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger_obligatorio, "PID: %d - Acción: LEER - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_lectura_fs, *posicion_lectura_fs, *tamanio_lectura_fs);
 			log_valor_espacio_usuario(valor_leido_fs, *tamanio_lectura_fs);
 			send_valor_leido_fs(valor_leido_fs, *tamanio_lectura_fs, cliente_socket);
-			free(posicion_lectura_fs);
-			free(tamanio_lectura_fs);
-			free(pid_lectura_fs);
-			free(valor_leido_fs);
-			list_destroy(parametros_lectura_fs);
+//			free(posicion_lectura_fs);
+//			free(tamanio_lectura_fs);
+//			free(pid_lectura_fs);
+//			free(valor_leido_fs);
+//			list_destroy(parametros_lectura_fs);
 			break;
 		case PEDIDO_ESCRITURA_CPU:
 			t_list* parametros_escritura_cpu = recv_escribir_valor(cliente_socket);
@@ -187,11 +187,11 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: CPU", *pid_escritura_cpu, *posicion_escritura_cpu, *tam_esc_cpu);
 			log_valor_espacio_usuario(valor_a_escribir_cpu, *tam_esc_cpu);
 			send_fin_escritura(cliente_socket);
-			free(valor_a_escribir_cpu);
-			free(posicion_escritura_cpu);
-			free(tam_esc_cpu);
-			free(pid_escritura_cpu);
-			list_destroy(parametros_escritura_cpu);
+//			free(valor_a_escribir_cpu);
+//			free(posicion_escritura_cpu);
+//			free(tam_esc_cpu);
+//			free(pid_escritura_cpu);
+//			list_destroy(parametros_escritura_cpu);
 			break;
 		case PEDIDO_ESCRITURA_FS:
 			t_list* parametros_escritura_fs = recv_escribir_valor(cliente_socket);
@@ -206,11 +206,11 @@ static void procesar_conexion(void *void_args) {
 			log_info(logger_obligatorio, "PID: %d - Acción: ESCRIBIR - Dirección física: %d - Tamaño: %d - Origen: FS", *pid_escritura_fs, *posicion_escritura_fs, *tam_esc_fs);
 			log_valor_espacio_usuario(valor_a_escribir_fs, *tam_esc_fs);
 			send_fin_escritura(cliente_socket);
-			free(valor_a_escribir_fs);
-			free(posicion_escritura_fs);
-			free(tam_esc_fs);
-			free(pid_escritura_fs);
-			list_destroy(parametros_escritura_fs);
+//			free(valor_a_escribir_fs);
+//			free(posicion_escritura_fs);
+//			free(tam_esc_fs);
+//			free(pid_escritura_fs);
+//			list_destroy(parametros_escritura_fs);
 			break;
 		default:
 				log_error(logger, "Codigo de operacion no reconocido en el server de %s", server_name);
