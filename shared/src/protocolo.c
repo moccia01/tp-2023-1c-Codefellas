@@ -503,14 +503,12 @@ void send_manejar_f_open(char* nombre_archivo, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_OPEN);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_close(char* nombre_archivo, int fd_modulo){
 	t_paquete* paquete = crear_paquete(MANEJAR_F_CLOSE);
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_seek(char* nombre_archivo, int posicion, int fd_modulo){
@@ -518,7 +516,7 @@ void send_manejar_f_seek(char* nombre_archivo, int posicion, int fd_modulo){
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	agregar_a_paquete(paquete, &posicion, sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
+	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_read(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int fd_modulo){
@@ -527,7 +525,6 @@ void send_manejar_f_read(char* nombre_archivo, int dir_fisica, int cantidad_byte
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_read_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int pid, int fd_modulo){
@@ -538,7 +535,6 @@ void send_manejar_f_read_fs(char* nombre_archivo, int dir_fisica, int cantidad_b
 	agregar_a_paquete(paquete, &(puntero), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_write(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int fd_modulo){
@@ -547,7 +543,6 @@ void send_manejar_f_write(char* nombre_archivo, int dir_fisica, int cantidad_byt
 	agregar_a_paquete(paquete, &(dir_fisica), sizeof(int));
 	agregar_a_paquete(paquete, &(cantidad_bytes), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_write_fs(char* nombre_archivo, int dir_fisica, int cantidad_bytes, int puntero, int pid, int fd_modulo){
@@ -558,7 +553,6 @@ void send_manejar_f_write_fs(char* nombre_archivo, int dir_fisica, int cantidad_
 	agregar_a_paquete(paquete, &(puntero), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_manejar_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo){
@@ -566,7 +560,6 @@ void send_manejar_f_truncate(char* nombre_archivo, int tamanio, int fd_modulo){
 	agregar_a_paquete(paquete, nombre_archivo, strlen(nombre_archivo) + 1);
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo){
@@ -575,7 +568,6 @@ void send_create_segment(int pid, int id_segmento, int tamanio, int fd_modulo){
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 t_list* recv_create_segment(int fd_modulo){
@@ -596,9 +588,6 @@ t_segment_response recv_segment_response(int fd_modulo){
 	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_segment_response* respuesta = list_get(paquete, 0);
-//	list_destroy(paquete);
-//	t_segment_response ret = *respuesta;
-//	free(respuesta);
 	return *respuesta;
 }
 
@@ -607,7 +596,6 @@ void send_delete_segment(int pid, int id_segmento, int fd_modulo){
 	agregar_a_paquete(paquete, &(id_segmento), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 t_list* recv_delete_segment(int fd_modulo){
@@ -618,7 +606,6 @@ void send_tabla_segmentos(t_list* tabla_segmentos, int fd_modulo){
 	t_paquete* paquete = crear_paquete(TABLA_SEGMENTOS);
 	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 t_list* recv_tabla_segmentos(int fd_modulo){
@@ -637,7 +624,6 @@ void send_leer_valor_cpu(int dir_fisica, int tamanio_a_leer, int pid, int fd_mod
 	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_leer_valor_fs(int dir_fisica, int tamanio_a_leer, int pid, int fd_modulo){
@@ -646,7 +632,6 @@ void send_leer_valor_fs(int dir_fisica, int tamanio_a_leer, int pid, int fd_modu
 	agregar_a_paquete(paquete, &(tamanio_a_leer), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 t_list* recv_leer_valor(int fd_modulo){
@@ -694,7 +679,6 @@ void send_escribir_valor_cpu(char* valor, int dir_fisica, int tamanio, int pid, 
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 void send_escribir_valor_fs(char* valor, int dir_fisica, int tamanio, int pid, int fd_modulo){
@@ -704,7 +688,6 @@ void send_escribir_valor_fs(char* valor, int dir_fisica, int tamanio, int pid, i
 	agregar_a_paquete(paquete, &(tamanio), sizeof(int));
 	agregar_a_paquete(paquete, &(pid), sizeof(int));
 	enviar_paquete(paquete, fd_modulo);
-//	eliminar_paquete(paquete);
 }
 
 t_list* recv_escribir_valor(int fd_modulo){
@@ -721,9 +704,7 @@ void send_inicializar_proceso(int pid, int fd_modulo){
 int recv_inicializar_proceso(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	int* pid = list_get(paquete, 0);
-//	int ret = *pid;
-//	free(pid);
-//	list_destroy(paquete);
+	list_destroy(paquete);
 	return *pid;
 }
 
@@ -732,7 +713,6 @@ void send_proceso_inicializado(t_list* tabla_segmentos, int fd_modulo){
 	empaquetar_tabla_segmentos(paquete, tabla_segmentos);
 	enviar_paquete(paquete, fd_modulo);
 	eliminar_paquete(paquete);
-	list_destroy(tabla_segmentos);
 }
 
 t_list* recv_proceso_inicializado(int fd_modulo){
@@ -756,9 +736,7 @@ void send_terminar_proceso(int pid, int fd_modulo){
 int recv_terminar_proceso(int fd_modulo){
 	t_list* paquete = recibir_paquete(fd_modulo);
 	int* pid = list_get(paquete, 0);
-//	int ret = *pid;
-//	list_destroy(paquete);
-//	free(pid);
+	list_destroy(paquete);
 	return *pid;
 }
 
@@ -961,10 +939,4 @@ t_list* desempaquetar_ts_wrappers(t_list* paquete, int comienzo){
 	}
 	free(cantidad_wrappers);
 	return lista_ts_wrappers;
-}
-
-void ts_wrapper_destroy(ts_wrapper* tabla_segmento){
-	//TODO Chequear ts_wrapper_destroy
-	//list_destroy(tabla_segmento->tabla_de_segmentos);
-	//free(tabla_segmento);
 }

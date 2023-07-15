@@ -170,7 +170,6 @@ static void procesar_conexion() {
 			t_peticion* peticion_open = crear_peticion(OPEN,nombre_archivo_open, 0, 0, 0, 0);
 			agrego_a_pendientes(peticion_open);
 			sem_post(&contador_peticiones);
-//			free(nombre_archivo_open);
 			break;
 		case MANEJAR_F_TRUNCATE:
 			t_list* parametros_truncate = recv_manejo_f_truncate(socket_cliente);
@@ -180,9 +179,6 @@ static void procesar_conexion() {
 			t_peticion* peticion_truncate = crear_peticion(TRUNCATE, nombre_archivo_truncate, *tamanio_truncate, 0, 0, 0);
 			agrego_a_pendientes(peticion_truncate);
 			sem_post(&contador_peticiones);
-//			free(nombre_archivo_truncate);
-//			free(tamanio_truncate);
-//			list_destroy(parametros_truncate);
 			break;
 		case MANEJAR_F_READ:
 			t_list* parametros_read = recv_manejo_f_read_fs(socket_cliente);
@@ -196,12 +192,6 @@ static void procesar_conexion() {
 			t_peticion* peticion_read = crear_peticion(READ, nombre_archivo_read, *tamanio_read, *dir_fisica_read, *posicion_a_leer, *pid_read);
 			agrego_a_pendientes(peticion_read);
 			sem_post(&contador_peticiones);
-//			free(nombre_archivo_read);
-//			free(dir_fisica_read);
-//			free(tamanio_read);
-//			free(posicion_a_leer);
-//			free(pid_read);
-//			list_destroy(parametros_read);
 			break;
 		case MANEJAR_F_WRITE:
 			t_list* parametros_write = recv_manejo_f_write_fs(socket_cliente);
@@ -215,12 +205,6 @@ static void procesar_conexion() {
 			t_peticion* peticion_write = crear_peticion(WRITE, nombre_archivo_write, *tamanio_write, *dir_fisica_write, *posicion_a_escribir, *pid_write);
 			agrego_a_pendientes(peticion_write);
 			sem_post(&contador_peticiones);
-//			free(nombre_archivo_write);
-//			free(dir_fisica_write);
-//			free(tamanio_write);
-//			free(posicion_a_escribir);
-//			free(pid_write);
-//			list_destroy(parametros_write);
 			break;
 		default:
 			log_error(logger, "Algo anduvo mal en el server de %s", server_name);
