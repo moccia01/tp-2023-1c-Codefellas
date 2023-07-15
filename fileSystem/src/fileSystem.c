@@ -4,7 +4,7 @@ int main(int argc, char **argv) {
 	if (argc > 2) {
 		return EXIT_FAILURE;
 	}
-	logger = log_create("filesystem.log", "filesystem_main", 1, LOG_LEVEL_INFO);
+	logger = log_create("filesystem_aux.log", "filesystem_main", 0, LOG_LEVEL_INFO);
 	logger_obligatorio = log_create("filesystem.log", "filesystem_obligatorio", 1, LOG_LEVEL_INFO);
 	config = config_create(argv[1]);
 	if(config == NULL){

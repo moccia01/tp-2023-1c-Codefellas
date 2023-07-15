@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	leer_config();
-	logger = log_create("kernel.log", "kernel_main", 1, LOG_LEVEL_INFO);
+	logger = log_create("kernel_aux.log", "kernel_main", 0, LOG_LEVEL_INFO);
 	// TODO: cambiar archivo de logs obligatorios
 	logger_obligatorio = log_create("kernel.log", "kernel_obligatorio", 1, LOG_LEVEL_INFO);
 	inicializar_variables();

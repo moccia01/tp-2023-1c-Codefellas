@@ -6,14 +6,14 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	config = config_create(argv[1]);
-	logger = log_create("memoria.log", "memoria_main", true, LOG_LEVEL_INFO);
+	logger = log_create("memoria_aux.log", "memoria_main", 0, LOG_LEVEL_INFO);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
 		config_destroy(config);
 		log_destroy(logger);
 		exit(1);
 	}
-	logger_obligatorio = log_create("memoria.log", "memoria_obligatorio", true, LOG_LEVEL_INFO);
+	logger_obligatorio = log_create("memoria.log", "memoria_obligatorio", 1, LOG_LEVEL_INFO);
 	leer_config();
 
 	inicializar_memoria();

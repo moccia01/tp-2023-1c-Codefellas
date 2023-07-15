@@ -5,7 +5,7 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	config = config_create(argv[1]);
-	logger = log_create("cpu.log", "cpu_main", 1, LOG_LEVEL_INFO);
+	logger = log_create("cpu_aux.log", "cpu_main", 0, LOG_LEVEL_INFO);
 	logger_obligatorio = log_create("cpu.log", "cpu_obligatorio", 1, LOG_LEVEL_INFO);
 	if(config == NULL){
 		log_error(logger, "No se encontró el archivo :(");
