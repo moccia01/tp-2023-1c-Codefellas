@@ -596,10 +596,10 @@ t_segment_response recv_segment_response(int fd_modulo){
 	}
 	t_list* paquete = recibir_paquete(fd_modulo);
 	t_segment_response* respuesta = list_get(paquete, 0);
-	list_destroy(paquete);
-	t_segment_response ret = *respuesta;
-	free(respuesta);
-	return ret;
+//	list_destroy(paquete);
+//	t_segment_response ret = *respuesta;
+//	free(respuesta);
+	return *respuesta;
 }
 
 void send_delete_segment(int pid, int id_segmento, int fd_modulo){
