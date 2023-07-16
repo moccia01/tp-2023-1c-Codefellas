@@ -26,7 +26,7 @@
 
 También puedes mirar la lista de todos los [contribuyentes](https://github.com/moccia01/tp-2023-1c-Codefellas/graphs/contributors) quíenes han participado en este proyecto. 
 
-## Expresiones de Gratitud 🎁
+## Links útiles 🎁
 
 * [La caja de UTN](https://lacajadeutn.blogspot.com/)
 * [Repo del tp lacajadeutn](https://github.com/GuidoDipietro/TP-SO-2021)
