@@ -1,6 +1,6 @@
 # <h1 align="center"> Trabajo Práctico de Sistemas Operativos - UTN FRBA </h1>
 
-## Primer Cuatrimetre 2023 --- TP "T.U.K.I - The Ultimate Kernel Implementation"
+## Primer Cuatrimestre 2023 --- TP "T.U.K.I - The Ultimate Kernel Implementation"
 
 [Enunciado del TP](https://github.com/moccia01/tp-2023-1c-Codefellas/blob/main/Archivos%20Importantes/T.U.K.I%20-%20v1.1.pdf)
 
